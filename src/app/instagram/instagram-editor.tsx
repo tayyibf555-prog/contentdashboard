@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PhonePreview } from "@/components/instagram/phone-preview";
 import { SlideNavigator } from "@/components/instagram/slide-navigator";
 import { CaptionEditor } from "@/components/content/caption-editor";
@@ -8,14 +9,17 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { approveContent, regenerateContent } from "@/app/actions";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
 type PostWithSlides = GeneratedContent & { carousel_slides: CarouselSlide[] };
 
 export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
+  const router = useRouter();
   const [tab, setTab] = useState<"pending" | "approved" | "posted">("pending");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [loading, setLoading] = useState<string | null>(null);
 
   const filtered = posts.filter((p) => {
     if (tab === "pending") return p.status === "pending" || p.status === "draft";
@@ -26,9 +30,28 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
   const current = filtered[selectedIndex];
   const slides = current?.carousel_slides?.sort((a, b) => a.slide_number - b.slide_number) || [];
 
+  const handleApprove = async () => {
+    if (!current) return;
+    setLoading("approve");
+    try {
+      await approveContent(current.id);
+      router.refresh();
+    } catch { alert("Failed to approve"); }
+    finally { setLoading(null); }
+  };
+
+  const handleRegenerate = async () => {
+    if (!current) return;
+    setLoading("regenerate");
+    try {
+      await regenerateContent(current.id);
+      router.refresh();
+    } catch { alert("Failed to regenerate"); }
+    finally { setLoading(null); }
+  };
+
   return (
     <div>
-      {/* Tabs */}
       <div className="flex gap-4 mb-6">
         {(["pending", "approved", "posted"] as const).map((t) => (
           <button
@@ -51,17 +74,11 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
         <p className="text-azen-text text-sm">No {tab} carousel posts.</p>
       ) : (
         <div className="grid grid-cols-2 gap-6">
-          {/* Left: Preview */}
           <div>
             <PhonePreview slide={slides[activeSlide] || null} account={current.account} />
-            <SlideNavigator
-              slides={slides}
-              activeIndex={activeSlide}
-              onSelect={setActiveSlide}
-            />
-            {/* Post selector */}
+            <SlideNavigator slides={slides} activeIndex={activeSlide} onSelect={setActiveSlide} />
             {filtered.length > 1 && (
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-2 mt-4 flex-wrap">
                 {filtered.map((p, i) => (
                   <button
                     key={p.id}
@@ -76,7 +93,6 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
               </div>
             )}
           </div>
-          {/* Right: Editor */}
           <div>
             <Card>
               <CaptionEditor caption={current.body || ""} onSave={() => {}} />
@@ -91,9 +107,14 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
                 sourceReference={current.source_reference}
               />
               <div className="flex gap-2 mt-4">
-                <Button variant="primary">Approve</Button>
-                <Button variant="secondary">Generate Images</Button>
-                <Button variant="secondary">Repurpose</Button>
+                {current.status === "pending" && (
+                  <Button variant="primary" onClick={handleApprove} disabled={loading === "approve"}>
+                    {loading === "approve" ? "Approving..." : "Approve"}
+                  </Button>
+                )}
+                <Button variant="secondary" onClick={handleRegenerate} disabled={loading === "regenerate"}>
+                  {loading === "regenerate" ? "Regenerating..." : "Regenerate"}
+                </Button>
               </div>
             </Card>
           </div>

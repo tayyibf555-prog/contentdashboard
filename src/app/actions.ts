@@ -13,11 +13,16 @@ function getSupabase() {
 
 export async function approveContent(id: string) {
   const supabase = getSupabase();
-  await supabase
+  const { error } = await supabase
     .from("generated_content")
     .update({ status: "approved" })
     .eq("id", id);
+  if (error) throw new Error(error.message);
   revalidatePath("/");
+  revalidatePath("/instagram");
+  revalidatePath("/linkedin");
+  revalidatePath("/twitter");
+  revalidatePath("/youtube");
 }
 
 export async function regenerateContent(id: string) {
@@ -28,7 +33,7 @@ export async function regenerateContent(id: string) {
     .eq("id", id)
     .single();
 
-  if (!original) return;
+  if (!original) throw new Error("Content not found");
 
   const { data: voice } = await supabase
     .from("voice_settings")
@@ -50,19 +55,23 @@ Generate a completely different take on the same topic. Respond in JSON format:
 }`;
 
   const raw = await generateContent(prompt, voice || undefined);
-  try {
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(raw);
-    await supabase
-      .from("generated_content")
-      .update({
-        title: parsed.title,
-        body: parsed.body,
-        hashtags: parsed.hashtags || [],
-      })
-      .eq("id", id);
-  } catch {
-    // Keep original content if regeneration fails
-  }
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(raw);
+
+  const { error } = await supabase
+    .from("generated_content")
+    .update({
+      title: parsed.title,
+      body: parsed.body,
+      hashtags: parsed.hashtags || [],
+    })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+
   revalidatePath("/");
+  revalidatePath("/instagram");
+  revalidatePath("/linkedin");
+  revalidatePath("/twitter");
+  revalidatePath("/youtube");
 }

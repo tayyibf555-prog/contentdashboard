@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { TweetPreview } from "@/components/twitter/tweet-preview";
 import { ThreadBuilder } from "@/components/twitter/thread-builder";
 import { CaptionEditor } from "@/components/content/caption-editor";
@@ -8,11 +9,14 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { approveContent, regenerateContent } from "@/app/actions";
 import type { GeneratedContent } from "@/types";
 
 export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
+  const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [format, setFormat] = useState<"tweet" | "thread">("tweet");
+  const [loading, setLoading] = useState<string | null>(null);
 
   const current = posts[selectedIndex];
 
@@ -22,9 +26,26 @@ export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
 
   const charCount = (current.body || "").length;
 
+  const handleApprove = async () => {
+    setLoading("approve");
+    try {
+      await approveContent(current.id);
+      router.refresh();
+    } catch { alert("Failed to approve"); }
+    finally { setLoading(null); }
+  };
+
+  const handleRegenerate = async () => {
+    setLoading("regenerate");
+    try {
+      await regenerateContent(current.id);
+      router.refresh();
+    } catch { alert("Failed to regenerate"); }
+    finally { setLoading(null); }
+  };
+
   return (
     <div>
-      {/* Format Tabs */}
       <div className="flex gap-4 mb-6">
         {(["tweet", "thread"] as const).map((f) => (
           <button
@@ -40,7 +61,6 @@ export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {/* Left: Preview */}
         <div>
           <TweetPreview body={current.body || ""} account={current.account} />
           <div className="mt-4 text-center">
@@ -64,7 +84,6 @@ export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
             </div>
           )}
         </div>
-        {/* Right: Editor */}
         <div>
           <Card>
             {format === "thread" ? (
@@ -83,9 +102,14 @@ export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
               sourceReference={current.source_reference}
             />
             <div className="flex gap-2 mt-4">
-              <Button variant="primary">Approve</Button>
-              <Button variant="secondary">Regenerate</Button>
-              <Button variant="secondary">Repurpose</Button>
+              {current.status === "pending" && (
+                <Button variant="primary" onClick={handleApprove} disabled={loading === "approve"}>
+                  {loading === "approve" ? "Approving..." : "Approve"}
+                </Button>
+              )}
+              <Button variant="secondary" onClick={handleRegenerate} disabled={loading === "regenerate"}>
+                {loading === "regenerate" ? "Regenerating..." : "Regenerate"}
+              </Button>
             </div>
           </Card>
         </div>

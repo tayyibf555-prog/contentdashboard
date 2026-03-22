@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { LinkedInPreview } from "@/components/linkedin/linkedin-preview";
 import { HookVariants } from "@/components/linkedin/hook-variants";
 import { ToneSelector } from "@/components/linkedin/tone-selector";
@@ -9,12 +10,15 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { approveContent, regenerateContent } from "@/app/actions";
 import type { GeneratedContent } from "@/types";
 
 export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
+  const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [tone, setTone] = useState("Professional");
   const [hookIndex, setHookIndex] = useState(0);
+  const [loading, setLoading] = useState<string | null>(null);
 
   const current = posts[selectedIndex];
 
@@ -24,9 +28,26 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
 
   const charCount = (current.body || "").length;
 
+  const handleApprove = async () => {
+    setLoading("approve");
+    try {
+      await approveContent(current.id);
+      router.refresh();
+    } catch { alert("Failed to approve"); }
+    finally { setLoading(null); }
+  };
+
+  const handleRegenerate = async () => {
+    setLoading("regenerate");
+    try {
+      await regenerateContent(current.id);
+      router.refresh();
+    } catch { alert("Failed to regenerate"); }
+    finally { setLoading(null); }
+  };
+
   return (
     <div className="grid grid-cols-2 gap-6">
-      {/* Left: Preview */}
       <div>
         <LinkedInPreview body={current.body || ""} account={current.account} />
         <div className="mt-4 text-center">
@@ -34,7 +55,6 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
             {charCount} / 3,000 characters
           </span>
         </div>
-        {/* Post selector */}
         {posts.length > 1 && (
           <div className="flex gap-2 mt-4 flex-wrap">
             {posts.map((p, i) => (
@@ -51,14 +71,11 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
           </div>
         )}
       </div>
-      {/* Right: Editor */}
       <div>
         <Card>
           <ToneSelector selected={tone} onSelect={setTone} />
           <HookVariants
-            hooks={[
-              { text: "Default hook from the generated post", score: 8.5 },
-            ]}
+            hooks={[{ text: (current.body || "").split("\n")[0] || "Hook from generated post", score: 8.5 }]}
             selectedIndex={hookIndex}
             onSelect={setHookIndex}
           />
@@ -74,9 +91,14 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
             sourceReference={current.source_reference}
           />
           <div className="flex gap-2 mt-4">
-            <Button variant="primary">Approve</Button>
-            <Button variant="secondary">Regenerate</Button>
-            <Button variant="secondary">Repurpose</Button>
+            {current.status === "pending" && (
+              <Button variant="primary" onClick={handleApprove} disabled={loading === "approve"}>
+                {loading === "approve" ? "Approving..." : "Approve"}
+              </Button>
+            )}
+            <Button variant="secondary" onClick={handleRegenerate} disabled={loading === "regenerate"}>
+              {loading === "regenerate" ? "Regenerating..." : "Regenerate"}
+            </Button>
           </div>
         </Card>
       </div>

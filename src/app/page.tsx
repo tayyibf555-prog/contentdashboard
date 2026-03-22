@@ -5,19 +5,22 @@ import { ContentQueue } from "@/components/dashboard/content-queue";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { approveContent, regenerateContent } from "./actions";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ account?: string }> }) {
   const supabase = await createServerSupabaseClient();
+  const { account = "business" } = await searchParams;
 
   const { data: pendingContent } = await supabase
     .from("generated_content")
     .select("*")
     .eq("status", "pending")
+    .eq("account", account)
     .order("created_at", { ascending: false });
 
   const { count: postedThisWeek } = await supabase
     .from("generated_content")
     .select("*", { count: "exact", head: true })
     .eq("status", "posted")
+    .eq("account", account)
     .gte("posted_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
   // Fetch engagement data for "best post" and weekly totals
@@ -54,7 +57,7 @@ export default async function DashboardPage() {
     <div>
       <TopBar
         title={`${greeting}, Tayyib`}
-        subtitle={`${dateStr} · ${pendingContent?.length || 0} posts ready for approval`}
+        subtitle={`${dateStr} · ${account === "business" ? "@azen_ai" : "@tayyib.ai"} · ${pendingContent?.length || 0} posts ready for approval`}
         actions={
           <>
             <span className="bg-azen-border text-azen-text px-3.5 py-2 rounded-md text-xs">Last scraped: --</span>
