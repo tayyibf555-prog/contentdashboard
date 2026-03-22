@@ -25,7 +25,9 @@ A content dashboard for Azen (@azen_ai) and personal brand (@tayyib.ai) that res
 | Database | Supabase | Data storage + auth + file storage |
 | Scheduling | Vercel Cron | Daily 9 AM content generation trigger |
 | Notifications | Resend | Email notifications for daily content |
-| Carousel Images | Supabase Storage | Generated carousel slide images |
+| Social Media Posting | Ayrshare | Unified API for posting to IG, LI, YT with OAuth and scheduling |
+| Carousel Image Generation | Satori + @resvg/resvg-js | Renders carousel slides as HTML/CSS to PNG images server-side |
+| Carousel Image Storage | Supabase Storage | Stores generated carousel slide PNGs |
 
 ### Why This Approach
 
@@ -258,7 +260,7 @@ Manage research sources.
 4. **Store**: Generated content (text + carousel layouts) saved to Supabase
 5. **Notify**: Email notification sent via Resend at 9 AM with summary
 6. **Review**: User opens dashboard, reviews queue, approves/edits/regenerates
-7. **Post**: Approved content is posted at the scheduled optimal time
+7. **Post**: Approved content is posted at the scheduled optimal time via Ayrshare API
 
 ### Manual Content Generation
 
@@ -277,6 +279,7 @@ Manage research sources.
 - **carousel_slides**: id, generated_content_id, slide_number, headline, body_text, slide_type (cover/content/cta), image_url
 - **youtube_scripts**: id, generated_content_id, hook, intro, body_sections (jsonb), cta, thumbnail_concepts (jsonb), title_variants (jsonb), description, tags (text[]), estimated_duration
 - **engagement_metrics**: id, generated_content_id, platform, likes, comments, shares, saves, views, recorded_at
+- **social_auth_tokens**: id, platform, account_type (business/personal), ayrshare_profile_key, connected_at
 
 ## Posting Workflow
 
@@ -285,10 +288,29 @@ Manage research sources.
    - **Approve**: Content moves to "Scheduled" at optimal time
    - **Edit**: Opens content in platform-specific editor, then approve
    - **Regenerate**: Claude creates a completely new version of the same topic
-3. At scheduled time, content is posted via platform APIs
-4. After posting, status changes to "Posted" and engagement tracking begins
+3. At scheduled time, content is posted via Ayrshare API (a unified social media posting API that handles Instagram, LinkedIn, and YouTube through a single integration with OAuth token management)
+4. After posting, status changes to "Posted" and engagement tracking begins via periodic Ayrshare analytics API calls
 
 This is a semi-automated system — nothing is posted without human approval.
+
+## Carousel & Thumbnail Image Generation
+
+### Carousel Slides
+
+Carousel slide images are generated server-side using **Satori** (converts JSX/HTML to SVG) + **@resvg/resvg-js** (converts SVG to PNG). This runs in Next.js API routes.
+
+**Process:**
+1. Claude generates the text content for each slide (headline, body, slide type)
+2. A Next.js API route renders each slide using predefined React/JSX templates matching the Azen brand
+3. Satori converts the JSX to SVG, resvg converts SVG to 1080x1080 PNG
+4. PNGs are uploaded to Supabase Storage
+5. The dashboard displays these images in the carousel preview
+
+**Templates:** Pre-built JSX templates for Cover, Content, and CTA slide types using the Azen color scheme (dark navy, teal accents, white text).
+
+### YouTube Thumbnails
+
+Thumbnail concepts are generated as **text descriptions + rendered mockups** using the same Satori pipeline. These are conceptual layouts (text placement, color scheme, composition) — not photo-realistic images. The user uses these as guidance when creating the final thumbnail in Canva or similar tools, or can use the rendered mockup directly if it's sufficient.
 
 ## External Service Dependencies
 
@@ -296,7 +318,9 @@ This is a semi-automated system — nothing is posted without human approval.
 |---------|---------|-------------------|
 | Apify | Social media scraping | Purpose-built scrapers for IG, LI, YT, Twitter/X; handles rate limits and platform changes |
 | Claude API | Content generation + analysis | Best natural language quality for social content; handles tone switching between accounts |
+| Ayrshare | Social media posting | Unified API for posting to Instagram, LinkedIn, YouTube; handles OAuth, scheduling, and format requirements |
 | Supabase | Database + auth + storage | Postgres database, file storage for carousel images, authentication |
+| Satori + resvg | Image generation | Server-side rendering of carousel slides and thumbnail mockups from JSX to PNG |
 | Vercel | Hosting + cron | Pro plan needed for longer function timeouts on scraping/generation |
 | Resend | Email notifications | Daily 9 AM content ready notification |
 
