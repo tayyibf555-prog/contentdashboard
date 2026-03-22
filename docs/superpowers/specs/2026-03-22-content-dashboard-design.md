@@ -2,7 +2,7 @@
 
 ## Overview
 
-A content dashboard for Azen (@azen_ai) and personal brand (@tayyib.ai) that researches AI industry leaders and competitors, generates ready-to-post content across Instagram, LinkedIn, and YouTube, and provides a semi-automated approval workflow. Content is delivered daily by 9 AM (Europe/London timezone), with YouTube content ready by 9 AM on Sundays.
+A content dashboard for Azen (@azen_ai) and personal brand (@tayyib.ai) that researches AI industry leaders and competitors, generates ready-to-post content across Instagram, LinkedIn, YouTube, and Twitter/X, and provides a semi-automated approval workflow. Content is delivered daily by 9 AM (Europe/London timezone), with YouTube content ready by 9 AM on Sundays.
 
 ## Business Context
 
@@ -25,7 +25,7 @@ A content dashboard for Azen (@azen_ai) and personal brand (@tayyib.ai) that res
 | Database | Supabase | Data storage + auth + file storage |
 | Scheduling | Vercel Cron | Daily 9 AM content generation trigger |
 | Notifications | Resend | Email notifications for daily content |
-| Social Media Posting | Ayrshare | Unified API for posting to IG, LI, YT with OAuth and scheduling |
+| Social Media Posting | Ayrshare | Unified API for posting to IG, LI, YT, Twitter/X with OAuth and scheduling |
 | Carousel Image Generation | Satori + @resvg/resvg-js | Renders carousel slides as HTML/CSS to PNG images server-side |
 | Carousel Image Storage | Supabase Storage | Stores generated carousel slide PNGs |
 
@@ -82,8 +82,10 @@ A content dashboard for Azen (@azen_ai) and personal brand (@tayyib.ai) that res
 | LinkedIn | Azen AI | Daily | 9:00 AM |
 | LinkedIn | @tayyib.ai | Daily | 8:00-8:30 AM |
 | YouTube | @tayyib.ai | Weekly (Sunday) | 2:00 PM |
+| Twitter/X | @azen_ai | Daily | 10:00 AM |
+| Twitter/X | @tayyib.ai | Daily | 11:00 AM |
 
-**Total**: 28 posts per week + 1 YouTube video = 29 pieces of content
+**Total**: 28 IG+LI posts + 14 Twitter/X posts + 1 YouTube video = 43 pieces of content per week
 
 Content is generated and ready for approval by 9 AM daily (Europe/London). YouTube content is ready by 9 AM on Sundays.
 
@@ -195,7 +197,23 @@ Script generator and video content builder for @tayyib.ai (personal only).
 
 Every script naturally weaves in a CTA to azen.io for lead generation from personal YouTube back to the business.
 
-### 6. Content Calendar
+### 6. Twitter/X
+
+Post editor for both accounts. Twitter/X is a key platform for AI thought leadership.
+
+**Components:**
+- Header with post count, Drafts, Posted history, + Generate New
+- Format tabs: Thread (multi-tweet), Single Tweet, Quote Tweet response
+- Tweet preview: Realistic Twitter/X mockup showing how the post appears in the feed
+- Character counter: Track against 280 character limit (or 25,000 for premium)
+- Thread builder: Create multi-part threads with numbered tweets, each editable
+- Hook variants: 3 opening tweet options with engagement score
+- Post details: Account, pillar, source, best time
+- Approve & Schedule + Regenerate buttons
+
+**Twitter/X content is often repurposed from LinkedIn and Instagram content** — a LinkedIn long-form post becomes a thread, a carousel key point becomes a single tweet. The content repurposing engine handles this automatically.
+
+### 7. Content Calendar
 
 Weekly and monthly planning view.
 
@@ -215,11 +233,13 @@ Weekly and monthly planning view.
 **Daily content structure:**
 - 1x Business IG carousel (@azen_ai)
 - 1x Business LinkedIn post (Azen AI)
+- 1x Business Twitter/X post (@azen_ai)
 - 1x Personal IG carousel (@tayyib.ai)
 - 1x Personal LinkedIn post (@tayyib.ai)
+- 1x Personal Twitter/X post (@tayyib.ai)
 - 1x YouTube video on Sundays (@tayyib.ai)
 
-### 7. Analytics
+### 8. Analytics
 
 Engagement tracking to improve content over time.
 
@@ -228,10 +248,10 @@ Engagement tracking to improve content over time.
 - Week-over-week comparison with % change
 - Best performing posts by platform
 - Pillar performance: Which content pillars drive the most engagement
-- Platform breakdown: Performance comparison across IG, LinkedIn, YouTube
+- Platform breakdown: Performance comparison across IG, LinkedIn, Twitter/X, YouTube
 - Account comparison: Business vs personal engagement trends
 
-### 8. Tracked Accounts
+### 9. Tracked Accounts
 
 Manage research sources.
 
@@ -245,6 +265,52 @@ Manage research sources.
 - Category tabs: All, Leaders, Competitors, Other
 - Competitor cards: Red-bordered with alert count instead of content generation stats
 - Add New Account card: Enter handles, select platforms, categorize
+
+## Content Repurposing Engine
+
+When content is approved for one platform, the system automatically generates adapted versions for other platforms.
+
+**Repurposing rules:**
+- **LinkedIn long-form post → Twitter/X thread**: Key points become individual tweets in a thread
+- **LinkedIn long-form post → IG carousel**: Main points become carousel slides with the Azen visual template
+- **IG carousel → Twitter/X single tweet**: The hook/cover slide becomes a punchy tweet
+- **IG carousel → LinkedIn short post**: Cover slide headline + condensed caption
+- **YouTube script → LinkedIn long-form**: Script content adapted into a written post
+- **YouTube script → IG carousel**: Key tutorial steps become carousel slides
+- **YouTube script → Twitter/X thread**: Main points become a thread with link to the video
+
+**Workflow:** When a user approves content for Platform A, the dashboard shows a prompt: "Generate adapted versions for other platforms?" with checkboxes for each target platform. Generated repurposed content enters the queue as new items requiring their own approval.
+
+**Cross-platform content is never identical** — each version is adapted for the platform's format, tone, and audience expectations. Claude rewrites the content to feel native to each platform.
+
+## Tone Training (Voice Settings)
+
+A settings page where the user provides writing samples and preferences so Claude can match their authentic voice.
+
+**Components:**
+- **Writing samples**: Paste 5-10 examples of posts you've written that sound like "you". Stored in Supabase and included in Claude's system prompt during generation.
+- **Tone guidelines per account**:
+  - Business (@azen_ai): Specific instructions (e.g., "professional but not corporate", "use data and specifics", "reference Azen's 3-step framework")
+  - Personal (@tayyib.ai): Specific instructions (e.g., "conversational, like talking to a friend", "share honest opinions", "reference personal experiences")
+- **Words/phrases to avoid**: List of banned words (e.g., "leverage", "synergy", "game-changer")
+- **Words/phrases to use**: Preferred vocabulary and expressions
+- **Preview & test**: Generate a sample post using current voice settings to verify it sounds right before using in production
+
+The voice settings are included as part of the Claude API system prompt for every content generation call, ensuring consistent output that sounds like the user, not like AI.
+
+## Evergreen Content Bank
+
+A library of timeless content that can be recycled and reshared periodically.
+
+**Components:**
+- **Flag as evergreen**: Any approved/posted content can be flagged as evergreen from the queue, calendar, or platform pages
+- **Evergreen library**: Browsable collection of all flagged content, filterable by platform, account, and pillar
+- **Auto-reshare suggestions**: The system suggests re-posting evergreen content during low-research days or when no strong trending topics are found
+- **Refresh on reshare**: When recycling evergreen content, Claude slightly rewrites the caption/post to keep it fresh while preserving the core message
+- **Cooldown period**: Evergreen content won't be suggested for reshare within 30 days of its last posting
+
+**Database addition:**
+- **evergreen_content**: id, generated_content_id, flagged_at, last_reshared_at, reshare_count, cooldown_days (default 30)
 
 ## Data Flow
 
@@ -280,6 +346,8 @@ Manage research sources.
 - **youtube_scripts**: id, generated_content_id, hook, intro, body_sections (jsonb), cta, thumbnail_concepts (jsonb), title_variants (jsonb), description, tags (text[]), estimated_duration
 - **engagement_metrics**: id, generated_content_id, platform, likes, comments, shares, saves, views, recorded_at
 - **social_auth_tokens**: id, platform, account_type (business/personal), ayrshare_profile_key, connected_at
+- **voice_settings**: id, account_type (business/personal), writing_samples (text[]), tone_guidelines (text), avoid_words (text[]), preferred_words (text[]), updated_at
+- **evergreen_content**: id, generated_content_id, flagged_at, last_reshared_at, reshare_count, cooldown_days (default 30)
 
 ## Posting Workflow
 
@@ -318,7 +386,7 @@ Thumbnail concepts are generated as **text descriptions + rendered mockups** usi
 |---------|---------|-------------------|
 | Apify | Social media scraping | Purpose-built scrapers for IG, LI, YT, Twitter/X; handles rate limits and platform changes |
 | Claude API | Content generation + analysis | Best natural language quality for social content; handles tone switching between accounts |
-| Ayrshare | Social media posting | Unified API for posting to Instagram, LinkedIn, YouTube; handles OAuth, scheduling, and format requirements |
+| Ayrshare | Social media posting | Unified API for posting to Instagram, LinkedIn, YouTube, Twitter/X; handles OAuth, scheduling, and format requirements |
 | Supabase | Database + auth + storage | Postgres database, file storage for carousel images, authentication |
 | Satori + resvg | Image generation | Server-side rendering of carousel slides and thumbnail mockups from JSX to PNG |
 | Vercel | Hosting + cron | Pro plan needed for longer function timeouts on scraping/generation |
