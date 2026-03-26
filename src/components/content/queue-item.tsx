@@ -10,15 +10,31 @@ export function QueueItem({
   content,
   onApprove,
   onRegenerate,
+  onApproveAndPost,
 }: {
   content: GeneratedContent;
   onApprove: (id: string) => void;
   onRegenerate: (id: string) => void;
+  onApproveAndPost: (id: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const pillars = content.account === "business" ? BUSINESS_PILLARS : PERSONAL_PILLARS;
   const pillar = pillars.find((p) => p.key === content.pillar);
+
+  const handleApproveAndPost = async () => {
+    setLoading("approveAndPost");
+    setError(null);
+    try {
+      await onApproveAndPost(content.id);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to post");
+    } finally {
+      setLoading(null);
+    }
+  };
 
   return (
     <div className="bg-azen-bg rounded-md mb-2">
@@ -40,6 +56,7 @@ export function QueueItem({
               </span>
             )}
           </div>
+          {error && <p className="text-red-400 text-[10px] mt-1">{error}</p>}
         </div>
         {content.best_time && (
           <div className="text-right mr-3">
@@ -48,9 +65,12 @@ export function QueueItem({
           </div>
         )}
         <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
-          <Button variant="primary" onClick={() => onApprove(content.id)}>Approve</Button>
+          <Button variant="primary" onClick={() => onApprove(content.id)} disabled={!!loading}>Approve</Button>
+          <Button variant="primary" onClick={handleApproveAndPost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
+            {loading === "approveAndPost" ? "Posting..." : "Approve & Post"}
+          </Button>
           <Button variant="secondary" onClick={() => setExpanded(true)}>Edit</Button>
-          <Button variant="icon" onClick={() => onRegenerate(content.id)}>↻</Button>
+          <Button variant="icon" onClick={() => onRegenerate(content.id)} disabled={!!loading}>↻</Button>
         </div>
       </div>
 

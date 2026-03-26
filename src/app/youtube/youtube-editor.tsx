@@ -9,7 +9,7 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { approveContent, regenerateContent } from "@/app/actions";
+import { approveContent, regenerateContent, postContent, approveAndPostContent } from "@/app/actions";
 import type { GeneratedContent, YoutubeScript } from "@/types";
 
 type PostWithScript = GeneratedContent & { youtube_scripts: YoutubeScript[] };
@@ -20,6 +20,7 @@ export function YouTubeEditor({ posts }: { posts: PostWithScript[] }) {
   const [titleIndex, setTitleIndex] = useState(0);
   const [thumbnailIndex, setThumbnailIndex] = useState(0);
   const [loading, setLoading] = useState<string | null>(null);
+  const [postError, setPostError] = useState<string | null>(null);
 
   const current = posts[selectedIndex];
   const script = current?.youtube_scripts?.[0];
@@ -30,6 +31,7 @@ export function YouTubeEditor({ posts }: { posts: PostWithScript[] }) {
 
   const handleApprove = async () => {
     setLoading("approve");
+    setPostError(null);
     try {
       await approveContent(current.id);
       router.refresh();
@@ -37,8 +39,29 @@ export function YouTubeEditor({ posts }: { posts: PostWithScript[] }) {
     finally { setLoading(null); }
   };
 
+  const handlePost = async () => {
+    setLoading("post");
+    setPostError(null);
+    try {
+      await postContent(current.id);
+      router.refresh();
+    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
+    finally { setLoading(null); }
+  };
+
+  const handleApproveAndPost = async () => {
+    setLoading("approveAndPost");
+    setPostError(null);
+    try {
+      await approveAndPostContent(current.id);
+      router.refresh();
+    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
+    finally { setLoading(null); }
+  };
+
   const handleRegenerate = async () => {
     setLoading("regenerate");
+    setPostError(null);
     try {
       await regenerateContent(current.id);
       router.refresh();
@@ -99,16 +122,29 @@ export function YouTubeEditor({ posts }: { posts: PostWithScript[] }) {
             contentType="video_script"
             sourceReference={current.source_reference}
           />
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 mt-4 flex-wrap">
             {current.status === "pending" && (
-              <Button variant="primary" onClick={handleApprove} disabled={loading === "approve"}>
-                {loading === "approve" ? "Approving..." : "Approve Script"}
+              <>
+                <Button variant="primary" onClick={handleApprove} disabled={!!loading}>
+                  {loading === "approve" ? "Approving..." : "Approve Script"}
+                </Button>
+                <Button variant="primary" onClick={handleApproveAndPost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
+                  {loading === "approveAndPost" ? "Posting..." : "Approve & Post"}
+                </Button>
+              </>
+            )}
+            {current.status === "approved" && (
+              <Button variant="primary" onClick={handlePost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
+                {loading === "post" ? "Posting..." : "Post Now"}
               </Button>
             )}
-            <Button variant="secondary" onClick={handleRegenerate} disabled={loading === "regenerate"}>
+            <Button variant="secondary" onClick={handleRegenerate} disabled={!!loading}>
               {loading === "regenerate" ? "Regenerating..." : "Regenerate"}
             </Button>
           </div>
+          {postError && (
+            <p className="text-red-400 text-[11px] mt-2">{postError}</p>
+          )}
         </Card>
         {posts.length > 1 && (
           <div className="flex gap-2 mt-4 flex-wrap">

@@ -3,7 +3,7 @@ import { StatsRow } from "@/components/dashboard/stats-row";
 import { EngagementSummary } from "@/components/dashboard/engagement-summary";
 import { ContentQueue } from "@/components/dashboard/content-queue";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { approveContent, regenerateContent } from "./actions";
+import { approveContent, regenerateContent, approveAndPostContent } from "./actions";
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ account?: string }> }) {
   const supabase = await createServerSupabaseClient();
@@ -81,6 +81,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         items={pendingContent || []}
         onApprove={approveContent}
         onRegenerate={regenerateContent}
+        onApproveAndPost={approveAndPostContent}
       />
     </div>
   );

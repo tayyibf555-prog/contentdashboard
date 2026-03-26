@@ -10,7 +10,7 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { approveContent, regenerateContent } from "@/app/actions";
+import { approveContent, regenerateContent, postContent, approveAndPostContent } from "@/app/actions";
 import type { GeneratedContent } from "@/types";
 
 export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
@@ -19,6 +19,7 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
   const [tone, setTone] = useState("Professional");
   const [hookIndex, setHookIndex] = useState(0);
   const [loading, setLoading] = useState<string | null>(null);
+  const [postError, setPostError] = useState<string | null>(null);
 
   const current = posts[selectedIndex];
 
@@ -30,6 +31,7 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
 
   const handleApprove = async () => {
     setLoading("approve");
+    setPostError(null);
     try {
       await approveContent(current.id);
       router.refresh();
@@ -37,8 +39,29 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
     finally { setLoading(null); }
   };
 
+  const handlePost = async () => {
+    setLoading("post");
+    setPostError(null);
+    try {
+      await postContent(current.id);
+      router.refresh();
+    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
+    finally { setLoading(null); }
+  };
+
+  const handleApproveAndPost = async () => {
+    setLoading("approveAndPost");
+    setPostError(null);
+    try {
+      await approveAndPostContent(current.id);
+      router.refresh();
+    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
+    finally { setLoading(null); }
+  };
+
   const handleRegenerate = async () => {
     setLoading("regenerate");
+    setPostError(null);
     try {
       await regenerateContent(current.id);
       router.refresh();
@@ -90,16 +113,29 @@ export function LinkedInEditor({ posts }: { posts: GeneratedContent[] }) {
             contentType={current.content_type}
             sourceReference={current.source_reference}
           />
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 mt-4 flex-wrap">
             {current.status === "pending" && (
-              <Button variant="primary" onClick={handleApprove} disabled={loading === "approve"}>
-                {loading === "approve" ? "Approving..." : "Approve"}
+              <>
+                <Button variant="primary" onClick={handleApprove} disabled={!!loading}>
+                  {loading === "approve" ? "Approving..." : "Approve"}
+                </Button>
+                <Button variant="primary" onClick={handleApproveAndPost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
+                  {loading === "approveAndPost" ? "Posting..." : "Approve & Post"}
+                </Button>
+              </>
+            )}
+            {current.status === "approved" && (
+              <Button variant="primary" onClick={handlePost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
+                {loading === "post" ? "Posting..." : "Post Now"}
               </Button>
             )}
-            <Button variant="secondary" onClick={handleRegenerate} disabled={loading === "regenerate"}>
+            <Button variant="secondary" onClick={handleRegenerate} disabled={!!loading}>
               {loading === "regenerate" ? "Regenerating..." : "Regenerate"}
             </Button>
           </div>
+          {postError && (
+            <p className="text-red-400 text-[11px] mt-2">{postError}</p>
+          )}
         </Card>
       </div>
     </div>

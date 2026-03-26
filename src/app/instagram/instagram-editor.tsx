@@ -9,7 +9,7 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { approveContent, regenerateContent } from "@/app/actions";
+import { approveContent, regenerateContent, postContent, approveAndPostContent } from "@/app/actions";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
 type PostWithSlides = GeneratedContent & { carousel_slides: CarouselSlide[] };
@@ -20,6 +20,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeSlide, setActiveSlide] = useState(0);
   const [loading, setLoading] = useState<string | null>(null);
+  const [postError, setPostError] = useState<string | null>(null);
 
   const filtered = posts.filter((p) => {
     if (tab === "pending") return p.status === "pending" || p.status === "draft";
@@ -33,6 +34,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
   const handleApprove = async () => {
     if (!current) return;
     setLoading("approve");
+    setPostError(null);
     try {
       await approveContent(current.id);
       router.refresh();
@@ -40,9 +42,32 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
     finally { setLoading(null); }
   };
 
+  const handlePost = async () => {
+    if (!current) return;
+    setLoading("post");
+    setPostError(null);
+    try {
+      await postContent(current.id);
+      router.refresh();
+    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
+    finally { setLoading(null); }
+  };
+
+  const handleApproveAndPost = async () => {
+    if (!current) return;
+    setLoading("approveAndPost");
+    setPostError(null);
+    try {
+      await approveAndPostContent(current.id);
+      router.refresh();
+    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
+    finally { setLoading(null); }
+  };
+
   const handleRegenerate = async () => {
     if (!current) return;
     setLoading("regenerate");
+    setPostError(null);
     try {
       await regenerateContent(current.id);
       router.refresh();
@@ -106,16 +131,29 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
                 contentType={current.content_type}
                 sourceReference={current.source_reference}
               />
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-2 mt-4 flex-wrap">
                 {current.status === "pending" && (
-                  <Button variant="primary" onClick={handleApprove} disabled={loading === "approve"}>
-                    {loading === "approve" ? "Approving..." : "Approve"}
+                  <>
+                    <Button variant="primary" onClick={handleApprove} disabled={!!loading}>
+                      {loading === "approve" ? "Approving..." : "Approve"}
+                    </Button>
+                    <Button variant="primary" onClick={handleApproveAndPost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
+                      {loading === "approveAndPost" ? "Posting..." : "Approve & Post"}
+                    </Button>
+                  </>
+                )}
+                {current.status === "approved" && (
+                  <Button variant="primary" onClick={handlePost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
+                    {loading === "post" ? "Posting..." : "Post Now"}
                   </Button>
                 )}
-                <Button variant="secondary" onClick={handleRegenerate} disabled={loading === "regenerate"}>
+                <Button variant="secondary" onClick={handleRegenerate} disabled={!!loading}>
                   {loading === "regenerate" ? "Regenerating..." : "Regenerate"}
                 </Button>
               </div>
+              {postError && (
+                <p className="text-red-400 text-[11px] mt-2">{postError}</p>
+              )}
             </Card>
           </div>
         </div>

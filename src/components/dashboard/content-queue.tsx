@@ -8,10 +8,12 @@ export function ContentQueue({
   items,
   onApprove,
   onRegenerate,
+  onApproveAndPost,
 }: {
   items: GeneratedContent[];
   onApprove: (id: string) => void;
   onRegenerate: (id: string) => void;
+  onApproveAndPost: (id: string) => void;
 }) {
   return (
     <Card>
@@ -25,6 +27,7 @@ export function ContentQueue({
             content={item}
             onApprove={onApprove}
             onRegenerate={onRegenerate}
+            onApproveAndPost={onApproveAndPost}
           />
         ))
       )}
