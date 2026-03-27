@@ -98,7 +98,7 @@ export async function switchCarouselTemplate(contentId: string, variant: string)
   const theme = resolveTheme(
     content.account as "business" | "personal",
     content.pillar || "education",
-    variant as "azen" | "architect" | "gradient" | "minimal" | "bold"
+    variant as "azen" | "tayyib" | "architect" | "gradient" | "minimal" | "bold"
   );
 
   // Update all slides with new variant + accent color

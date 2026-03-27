@@ -3,7 +3,7 @@ import type { TemplateVariant, SlideTheme } from "./types";
 
 const ACCOUNT_VARIANTS: Record<string, TemplateVariant[]> = {
   business: ["azen", "architect"],
-  personal: ["gradient", "bold"],
+  personal: ["tayyib", "gradient"],
 };
 
 export function resolveTheme(

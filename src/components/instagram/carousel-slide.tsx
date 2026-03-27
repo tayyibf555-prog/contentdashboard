@@ -67,6 +67,45 @@ export function CarouselSlide({
     );
   }
 
+  // Tayyib variant — personal brand, top-left aligned, teal accent with underline
+  if (variant === "tayyib") {
+    const teal = "#00d4aa";
+    const bodyBlue = "#a0c4e8";
+    const mutedBlue = "#6b8db5";
+    return (
+      <div className="w-full aspect-square rounded-lg flex flex-col p-6 relative" style={{ background: "#0a0e1a" }}>
+        {slide.slide_type === "cover" && (
+          <div className="flex-1 flex flex-col justify-start pt-4">
+            <div className="text-white text-2xl font-bold leading-tight">{slide.headline}</div>
+            <div className="w-10 h-1 rounded mt-1" style={{ background: teal }} />
+            {slide.body_text && (
+              <div className="text-xs mt-3 leading-relaxed" style={{ color: bodyBlue }}>{slide.body_text}</div>
+            )}
+          </div>
+        )}
+        {slide.slide_type === "content" && (
+          <div className="flex-1 flex flex-col justify-start pt-2">
+            <div className="text-lg font-bold leading-tight" style={{ color: teal }}>{slide.headline}</div>
+            <div className="w-8 h-0.5 rounded mt-1" style={{ background: teal }} />
+            <div className="text-xs mt-3 leading-relaxed" style={{ color: bodyBlue }}>{slide.body_text}</div>
+          </div>
+        )}
+        {slide.slide_type === "cta" && (
+          <div className="flex-1 flex flex-col items-center justify-center gap-2">
+            <div className="text-white text-xl font-bold text-center leading-tight">{slide.headline}</div>
+            <div className="text-sm font-bold" style={{ color: teal }}>{slide.body_text}</div>
+            <div className="w-16 h-0.5 rounded" style={{ background: teal }} />
+          </div>
+        )}
+        <div className="flex justify-between items-center mt-auto">
+          <span className="text-white text-[10px] font-semibold">@tayyib.ai</span>
+          <span className="text-[8px]" style={{ color: mutedBlue }}>save for later</span>
+        </div>
+        <div className="absolute top-2 right-3 text-[10px]" style={{ color: mutedBlue }}>{slide.slide_number}/{totalSlides}</div>
+      </div>
+    );
+  }
+
   // Minimal variant uses light bg
   if (variant === "minimal") {
     return (
