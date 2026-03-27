@@ -9,7 +9,7 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { approveContent, regenerateContent, postContent, approveAndPostContent, switchCarouselTemplate } from "@/app/actions";
+import { approveContent, regenerateContent, postContent, approveAndPostContent, switchCarouselTemplate, type ActionResult } from "@/app/actions";
 import { TemplatePicker } from "@/components/instagram/template-picker";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
@@ -32,59 +32,57 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
   const current = filtered[selectedIndex];
   const slides = current?.carousel_slides?.sort((a, b) => a.slide_number - b.slide_number) || [];
 
+  const handleResult = (result: ActionResult, fallbackMsg: string) => {
+    if (!result.success) {
+      setPostError(result.error || fallbackMsg);
+    } else {
+      router.refresh();
+    }
+  };
+
   const handleApprove = async () => {
     if (!current) return;
     setLoading("approve");
     setPostError(null);
-    try {
-      await approveContent(current.id);
-      router.refresh();
-    } catch { alert("Failed to approve"); }
-    finally { setLoading(null); }
+    const result = await approveContent(current.id);
+    handleResult(result, "Failed to approve");
+    setLoading(null);
   };
 
   const handlePost = async () => {
     if (!current) return;
     setLoading("post");
     setPostError(null);
-    try {
-      await postContent(current.id);
-      router.refresh();
-    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
-    finally { setLoading(null); }
+    const result = await postContent(current.id);
+    handleResult(result, "Failed to post");
+    setLoading(null);
   };
 
   const handleApproveAndPost = async () => {
     if (!current) return;
     setLoading("approveAndPost");
     setPostError(null);
-    try {
-      await approveAndPostContent(current.id);
-      router.refresh();
-    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
-    finally { setLoading(null); }
+    const result = await approveAndPostContent(current.id);
+    handleResult(result, "Failed to post");
+    setLoading(null);
   };
 
   const handleSwitchTemplate = async (variant: string) => {
     if (!current) return;
     setLoading("template");
     setPostError(null);
-    try {
-      await switchCarouselTemplate(current.id, variant);
-      router.refresh();
-    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to switch template"); }
-    finally { setLoading(null); }
+    const result = await switchCarouselTemplate(current.id, variant);
+    handleResult(result, "Failed to switch template");
+    setLoading(null);
   };
 
   const handleRegenerate = async () => {
     if (!current) return;
     setLoading("regenerate");
     setPostError(null);
-    try {
-      await regenerateContent(current.id);
-      router.refresh();
-    } catch { alert("Failed to regenerate"); }
-    finally { setLoading(null); }
+    const result = await regenerateContent(current.id);
+    handleResult(result, "Failed to regenerate");
+    setLoading(null);
   };
 
   return (

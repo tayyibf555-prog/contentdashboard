@@ -9,7 +9,7 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { approveContent, regenerateContent, postContent, approveAndPostContent } from "@/app/actions";
+import { approveContent, regenerateContent, postContent, approveAndPostContent, type ActionResult } from "@/app/actions";
 import type { GeneratedContent } from "@/types";
 
 export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
@@ -27,44 +27,44 @@ export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
 
   const charCount = (current.body || "").length;
 
+  const handleResult = (result: ActionResult, fallbackMsg: string) => {
+    if (!result.success) {
+      setPostError(result.error || fallbackMsg);
+    } else {
+      router.refresh();
+    }
+  };
+
   const handleApprove = async () => {
     setLoading("approve");
     setPostError(null);
-    try {
-      await approveContent(current.id);
-      router.refresh();
-    } catch { alert("Failed to approve"); }
-    finally { setLoading(null); }
+    const result = await approveContent(current.id);
+    handleResult(result, "Failed to approve");
+    setLoading(null);
   };
 
   const handlePost = async () => {
     setLoading("post");
     setPostError(null);
-    try {
-      await postContent(current.id);
-      router.refresh();
-    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
-    finally { setLoading(null); }
+    const result = await postContent(current.id);
+    handleResult(result, "Failed to post");
+    setLoading(null);
   };
 
   const handleApproveAndPost = async () => {
     setLoading("approveAndPost");
     setPostError(null);
-    try {
-      await approveAndPostContent(current.id);
-      router.refresh();
-    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to post"); }
-    finally { setLoading(null); }
+    const result = await approveAndPostContent(current.id);
+    handleResult(result, "Failed to post");
+    setLoading(null);
   };
 
   const handleRegenerate = async () => {
     setLoading("regenerate");
     setPostError(null);
-    try {
-      await regenerateContent(current.id);
-      router.refresh();
-    } catch { alert("Failed to regenerate"); }
-    finally { setLoading(null); }
+    const result = await regenerateContent(current.id);
+    handleResult(result, "Failed to regenerate");
+    setLoading(null);
   };
 
   return (

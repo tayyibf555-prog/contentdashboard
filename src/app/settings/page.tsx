@@ -9,13 +9,13 @@ export default async function SettingsPage() {
     .from("voice_settings")
     .select("*")
     .eq("account_type", "business")
-    .single();
+    .maybeSingle();
 
   const { data: personalVoice } = await supabase
     .from("voice_settings")
     .select("*")
     .eq("account_type", "personal")
-    .single();
+    .maybeSingle();
 
   return (
     <div>
