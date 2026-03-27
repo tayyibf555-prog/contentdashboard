@@ -25,10 +25,20 @@ export async function generateSlideImage(
 
   const Template = getTemplate(theme.variant, slideType);
 
-  const element = React.createElement(Template, {
+  // Ensure all string props have defaults — Satori crashes on undefined text nodes
+  const safeProps = {
     ...props,
+    headline: props.headline || "",
+    bodyText: props.bodyText || "",
+    accentWord: props.accentWord || "",
+    ctaText: props.ctaText || "",
+    subtitle: props.subtitle || "",
+    slideNumber: props.slideNumber ?? 1,
+    totalSlides: props.totalSlides ?? 1,
     theme,
-  });
+  };
+
+  const element = React.createElement(Template, safeProps);
 
   const svg = await satori(element, {
     width: 1080,

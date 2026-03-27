@@ -101,7 +101,7 @@ export async function switchCarouselTemplate(contentId: string, variant: string)
     variant as "azen" | "tayyib" | "architect" | "gradient" | "minimal" | "bold"
   );
 
-  // Update all slides with new variant + accent color
+  // Update all slides with new variant + accent color, clear old images
   const { error: updateErr } = await supabase
     .from("carousel_slides")
     .update({ template_variant: theme.variant, accent_color: theme.accentColor, image_url: null })
@@ -109,8 +109,11 @@ export async function switchCarouselTemplate(contentId: string, variant: string)
 
   if (updateErr) throw new Error(updateErr.message);
 
-  // Regenerate images for all slides
-  const { generateSlideImage } = await import("@/lib/carousel/generator");
+  // Regenerate images via the /api/carousel route (handles Satori + resvg + upload)
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
+    || "http://localhost:3001";
+
   const slides = (content.carousel_slides || []).sort(
     (a: { slide_number: number }, b: { slide_number: number }) => a.slide_number - b.slide_number
   );
@@ -118,25 +121,32 @@ export async function switchCarouselTemplate(contentId: string, variant: string)
   const totalSlides = slides.length;
   for (const slide of slides) {
     try {
-      const imageBuffer = await generateSlideImage(
-        slide.slide_type,
-        {
-          headline: slide.headline,
-          bodyText: slide.body_text,
-          accentWord: slide.body_text,
-          ctaText: slide.body_text,
-          subtitle: slide.slide_type === "cover" ? slide.body_text : undefined,
+      const res = await fetch(`${baseUrl}/api/carousel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slideId: slide.id,
+          slideType: slide.slide_type,
+          props: {
+            headline: slide.headline,
+            bodyText: slide.body_text,
+            accentWord: slide.body_text,
+            ctaText: slide.body_text,
+            subtitle: slide.slide_type === "cover" ? slide.body_text : undefined,
+            account: content.account,
+            slideNumber: slide.slide_number,
+            totalSlides,
+          },
           account: content.account,
-          slideNumber: slide.slide_number,
-          totalSlides,
-        },
-        { account: content.account, pillar: content.pillar || "education", variant: theme.variant }
-      );
+          pillar: content.pillar || "education",
+          variant: theme.variant,
+        }),
+      });
 
-      const fileName = `carousel/${slide.id}-${Date.now()}.png`;
-      await supabase.storage.from("carousel-images").upload(fileName, imageBuffer, { contentType: "image/png" });
-      const { data: { publicUrl } } = supabase.storage.from("carousel-images").getPublicUrl(fileName);
-      await supabase.from("carousel_slides").update({ image_url: publicUrl }).eq("id", slide.id);
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error(`Slide ${slide.slide_number} image gen failed: ${errText}`);
+      }
     } catch (err) {
       console.error(`Image regen failed for slide ${slide.slide_number}:`, err);
     }

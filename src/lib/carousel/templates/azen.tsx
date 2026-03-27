@@ -36,10 +36,9 @@ export function AzenContent({ headline, bodyText, slideNumber, totalSlides, acco
   return (
     <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", padding: "100px 90px", position: "relative" }}>
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", flex: 1 }}>
-        <div style={{ color: WHITE, fontSize: 36, lineHeight: 1.7, fontWeight: 400, maxWidth: 920 }}>
-          <span style={{ color: ACCENT, fontWeight: 700 }}>{headline}</span>
-          {" "}
-          {bodyText}
+        <div style={{ color: WHITE, fontSize: 36, lineHeight: 1.7, fontWeight: 400, maxWidth: 920, display: "flex", flexWrap: "wrap" }}>
+          <span style={{ color: ACCENT, fontWeight: 700 }}>{headline} </span>
+          <span>{bodyText}</span>
         </div>
       </div>
 

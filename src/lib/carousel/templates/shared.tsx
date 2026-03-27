@@ -12,7 +12,7 @@ export function LogoBar({ account, color }: { account: string; color: string }) 
 export function SlideCounter({ current, total, color }: { current: number; total: number; color: string }) {
   return (
     <div style={{ position: "absolute", top: 30, right: 30, color, fontSize: 22, fontWeight: 400 }}>
-      {current}/{total}
+      {`${current}/${total}`}
     </div>
   );
 }
@@ -36,14 +36,18 @@ export function AccentStripe({
   right?: number;
   bottom?: number;
 }) {
+  // Satori crashes on undefined CSS values — only include defined positions
+  const pos: Record<string, number> = {};
+  if (top !== undefined) pos.top = top;
+  if (left !== undefined) pos.left = left;
+  if (right !== undefined) pos.right = right;
+  if (bottom !== undefined) pos.bottom = bottom;
+
   return (
     <div
       style={{
         position: "absolute",
-        top,
-        left,
-        right,
-        bottom,
+        ...pos,
         width: orientation === "vertical" ? thickness : length,
         height: orientation === "horizontal" ? thickness : length,
         background: color,
@@ -89,14 +93,17 @@ export function DecoCircle({
   right?: number;
   bottom?: number;
 }) {
+  const pos: Record<string, number> = {};
+  if (top !== undefined) pos.top = top;
+  if (left !== undefined) pos.left = left;
+  if (right !== undefined) pos.right = right;
+  if (bottom !== undefined) pos.bottom = bottom;
+
   return (
     <div
       style={{
         position: "absolute",
-        top,
-        left,
-        right,
-        bottom,
+        ...pos,
         width: size,
         height: size,
         borderRadius: size / 2,

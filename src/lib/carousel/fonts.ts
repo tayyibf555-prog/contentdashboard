@@ -1,19 +1,21 @@
 import { readFile } from "fs/promises";
 import path from "path";
 
-let fontBold: Buffer | null = null;
-let fontRegular: Buffer | null = null;
+let fontBold: ArrayBuffer | null = null;
+let fontRegular: ArrayBuffer | null = null;
 
 export async function loadFonts() {
   if (!fontBold) {
-    fontBold = await readFile(
+    const buf = await readFile(
       path.join(process.cwd(), "public", "fonts", "Inter-Bold.woff")
     );
+    fontBold = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
   }
   if (!fontRegular) {
-    fontRegular = await readFile(
+    const buf = await readFile(
       path.join(process.cwd(), "public", "fonts", "Inter-Regular.woff")
     );
+    fontRegular = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
   }
   return [
     { name: "Inter" as const, data: fontBold, weight: 700 as const, style: "normal" as const },

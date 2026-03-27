@@ -23,7 +23,7 @@ export function GradientCover({ headline, accentWord, subtitle, account, theme, 
 
       <div style={{ color: WHITE, fontSize: 58, fontWeight: 700, textAlign: "center", lineHeight: 1.3, display: "flex", flexWrap: "wrap", justifyContent: "center", maxWidth: 900 }}>
         {parts[0]}
-        <div style={{ background: theme.accentColor, borderRadius: 8, padding: "4px 16px", margin: "0 8px" }}>
+        <div style={{ background: theme.accentColor, borderRadius: 8, padding: "4px 16px", margin: "0 8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <span style={{ color: "#0a0e1a", fontWeight: 700 }}>{accentWord}</span>
         </div>
         {parts[1] || ""}
