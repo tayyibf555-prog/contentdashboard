@@ -31,11 +31,16 @@ export async function POST(request: Request) {
 
   const accountHandle = account === "business" ? "@azen_ai" : "@tayyib.ai";
 
+  const personalContext = account === "personal"
+    ? `\nTarget audience: Business owners and founders who are considering AI but haven't implemented it yet.
+Strategic angle: Educate with real value so they see the gap between where they are and where AI could take them. Never pitch — just teach. Cover diverse business topics (operations, marketing, sales, hiring, workflows, customer experience, strategy) — not just one tool or product.`
+    : "";
+
   let prompt = "";
 
   if (contentType === "carousel") {
     prompt = `Generate an Instagram carousel post for ${accountHandle}.
-Content pillar: ${pillarLabel}
+Content pillar: ${pillarLabel}${personalContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Carousel rules:
@@ -48,7 +53,7 @@ Respond in JSON:
 {"title":"post title","caption":"full Instagram caption (no emojis)","hashtags":["tag1","tag2"],"slides":[{"slide_type":"cover","headline":"...","accent_word":"...","subtitle":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"cta","headline":"...","cta_text":"..."}]}`;
   } else if (contentType === "long_form") {
     prompt = `Generate a LinkedIn long-form post for ${accountHandle}.
-Content pillar: ${pillarLabel}
+Content pillar: ${pillarLabel}${personalContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Respond in JSON format:
@@ -64,7 +69,7 @@ Respond in JSON format:
 }`;
   } else if (contentType === "tweet" || contentType === "thread") {
     prompt = `Generate a Twitter/X ${contentType === "thread" ? "thread" : "single tweet"} for ${accountHandle}.
-Content pillar: ${pillarLabel}
+Content pillar: ${pillarLabel}${personalContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Respond in JSON format:
@@ -76,9 +81,9 @@ Respond in JSON format:
 }`;
   } else if (contentType === "video_script") {
     prompt = `Generate a YouTube video script for @tayyib.ai.
-Content pillar: ${pillarLabel}
+Content pillar: ${pillarLabel}${personalContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
-The script should naturally include a CTA to azen.io for lead generation.
+The script should naturally include a CTA to azen.io for lead generation — woven into the content, not a hard sell.
 
 Respond in JSON format:
 {
@@ -103,7 +108,7 @@ Respond in JSON format:
 }`;
   } else {
     prompt = `Generate a short social media post for ${accountHandle} on ${platform}.
-Content pillar: ${pillarLabel}
+Content pillar: ${pillarLabel}${personalContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Respond in JSON format:
@@ -114,7 +119,7 @@ Respond in JSON format:
 }`;
   }
 
-  const raw = await generateContent(prompt, voice || undefined);
+  const raw = await generateContent(prompt, voice || undefined, account as "business" | "personal");
 
   let parsed;
   try {

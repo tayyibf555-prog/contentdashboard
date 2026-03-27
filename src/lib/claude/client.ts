@@ -8,14 +8,28 @@ function getAnthropic() {
 
 export async function generateContent(
   prompt: string,
-  voiceSettings?: { tone_guidelines: string | null; writing_samples: string[]; avoid_words: string[]; preferred_words: string[] }
+  voiceSettings?: { tone_guidelines: string | null; writing_samples: string[]; avoid_words: string[]; preferred_words: string[] },
+  account?: "business" | "personal"
 ) {
-  const systemParts = [
-    "You are a content strategist for Azen, an AI agency that helps businesses implement custom AI solutions with a strategy-first approach (Audit, Educate, Deploy).",
-    "Website: azen.io. Tagline: The Future Made Simple.",
+  const systemParts: string[] = [];
+
+  if (account === "personal") {
+    systemParts.push(
+      "You are writing content for @tayyib.ai — the personal brand of Tayyib, founder of Azen AI (azen.io), an agency that builds custom AI solutions for businesses.",
+      "Your audience is business owners, founders, and decision-makers who are curious about AI but haven't taken action yet. Your job is to educate them with real insights, practical frameworks, and clear thinking about how AI applies to real business problems — so they naturally realize they need help implementing it.",
+      "Content strategy rules:\n- Lead with value. Teach something genuinely useful in every post.\n- Cover a wide range of AI and business topics: operations, marketing, sales, customer service, hiring, workflows, strategy, industry trends, real-world use cases — not just one tool or product.\n- Never be salesy or pitch services directly. The goal is to position Tayyib as the go-to person business owners trust on AI, so when they're ready to act, they come to him.\n- Share opinions and frameworks, not just news. Business owners respect someone who thinks, not someone who summarizes.\n- When referencing tools or technologies, talk about the business outcome they enable, not the technical details.\n- Make complex AI concepts feel simple and actionable.",
+    );
+  } else {
+    systemParts.push(
+      "You are a content strategist for Azen, an AI agency that helps businesses implement custom AI solutions with a strategy-first approach (Audit, Educate, Deploy).",
+      "Website: azen.io. Tagline: The Future Made Simple.",
+    );
+  }
+
+  systemParts.push(
     "Never use emojis. Use clean, professional text formatting.",
     "Write content that sounds human and authentic, not AI-generated.",
-  ];
+  );
 
   if (voiceSettings) {
     if (voiceSettings.tone_guidelines) {

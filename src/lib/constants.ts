@@ -7,11 +7,11 @@ export const BUSINESS_PILLARS = [
 ] as const;
 
 export const PERSONAL_PILLARS = [
-  { key: "bts", label: "Behind the Scenes", color: "#ffeaa7" },
-  { key: "hottakes", label: "Hot Takes & Opinions", color: "#74b9ff" },
-  { key: "tips", label: "Tips & Tools", color: "#55efc4" },
-  { key: "journey", label: "Journey & Lessons", color: "#fdcb6e" },
-  { key: "curated", label: "Curated Insights", color: "#e17055" },
+  { key: "bts", label: "AI in Action — Real Implementation Stories", color: "#ffeaa7" },
+  { key: "hottakes", label: "Founder Takes — Business & AI Opinions", color: "#74b9ff" },
+  { key: "tips", label: "AI Playbooks — Practical Frameworks for Owners", color: "#55efc4" },
+  { key: "journey", label: "Lessons from the Field — What Actually Works", color: "#fdcb6e" },
+  { key: "curated", label: "Industry Signals — Trends Owners Should Watch", color: "#e17055" },
 ] as const;
 
 export const PLATFORMS = {

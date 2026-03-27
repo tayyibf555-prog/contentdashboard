@@ -184,7 +184,7 @@ Generate a completely different take on the same topic. Respond in JSON format:
   "hashtags": ["tag1", "tag2", ...]
 }`;
 
-  const raw = await generateContent(prompt, voice || undefined);
+  const raw = await generateContent(prompt, voice || undefined, original.account as "business" | "personal");
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(raw);
 
