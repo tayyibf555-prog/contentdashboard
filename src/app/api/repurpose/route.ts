@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/claude/client";
 import { createClient } from "@supabase/supabase-js";
+import { resolveTheme } from "@/lib/carousel/theme";
 
 function getSupabase() {
   return createClient(
@@ -84,12 +85,15 @@ Respond in JSON format:
     .single();
 
   if (content && targetContentType === "carousel" && parsed.slides) {
+    const theme = resolveTheme(targetAccount as "business" | "personal", source.pillar || "education");
     const slides = parsed.slides.map((slide: Record<string, string>, i: number) => ({
       generated_content_id: content.id,
       slide_number: i + 1,
       headline: slide.headline,
       body_text: slide.body_text || slide.accent_word || slide.cta_text || "",
       slide_type: slide.slide_type,
+      template_variant: theme.variant,
+      accent_color: theme.accentColor,
     }));
     await supabase.from("carousel_slides").insert(slides);
   }

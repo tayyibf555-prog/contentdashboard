@@ -56,6 +56,8 @@ export type CarouselSlide = {
   body_text: string | null;
   slide_type: "cover" | "content" | "cta";
   image_url: string | null;
+  template_variant: "architect" | "gradient" | "minimal" | "bold" | null;
+  accent_color: string | null;
   created_at: string;
 };
 

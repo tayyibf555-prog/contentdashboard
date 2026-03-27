@@ -100,7 +100,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
       ) : (
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <PhonePreview slide={slides[activeSlide] || null} account={current.account} />
+            <PhonePreview slide={slides[activeSlide] || null} account={current.account} totalSlides={slides.length} />
             <SlideNavigator slides={slides} activeIndex={activeSlide} onSelect={setActiveSlide} />
             {filtered.length > 1 && (
               <div className="flex gap-2 mt-4 flex-wrap">

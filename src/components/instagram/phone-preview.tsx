@@ -8,14 +8,18 @@ type SlideData = {
   body_text: string | null;
   slide_type: "cover" | "content" | "cta";
   image_url: string | null;
+  template_variant?: string | null;
+  accent_color?: string | null;
 };
 
 export function PhonePreview({
   slide,
   account,
+  totalSlides = 8,
 }: {
   slide: SlideData | null;
   account: "business" | "personal";
+  totalSlides?: number;
 }) {
   const handle = account === "business" ? "azen_ai" : "tayyib.ai";
 
@@ -32,7 +36,7 @@ export function PhonePreview({
         {/* Slide Content */}
         <div className="aspect-square">
           {slide ? (
-            <CarouselSlide slide={slide} account={account} />
+            <CarouselSlide slide={slide} account={account} totalSlides={totalSlides} />
           ) : (
             <div className="w-full h-full bg-azen-card flex items-center justify-center text-azen-text text-xs">
               No slide selected

@@ -11,9 +11,13 @@ function getSupabase() {
 
 export async function POST(request: Request) {
   const supabase = getSupabase();
-  const { slideId, slideType, props } = await request.json();
+  const { slideId, slideType, props, account, pillar, variant } = await request.json();
 
-  const imageBuffer = await generateSlideImage(slideType, props);
+  const imageBuffer = await generateSlideImage(slideType, props, {
+    account,
+    pillar,
+    variant,
+  });
 
   // Upload to Supabase Storage
   const fileName = `carousel/${slideId}-${Date.now()}.png`;

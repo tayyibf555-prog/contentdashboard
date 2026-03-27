@@ -4,6 +4,8 @@ import { scrapeAccount } from "@/lib/apify/client";
 import { analyzeResearch, generateContent } from "@/lib/claude/client";
 import { sendDailyDigest } from "@/lib/resend/client";
 import { BUSINESS_PILLARS, PERSONAL_PILLARS } from "@/lib/constants";
+import { resolveTheme } from "@/lib/carousel/theme";
+import { generateSlideImage } from "@/lib/carousel/generator";
 
 function getSupabase() {
   return createClient(
@@ -129,7 +131,18 @@ export async function GET(request: Request) {
 
       let prompt = "";
       if (req.contentType === "carousel") {
-        prompt = `Generate an Instagram carousel post for ${accountHandle}.\nContent pillar: ${pillarLabel}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "post title", "caption": "full Instagram caption (no emojis)", "hashtags": ["tag1"], "slides": [{ "slide_type": "cover", "headline": "...", "accent_word": "..." }, { "slide_type": "content", "headline": "...", "body_text": "..." }, { "slide_type": "cta", "headline": "...", "cta_text": "..." }] }`;
+        prompt = `Generate an Instagram carousel post for ${accountHandle}.
+Content pillar: ${pillarLabel}
+Research context: ${researchContext}
+
+Carousel rules:
+- Slide 1: "cover" (hook the reader). Headlines max 8 words. accent_word is the single most impactful word.
+- Slides 2-7: "content" (educate/inform). Headlines max 8 words. Body text max 40 words each.
+- Slide 8: "cta" (drive action). Short punchy CTA.
+- Include a subtitle for the cover (short tagline, max 6 words)
+
+Respond in JSON:
+{"title":"post title","caption":"full Instagram caption (no emojis)","hashtags":["tag1","tag2"],"slides":[{"slide_type":"cover","headline":"...","accent_word":"...","subtitle":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"cta","headline":"...","cta_text":"..."}]}`;
       } else if (req.contentType === "long_form") {
         prompt = `Generate a LinkedIn long-form post for ${accountHandle}.\nContent pillar: ${pillarLabel}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "post title", "body": "full post text (no emojis, max 3000 chars)", "hashtags": ["tag1"] }`;
       } else if (req.contentType === "tweet") {
@@ -162,14 +175,48 @@ export async function GET(request: Request) {
         .single();
 
       if (content && req.contentType === "carousel" && parsed.slides) {
+        const theme = resolveTheme(req.account as "business" | "personal", req.pillar);
+        const totalSlides = parsed.slides.length;
+
         const slides = parsed.slides.map((slide: Record<string, string>, i: number) => ({
           generated_content_id: content.id,
           slide_number: i + 1,
           headline: slide.headline,
           body_text: slide.body_text || slide.accent_word || slide.cta_text || "",
           slide_type: slide.slide_type,
+          template_variant: theme.variant,
+          accent_color: theme.accentColor,
         }));
-        await supabase.from("carousel_slides").insert(slides);
+        const { data: insertedSlides } = await supabase.from("carousel_slides").insert(slides).select();
+
+        // Auto-generate images for each slide
+        if (insertedSlides) {
+          const imagePromises = insertedSlides.map(async (slide: Record<string, string | number>) => {
+            try {
+              const imageBuffer = await generateSlideImage(
+                slide.slide_type as "cover" | "content" | "cta",
+                {
+                  headline: slide.headline,
+                  bodyText: slide.body_text,
+                  accentWord: slide.body_text,
+                  ctaText: slide.body_text,
+                  subtitle: parsed.slides[(slide.slide_number as number) - 1]?.subtitle,
+                  account: req.account,
+                  slideNumber: slide.slide_number,
+                  totalSlides,
+                },
+                { account: req.account as "business" | "personal", pillar: req.pillar, variant: theme.variant }
+              );
+              const fileName = `carousel/${slide.id}-${Date.now()}.png`;
+              await supabase.storage.from("carousel-images").upload(fileName, imageBuffer, { contentType: "image/png" });
+              const { data: { publicUrl } } = supabase.storage.from("carousel-images").getPublicUrl(fileName);
+              await supabase.from("carousel_slides").update({ image_url: publicUrl }).eq("id", slide.id);
+            } catch (imgErr) {
+              console.error(`Image generation failed for slide ${slide.slide_number}:`, imgErr);
+            }
+          });
+          await Promise.all(imagePromises);
+        }
       }
 
       if (content && req.contentType === "video_script") {
