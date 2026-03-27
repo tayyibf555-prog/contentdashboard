@@ -2,7 +2,7 @@ import { BUSINESS_PILLARS, PERSONAL_PILLARS } from "@/lib/constants";
 import type { TemplateVariant, SlideTheme } from "./types";
 
 const ACCOUNT_VARIANTS: Record<string, TemplateVariant[]> = {
-  business: ["architect", "minimal"],
+  business: ["azen", "architect"],
   personal: ["gradient", "bold"],
 };
 

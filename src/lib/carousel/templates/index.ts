@@ -1,4 +1,5 @@
 import type { TemplateVariant } from "../types";
+import { AzenCover, AzenContent, AzenCta } from "./azen";
 import { ArchitectCover, ArchitectContent, ArchitectCta } from "./architect";
 import { GradientCover, GradientContent, GradientCta } from "./gradient";
 import { MinimalCover, MinimalContent, MinimalCta } from "./minimal";
@@ -12,6 +13,7 @@ type TemplateSet = {
 };
 
 const REGISTRY: Record<TemplateVariant, TemplateSet> = {
+  azen: { cover: AzenCover, content: AzenContent, cta: AzenCta },
   architect: { cover: ArchitectCover, content: ArchitectContent, cta: ArchitectCta },
   gradient: { cover: GradientCover, content: GradientContent, cta: GradientCta },
   minimal: { cover: MinimalCover, content: MinimalContent, cta: MinimalCta },

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CarouselSlide } from "./carousel-slide";
 
 const VARIANTS = [
+  { key: "azen", label: "Azen", desc: "Brand navy, bold typography" },
   { key: "architect", label: "Architect", desc: "Structured, professional" },
   { key: "gradient", label: "Gradient", desc: "Expressive, warm" },
   { key: "minimal", label: "Minimal", desc: "Clean, modern" },
@@ -42,7 +43,7 @@ export function TemplatePicker({
   return (
     <div className="mt-4">
       <div className="text-xs font-semibold text-white mb-2">Template Style</div>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {VARIANTS.map((v) => (
           <button
             key={v.key}

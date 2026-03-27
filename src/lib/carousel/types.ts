@@ -1,4 +1,4 @@
-export type TemplateVariant = "architect" | "gradient" | "minimal" | "bold";
+export type TemplateVariant = "azen" | "architect" | "gradient" | "minimal" | "bold";
 
 export type SlideTheme = {
   variant: TemplateVariant;
