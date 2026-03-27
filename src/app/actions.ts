@@ -83,6 +83,68 @@ export async function approveAndPostContent(id: string) {
   return postContent(id);
 }
 
+export async function switchCarouselTemplate(contentId: string, variant: string) {
+  const supabase = getSupabase();
+
+  const { data: content } = await supabase
+    .from("generated_content")
+    .select("*, carousel_slides(*)")
+    .eq("id", contentId)
+    .single();
+
+  if (!content) throw new Error("Content not found");
+
+  const { resolveTheme } = await import("@/lib/carousel/theme");
+  const theme = resolveTheme(
+    content.account as "business" | "personal",
+    content.pillar || "education",
+    variant as "architect" | "gradient" | "minimal" | "bold"
+  );
+
+  // Update all slides with new variant + accent color
+  const { error: updateErr } = await supabase
+    .from("carousel_slides")
+    .update({ template_variant: theme.variant, accent_color: theme.accentColor, image_url: null })
+    .eq("generated_content_id", contentId);
+
+  if (updateErr) throw new Error(updateErr.message);
+
+  // Regenerate images for all slides
+  const { generateSlideImage } = await import("@/lib/carousel/generator");
+  const slides = (content.carousel_slides || []).sort(
+    (a: { slide_number: number }, b: { slide_number: number }) => a.slide_number - b.slide_number
+  );
+
+  const totalSlides = slides.length;
+  for (const slide of slides) {
+    try {
+      const imageBuffer = await generateSlideImage(
+        slide.slide_type,
+        {
+          headline: slide.headline,
+          bodyText: slide.body_text,
+          accentWord: slide.body_text,
+          ctaText: slide.body_text,
+          subtitle: slide.slide_type === "cover" ? slide.body_text : undefined,
+          account: content.account,
+          slideNumber: slide.slide_number,
+          totalSlides,
+        },
+        { account: content.account, pillar: content.pillar || "education", variant: theme.variant }
+      );
+
+      const fileName = `carousel/${slide.id}-${Date.now()}.png`;
+      await supabase.storage.from("carousel-images").upload(fileName, imageBuffer, { contentType: "image/png" });
+      const { data: { publicUrl } } = supabase.storage.from("carousel-images").getPublicUrl(fileName);
+      await supabase.from("carousel_slides").update({ image_url: publicUrl }).eq("id", slide.id);
+    } catch (err) {
+      console.error(`Image regen failed for slide ${slide.slide_number}:`, err);
+    }
+  }
+
+  revalidateAll();
+}
+
 export async function regenerateContent(id: string) {
   const supabase = getSupabase();
   const { data: original } = await supabase

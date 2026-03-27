@@ -9,7 +9,8 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { approveContent, regenerateContent, postContent, approveAndPostContent } from "@/app/actions";
+import { approveContent, regenerateContent, postContent, approveAndPostContent, switchCarouselTemplate } from "@/app/actions";
+import { TemplatePicker } from "@/components/instagram/template-picker";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
 type PostWithSlides = GeneratedContent & { carousel_slides: CarouselSlide[] };
@@ -64,6 +65,17 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
     finally { setLoading(null); }
   };
 
+  const handleSwitchTemplate = async (variant: string) => {
+    if (!current) return;
+    setLoading("template");
+    setPostError(null);
+    try {
+      await switchCarouselTemplate(current.id, variant);
+      router.refresh();
+    } catch (e) { setPostError(e instanceof Error ? e.message : "Failed to switch template"); }
+    finally { setLoading(null); }
+  };
+
   const handleRegenerate = async () => {
     if (!current) return;
     setLoading("regenerate");
@@ -102,6 +114,15 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
           <div>
             <PhonePreview slide={slides[activeSlide] || null} account={current.account} totalSlides={slides.length} />
             <SlideNavigator slides={slides} activeIndex={activeSlide} onSelect={setActiveSlide} />
+            {slides.length > 0 && (current.status === "pending" || current.status === "draft") && (
+              <TemplatePicker
+                slides={slides}
+                currentVariant={slides[0]?.template_variant || "architect"}
+                account={current.account}
+                onApply={handleSwitchTemplate}
+                loading={loading === "template"}
+              />
+            )}
             {filtered.length > 1 && (
               <div className="flex gap-2 mt-4 flex-wrap">
                 {filtered.map((p, i) => (

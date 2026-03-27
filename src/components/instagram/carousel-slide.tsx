@@ -12,13 +12,15 @@ export function CarouselSlide({
   slide,
   account,
   totalSlides = 8,
+  variantOverride,
 }: {
   slide: SlideData;
   account: "business" | "personal";
   totalSlides?: number;
+  variantOverride?: string | null;
 }) {
-  // If we have a generated image, show it directly
-  if (slide.image_url) {
+  // If we have a generated image and no variant override, show the PNG directly
+  if (slide.image_url && !variantOverride) {
     return (
       <img
         src={slide.image_url}
@@ -29,7 +31,7 @@ export function CarouselSlide({
   }
 
   const accent = slide.accent_color || "#00d4aa";
-  const variant = slide.template_variant || "architect";
+  const variant = variantOverride || slide.template_variant || "architect";
   const logo = account === "business" ? "azen" : "tayyib.ai";
 
   // Minimal variant uses light bg
