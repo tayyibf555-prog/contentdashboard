@@ -5,6 +5,7 @@ import { getTemplate } from "./templates";
 import { resolveTheme } from "./theme";
 import { generateBackground } from "../gemini/client";
 import { getBackgroundPrompt } from "./backgrounds";
+import { hasStaticTexture, loadStaticTexture } from "./static-textures";
 import type { TemplateVariant } from "./types";
 import React from "react";
 
@@ -30,7 +31,11 @@ export async function generateSlideImage(
 
   // Use pre-generated background if provided, otherwise generate one
   let backgroundImage: string | null = options?.backgroundImage ?? null;
-  if (!backgroundImage && process.env.GEMINI_API_KEY) {
+  if (!backgroundImage && hasStaticTexture(theme.variant)) {
+    // Static texture — skip Gemini entirely (faster, consistent, free)
+    console.log(`[Static] Loading texture for ${theme.variant}/${slideType}`);
+    backgroundImage = await loadStaticTexture(theme.variant);
+  } else if (!backgroundImage && process.env.GEMINI_API_KEY) {
     try {
       const prompt = getBackgroundPrompt(theme.variant, slideType, theme.accentColor);
       console.log(`[Gemini] Generating background for ${theme.variant}/${slideType}...`);
@@ -81,6 +86,16 @@ export async function generateBackgrounds(
   accentColor?: string
 ): Promise<Map<number, string | null>> {
   const results = new Map<number, string | null>();
+
+  // Static texture variants skip Gemini entirely
+  if (hasStaticTexture(variant)) {
+    console.log(`[Static] Using static texture for all ${variant} slides`);
+    const texture = await loadStaticTexture(variant);
+    for (let i = 0; i < slideTypes.length; i++) {
+      results.set(i, texture);
+    }
+    return results;
+  }
 
   if (!process.env.GEMINI_API_KEY) {
     console.log("[Gemini] No API key, skipping background generation");

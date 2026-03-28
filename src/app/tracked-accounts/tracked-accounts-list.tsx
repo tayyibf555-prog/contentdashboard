@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
-import { addTrackedAccount, deleteTrackedAccount, updateTrackedAccount } from "./actions";
+import { addTrackedAccount, deleteTrackedAccount, updateTrackedAccount, seedAIIndustryAccounts } from "./actions";
 import type { TrackedAccount } from "@/types";
 
 type FormData = {
@@ -25,6 +25,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
   const [form, setForm] = useState<FormData>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [seeding, setSeeding] = useState(false);
 
   const filtered = filter === "all" ? accounts : accounts.filter((a) => a.category === filter);
 
@@ -93,12 +94,31 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
             {t.charAt(0).toUpperCase() + t.slice(1)} ({t === "all" ? accounts.length : accounts.filter((a) => a.category === t).length})
           </button>
         ))}
-        <button
-          onClick={openAdd}
-          className="ml-auto bg-azen-accent text-azen-bg px-3 py-1 rounded text-[11px] font-semibold"
-        >
-          + Add Account
-        </button>
+        <div className="ml-auto flex gap-2">
+          <button
+            onClick={async () => {
+              setSeeding(true);
+              try {
+                const result = await seedAIIndustryAccounts();
+                alert(`Added ${result.added} accounts (${result.skipped} already existed)`);
+              } catch (e) {
+                alert(e instanceof Error ? e.message : "Failed to seed");
+              } finally {
+                setSeeding(false);
+              }
+            }}
+            disabled={seeding}
+            className="bg-azen-card border border-azen-border text-white px-3 py-1 rounded text-[11px] font-semibold disabled:opacity-50"
+          >
+            {seeding ? "Adding..." : "Populate AI Industry"}
+          </button>
+          <button
+            onClick={openAdd}
+            className="bg-azen-accent text-azen-bg px-3 py-1 rounded text-[11px] font-semibold"
+          >
+            + Add Account
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
