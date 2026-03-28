@@ -32,16 +32,21 @@ export async function POST(request: Request) {
 
   const accountHandle = account === "business" ? "@azen_ai" : "@tayyib.ai";
 
-  const personalContext = account === "personal"
-    ? `\nTarget audience: Business owners and founders who are considering AI but haven't implemented it yet.
-Strategic angle: Educate with real value so they see the gap between where they are and where AI could take them. Never pitch — just teach. Cover diverse business topics (operations, marketing, sales, hiring, workflows, customer experience, strategy) — not just one tool or product.`
-    : "";
+  let audienceContext = "";
+  if (account === "business") {
+    audienceContext = `\nTarget audience: Business owners, CEOs, and decision-makers who know AI matters but haven't implemented it yet.
+Strategic angle: Every post should position Azen AI as the trusted authority on AI implementation. Show the real business outcomes AI delivers — revenue, efficiency, competitive advantage. Make the reader think "I need this for my business." End with a natural CTA: book a free AI audit at azen.io, DM us, or visit azen.io. The Azen methodology is Audit, Educate, Deploy — reference it when relevant.
+Content must NOT be generic AI news or tool reviews. Focus on: how AI solves specific business problems, client transformation stories, ROI frameworks, implementation insights, and why most businesses are falling behind by not acting now.`;
+  } else {
+    audienceContext = `\nTarget audience: Business owners and founders who are considering AI but haven't implemented it yet.
+Strategic angle: Educate with real value so they see the gap between where they are and where AI could take them. Never pitch — just teach. Cover diverse business topics (operations, marketing, sales, hiring, workflows, customer experience, strategy) — not just one tool or product.`;
+  }
 
   let prompt = "";
 
   if (contentType === "carousel") {
     prompt = `Generate an Instagram carousel post for ${accountHandle}.
-Content pillar: ${pillarLabel}${personalContext}
+Content pillar: ${pillarLabel}${audienceContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Carousel rules:
@@ -54,7 +59,7 @@ Respond in JSON:
 {"title":"post title","caption":"full Instagram caption (no emojis)","hashtags":["tag1","tag2"],"slides":[{"slide_type":"cover","headline":"...","accent_word":"...","subtitle":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"cta","headline":"...","cta_text":"..."}]}`;
   } else if (contentType === "long_form") {
     prompt = `Generate a LinkedIn long-form post for ${accountHandle}.
-Content pillar: ${pillarLabel}${personalContext}
+Content pillar: ${pillarLabel}${audienceContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Respond in JSON format:
@@ -70,7 +75,7 @@ Respond in JSON format:
 }`;
   } else if (contentType === "tweet" || contentType === "thread") {
     prompt = `Generate a Twitter/X ${contentType === "thread" ? "thread" : "single tweet"} for ${accountHandle}.
-Content pillar: ${pillarLabel}${personalContext}
+Content pillar: ${pillarLabel}${audienceContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Respond in JSON format:
@@ -82,7 +87,7 @@ Respond in JSON format:
 }`;
   } else if (contentType === "video_script") {
     prompt = `Generate a YouTube video script for @tayyib.ai.
-Content pillar: ${pillarLabel}${personalContext}
+Content pillar: ${pillarLabel}${audienceContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 The script should naturally include a CTA to azen.io for lead generation — woven into the content, not a hard sell.
 
@@ -109,7 +114,7 @@ Respond in JSON format:
 }`;
   } else {
     prompt = `Generate a short social media post for ${accountHandle} on ${platform}.
-Content pillar: ${pillarLabel}${personalContext}
+Content pillar: ${pillarLabel}${audienceContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Respond in JSON format:

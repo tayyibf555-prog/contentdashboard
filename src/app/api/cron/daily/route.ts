@@ -131,14 +131,20 @@ export async function GET(request: Request) {
       const pillars = req.account === "business" ? BUSINESS_PILLARS : PERSONAL_PILLARS;
       const pillarLabel = pillars.find((p) => p.key === req.pillar)?.label || req.pillar;
 
-      const personalContext = req.account === "personal"
-        ? `\nTarget audience: Business owners and founders who are considering AI but haven't implemented it yet.\nStrategic angle: Educate with real value so they see the gap between where they are and where AI could take them. Never pitch — just teach. Cover diverse business topics (operations, marketing, sales, hiring, workflows, customer experience, strategy) — not just one tool or product.`
-        : "";
+      let audienceContext = "";
+      if (req.account === "business") {
+        audienceContext = `\nTarget audience: Business owners, CEOs, and decision-makers who know AI matters but haven't implemented it yet.
+Strategic angle: Every post should position Azen AI as the trusted authority on AI implementation. Show the real business outcomes AI delivers — revenue, efficiency, competitive advantage. Make the reader think "I need this for my business." End with a natural CTA: book a free AI audit at azen.io, DM us, or visit azen.io. The Azen methodology is Audit, Educate, Deploy — reference it when relevant.
+Content must NOT be generic AI news or tool reviews. Focus on: how AI solves specific business problems, client transformation stories, ROI frameworks, implementation insights, and why most businesses are falling behind by not acting now.`;
+      } else {
+        audienceContext = `\nTarget audience: Business owners and founders who are considering AI but haven't implemented it yet.
+Strategic angle: Educate with real value so they see the gap between where they are and where AI could take them. Never pitch — just teach. Cover diverse business topics (operations, marketing, sales, hiring, workflows, customer experience, strategy) — not just one tool or product.`;
+      }
 
       let prompt = "";
       if (req.contentType === "carousel") {
         prompt = `Generate an Instagram carousel post for ${accountHandle}.
-Content pillar: ${pillarLabel}${personalContext}
+Content pillar: ${pillarLabel}${audienceContext}
 Research context: ${researchContext}
 
 Carousel rules:
@@ -150,13 +156,13 @@ Carousel rules:
 Respond in JSON:
 {"title":"post title","caption":"full Instagram caption (no emojis)","hashtags":["tag1","tag2"],"slides":[{"slide_type":"cover","headline":"...","accent_word":"...","subtitle":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"content","headline":"...","body_text":"..."},{"slide_type":"cta","headline":"...","cta_text":"..."}]}`;
       } else if (req.contentType === "long_form") {
-        prompt = `Generate a LinkedIn long-form post for ${accountHandle}.\nContent pillar: ${pillarLabel}${personalContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "post title", "body": "full post text (no emojis, max 3000 chars)", "hashtags": ["tag1"] }`;
+        prompt = `Generate a LinkedIn long-form post for ${accountHandle}.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "post title", "body": "full post text (no emojis, max 3000 chars)", "hashtags": ["tag1"] }`;
       } else if (req.contentType === "tweet") {
-        prompt = `Generate a Twitter/X tweet for ${accountHandle}.\nContent pillar: ${pillarLabel}${personalContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "topic title", "body": "tweet text (max 280 chars, no emojis)", "hashtags": ["tag1"] }`;
+        prompt = `Generate a Twitter/X tweet for ${accountHandle}.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "topic title", "body": "tweet text (max 280 chars, no emojis)", "hashtags": ["tag1"] }`;
       } else if (req.contentType === "video_script") {
-        prompt = `Generate a YouTube video script for @tayyib.ai.\nContent pillar: ${pillarLabel}${personalContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "video title", "hook": "first 30s script", "intro": "intro script", "body_sections": [{ "title": "Section", "content": "...", "start_time": "1:30", "end_time": "4:00" }], "cta": "closing CTA mentioning azen.io", "description": "YouTube description", "tags": ["tag1"], "thumbnail_concepts": [{ "label": "A", "description": "concept" }], "estimated_duration": "12 min", "title_variants": [{ "title": "option", "ctr_score": 8.5 }] }`;
+        prompt = `Generate a YouTube video script for @tayyib.ai.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "video title", "hook": "first 30s script", "intro": "intro script", "body_sections": [{ "title": "Section", "content": "...", "start_time": "1:30", "end_time": "4:00" }], "cta": "closing CTA mentioning azen.io", "description": "YouTube description", "tags": ["tag1"], "thumbnail_concepts": [{ "label": "A", "description": "concept" }], "estimated_duration": "12 min", "title_variants": [{ "title": "option", "ctr_score": 8.5 }] }`;
       } else {
-        prompt = `Generate a short social media post for ${accountHandle} on ${req.platform}.\nContent pillar: ${pillarLabel}${personalContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "post title", "body": "post text (no emojis)", "hashtags": ["tag1"] }`;
+        prompt = `Generate a short social media post for ${accountHandle} on ${req.platform}.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "post title", "body": "post text (no emojis)", "hashtags": ["tag1"] }`;
       }
 
       const raw = await generateContent(prompt, voice || undefined, req.account as "business" | "personal");
