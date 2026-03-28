@@ -182,6 +182,21 @@ export async function switchCarouselTemplate(contentId: string, variant: string)
   }
 }
 
+export async function markAsPosted(id: string): Promise<ActionResult> {
+  try {
+    const supabase = getSupabase();
+    const { error } = await supabase
+      .from("generated_content")
+      .update({ status: "posted", posted_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) return { success: false, error: error.message };
+    revalidateAll();
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Failed to mark as posted" };
+  }
+}
+
 export async function regenerateContent(id: string): Promise<ActionResult> {
   try {
     const supabase = getSupabase();

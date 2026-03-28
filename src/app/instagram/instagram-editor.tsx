@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { approveContent, regenerateContent, postContent, approveAndPostContent, switchCarouselTemplate, type ActionResult } from "@/app/actions";
 import { TemplatePicker } from "@/components/instagram/template-picker";
+import { ManualPostKit } from "@/components/instagram/manual-post-kit";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
 type PostWithSlides = GeneratedContent & { carousel_slides: CarouselSlide[] };
@@ -152,16 +153,11 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
               />
               <div className="flex gap-2 mt-4 flex-wrap">
                 {current.status === "pending" && (
-                  <>
-                    <Button variant="primary" onClick={handleApprove} disabled={!!loading}>
-                      {loading === "approve" ? "Approving..." : "Approve"}
-                    </Button>
-                    <Button variant="primary" onClick={handleApproveAndPost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
-                      {loading === "approveAndPost" ? "Posting..." : "Approve & Post"}
-                    </Button>
-                  </>
+                  <Button variant="primary" onClick={handleApprove} disabled={!!loading}>
+                    {loading === "approve" ? "Approving..." : "Approve"}
+                  </Button>
                 )}
-                {current.status === "approved" && (
+                {current.status === "approved" && current.content_type !== "carousel" && (
                   <Button variant="primary" onClick={handlePost} disabled={!!loading} className="bg-green-600 hover:bg-green-500">
                     {loading === "post" ? "Posting..." : "Post Now"}
                   </Button>
@@ -174,6 +170,15 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
                 <p className="text-red-400 text-[11px] mt-2">{postError}</p>
               )}
             </Card>
+            {current.status === "approved" && current.content_type === "carousel" && (
+              <ManualPostKit
+                contentId={current.id}
+                caption={current.body || ""}
+                hashtags={current.hashtags || []}
+                slides={slides}
+                account={current.account}
+              />
+            )}
           </div>
         </div>
       )}
