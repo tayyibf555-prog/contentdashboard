@@ -93,8 +93,8 @@ export async function generateBackgrounds(
   for (let i = 0; i < slideTypes.length; i++) {
     const slideType = slideTypes[i];
 
-    // Content slides each get a unique background; cover/cta reuse
-    const cacheKey = slideType === "content" ? `content_${i}` : slideType;
+    // Reuse one background per slide type (3 Gemini calls max, not 8)
+    const cacheKey = slideType;
 
     if (typeCache.has(cacheKey)) {
       results.set(i, typeCache.get(cacheKey)!);
