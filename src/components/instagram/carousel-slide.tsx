@@ -62,41 +62,44 @@ export function CarouselSlide({
     );
   }
 
-  // Tayyib variant — personal brand, top-left aligned, teal accent with underline
+  // Tayyib variant — @itstylergermain style: dark bg, bold text, wavy underline accent
   if (variant === "tayyib") {
-    const teal = "#00d4aa";
-    const bodyBlue = "#a0c4e8";
-    const mutedBlue = "#6b8db5";
     return (
-      <div className="w-full aspect-square rounded-lg flex flex-col p-6 relative" style={{ background: "#0a0e1a" }}>
+      <div className="w-full aspect-square rounded-lg flex flex-col p-6 relative" style={{ background: "#111111" }}>
         {slide.slide_type === "cover" && (
           <div className="flex-1 flex flex-col justify-start pt-4">
-            <div className="text-white text-2xl font-bold leading-tight">{slide.headline}</div>
-            <div className="w-10 h-1 rounded mt-1" style={{ background: teal }} />
+            <div className="text-3xl font-bold leading-tight" style={{ color: "#f5f5f5" }}>{slide.headline}</div>
+            <svg width="120" height="10" viewBox="0 0 120 10" className="mt-1">
+              <path d="M 2 7 C 15 2, 30 9, 50 5 S 80 8, 100 4 C 108 2, 115 6, 118 5" stroke={accent} fill="none" strokeWidth="2" strokeLinecap="round" />
+            </svg>
             {slide.body_text && (
-              <div className="text-xs mt-3 leading-relaxed" style={{ color: bodyBlue }}>{slide.body_text}</div>
+              <div className="text-xs mt-3 leading-relaxed" style={{ color: "#c8c8c8" }}>{slide.body_text}</div>
             )}
           </div>
         )}
         {slide.slide_type === "content" && (
           <div className="flex-1 flex flex-col justify-start pt-2">
-            <div className="text-lg font-bold leading-tight" style={{ color: teal }}>{slide.headline}</div>
-            <div className="w-8 h-0.5 rounded mt-1" style={{ background: teal }} />
-            <div className="text-xs mt-3 leading-relaxed" style={{ color: bodyBlue }}>{slide.body_text}</div>
+            <div className="text-lg font-bold leading-tight" style={{ color: accent }}>{slide.headline}</div>
+            <svg width="80" height="8" viewBox="0 0 80 8" className="mt-1">
+              <path d="M 2 5 C 10 2, 25 7, 40 4 S 60 6, 78 3" stroke={accent} fill="none" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <div className="text-xs mt-3 leading-relaxed" style={{ color: "#c8c8c8" }}>{slide.body_text}</div>
           </div>
         )}
         {slide.slide_type === "cta" && (
           <div className="flex-1 flex flex-col items-center justify-center gap-2">
-            <div className="text-white text-xl font-bold text-center leading-tight">{slide.headline}</div>
-            <div className="text-sm font-bold" style={{ color: teal }}>{slide.body_text}</div>
-            <div className="w-16 h-0.5 rounded" style={{ background: teal }} />
+            <div className="text-xl font-bold text-center leading-tight" style={{ color: "#f5f5f5" }}>{slide.headline}</div>
+            <div className="text-sm font-bold" style={{ color: accent }}>{slide.body_text}</div>
+            <svg width="100" height="8" viewBox="0 0 100 8" className="mt-0.5">
+              <path d="M 2 5 C 12 2, 30 7, 50 4 S 75 6, 98 3" stroke={accent} fill="none" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
           </div>
         )}
         <div className="flex justify-between items-center mt-auto">
-          <span className="text-white text-[10px] font-semibold">@tayyib.ai</span>
-          <span className="text-[8px]" style={{ color: mutedBlue }}>save for later</span>
+          <span className="text-[10px] font-semibold" style={{ color: "#f5f5f5" }}>@tayyib.ai</span>
+          <span className="text-[8px]" style={{ color: "#666" }}>save for later</span>
         </div>
-        <div className="absolute top-2 right-3 text-[10px]" style={{ color: mutedBlue }}>{slide.slide_number}/{totalSlides}</div>
+        <div className="absolute top-2 right-3 text-[10px]" style={{ color: "#666" }}>{slide.slide_number}/{totalSlides}</div>
       </div>
     );
   }

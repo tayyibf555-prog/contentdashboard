@@ -2,30 +2,45 @@ import React from "react";
 import type { CoverSlideProps, ContentSlideProps, CtaSlideProps } from "../types";
 import { SlideCounter } from "./shared";
 
-const BG = "#0a0e1a";
-const WHITE = "#ffffff";
-const ACCENT = "#00d4aa";
-const BODY_BLUE = "#a0c4e8";
-const MUTED_BLUE = "#6b8db5";
-
 /**
- * Tayyib personal template — inspired by @itstylergermain style.
- * Dark navy bg, top-left aligned bold headlines, teal accent with underline,
- * body text in soft blue shades. No grey anywhere.
+ * Tayyib personal template — @itstylergermain style.
+ * Dark bg, bold text, accent word with wavy brush-stroke underline.
+ * Bottom bar: @tayyib.ai + save for later.
  */
 
-export function TayyibCover({ headline, accentWord, subtitle, account, slideNumber, totalSlides }: CoverSlideProps) {
+const BG = "#111111";
+const WHITE = "#f5f5f5";
+const BODY = "#c8c8c8";
+const MUTED = "#666666";
+
+function WavyLine({ width, color }: { width: number; color: string }) {
+  // Hand-drawn style wavy underline using SVG path
+  const w = width;
+  return (
+    <svg width={w} height={24} viewBox={`0 0 ${w} 24`} style={{ marginTop: 4 }}>
+      <path
+        d={`M 5 16 C ${w * 0.12} 6, ${w * 0.25} 22, ${w * 0.4} 10 S ${w * 0.65} 20, ${w * 0.82} 8 C ${w * 0.9} 4, ${w * 0.95} 14, ${w - 5} 12`}
+        stroke={color}
+        fill="none"
+        strokeWidth={5}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function TayyibCover({ headline, accentWord, subtitle, slideNumber, totalSlides, theme }: CoverSlideProps) {
   const parts = headline.split(accentWord);
 
   return (
     <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative" }}>
-      {/* Headline — top-left, bold, accent word with underline */}
-      <div style={{ display: "flex", flexDirection: "column", marginTop: 40 }}>
-        <div style={{ color: WHITE, fontSize: 76, fontWeight: 700, lineHeight: 1.15, display: "flex", flexWrap: "wrap", maxWidth: 900 }}>
+      {/* Headline — bold, accent word with wavy underline */}
+      <div style={{ display: "flex", flexDirection: "column", marginTop: 60 }}>
+        <div style={{ color: WHITE, fontSize: 82, fontWeight: 700, lineHeight: 1.15, display: "flex", flexWrap: "wrap", maxWidth: 920 }}>
           {parts[0]}
           <span style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ color: ACCENT }}>{accentWord}</span>
-            <div style={{ width: "100%", height: 6, background: ACCENT, borderRadius: 3, marginTop: 4 }} />
+            <span style={{ color: theme.accentColor }}>{accentWord}</span>
+            <WavyLine width={Math.max(300, accentWord.length * 52)} color={theme.accentColor} />
           </span>
           {parts[1] || ""}
         </div>
@@ -33,7 +48,7 @@ export function TayyibCover({ headline, accentWord, subtitle, account, slideNumb
 
       {/* Subtitle */}
       {subtitle && (
-        <div style={{ color: BODY_BLUE, fontSize: 34, fontWeight: 400, marginTop: 40, lineHeight: 1.5 }}>
+        <div style={{ color: BODY, fontSize: 36, fontWeight: 400, marginTop: 50, lineHeight: 1.5, maxWidth: 800 }}>
           {subtitle}
         </div>
       )}
@@ -43,33 +58,28 @@ export function TayyibCover({ headline, accentWord, subtitle, account, slideNumb
 
       {/* Bottom bar — handle left, save for later right */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ color: MUTED_BLUE, fontSize: 20, fontWeight: 400 }}>save for later</span>
-        </div>
+        <span style={{ color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
+        <span style={{ color: MUTED, fontSize: 20, fontWeight: 400 }}>save for later</span>
       </div>
 
-      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED_BLUE} />
+      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED} />
     </div>
   );
 }
 
-export function TayyibContent({ headline, bodyText, slideNumber, totalSlides }: ContentSlideProps) {
+export function TayyibContent({ headline, bodyText, slideNumber, totalSlides, theme }: ContentSlideProps) {
   return (
     <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative" }}>
-      {/* Headline — top-left with accent color */}
-      <div style={{ display: "flex", flexDirection: "column", marginTop: 20 }}>
-        <div style={{ fontSize: 56, fontWeight: 700, lineHeight: 1.2, maxWidth: 900, display: "flex", flexWrap: "wrap" }}>
-          <span style={{ color: WHITE }}>{headline.split(" ").slice(0, Math.ceil(headline.split(" ").length / 2)).join(" ")} </span>
-          <span style={{ color: ACCENT }}>{headline.split(" ").slice(Math.ceil(headline.split(" ").length / 2)).join(" ")}</span>
+      {/* Headline with accent color */}
+      <div style={{ display: "flex", flexDirection: "column", marginTop: 40 }}>
+        <div style={{ color: theme.accentColor, fontSize: 52, fontWeight: 700, lineHeight: 1.2, maxWidth: 900 }}>
+          {headline}
         </div>
-        <div style={{ width: 60, height: 5, background: ACCENT, borderRadius: 3, marginTop: 12 }} />
+        <WavyLine width={Math.min(500, Math.max(200, headline.length * 28))} color={theme.accentColor} />
       </div>
 
       {/* Body text */}
-      <div style={{ color: BODY_BLUE, fontSize: 32, lineHeight: 1.7, fontWeight: 400, marginTop: 40, maxWidth: 900 }}>
+      <div style={{ color: BODY, fontSize: 34, lineHeight: 1.7, fontWeight: 400, marginTop: 50, maxWidth: 900 }}>
         {bodyText}
       </div>
 
@@ -78,43 +88,35 @@ export function TayyibContent({ headline, bodyText, slideNumber, totalSlides }: 
 
       {/* Bottom bar */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ color: MUTED_BLUE, fontSize: 20, fontWeight: 400 }}>save for later</span>
-        </div>
+        <span style={{ color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
+        <span style={{ color: MUTED, fontSize: 20, fontWeight: 400 }}>save for later</span>
       </div>
 
-      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED_BLUE} />
+      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED} />
     </div>
   );
 }
 
-export function TayyibCta({ headline, ctaText, slideNumber, totalSlides }: CtaSlideProps) {
+export function TayyibCta({ headline, ctaText, slideNumber, totalSlides, theme }: CtaSlideProps) {
   return (
     <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "80px 80px 60px", position: "relative" }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, gap: 40 }}>
-        <div style={{ color: WHITE, fontSize: 62, fontWeight: 700, textAlign: "center", lineHeight: 1.25, maxWidth: 800 }}>
+        <div style={{ color: WHITE, fontSize: 72, fontWeight: 700, textAlign: "center", lineHeight: 1.2, maxWidth: 850 }}>
           {headline}
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <span style={{ color: ACCENT, fontSize: 38, fontWeight: 700, textAlign: "center" }}>{ctaText}</span>
-          <div style={{ width: "100%", height: 5, background: ACCENT, borderRadius: 3, marginTop: 6 }} />
+          <span style={{ color: theme.accentColor, fontSize: 40, fontWeight: 700, textAlign: "center" }}>{ctaText}</span>
+          <WavyLine width={Math.max(250, ctaText.length * 24)} color={theme.accentColor} />
         </div>
       </div>
 
       {/* Bottom bar */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ color: MUTED_BLUE, fontSize: 20, fontWeight: 400 }}>save for later</span>
-        </div>
+        <span style={{ color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
+        <span style={{ color: MUTED, fontSize: 20, fontWeight: 400 }}>save for later</span>
       </div>
 
-      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED_BLUE} />
+      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED} />
     </div>
   );
 }
