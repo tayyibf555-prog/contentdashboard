@@ -5,7 +5,9 @@ import { analyzeResearch, generateContent } from "@/lib/claude/client";
 import { sendDailyDigest } from "@/lib/resend/client";
 import { BUSINESS_PILLARS, PERSONAL_PILLARS } from "@/lib/constants";
 import { resolveTheme } from "@/lib/carousel/theme";
-import { generateSlideImage } from "@/lib/carousel/generator";
+import { generateSlideImage, generateBackgrounds } from "@/lib/carousel/generator";
+
+export const maxDuration = 120;
 
 function getSupabase() {
   return createClient(
@@ -193,10 +195,14 @@ Respond in JSON:
         }));
         const { data: insertedSlides } = await supabase.from("carousel_slides").insert(slides).select();
 
-        // Auto-generate images for each slide
+        // Pre-generate AI backgrounds sequentially, then render slides
         if (insertedSlides) {
-          const imagePromises = insertedSlides.map(async (slide: Record<string, string | number>) => {
+          const slideTypes = insertedSlides.map((s: Record<string, string | number>) => s.slide_type as "cover" | "content" | "cta");
+          const backgrounds = await generateBackgrounds(theme.variant, slideTypes, theme.accentColor);
+
+          for (const slide of insertedSlides as Record<string, string | number>[]) {
             try {
+              const idx = (slide.slide_number as number) - 1;
               const imageBuffer = await generateSlideImage(
                 slide.slide_type as "cover" | "content" | "cta",
                 {
@@ -204,12 +210,12 @@ Respond in JSON:
                   bodyText: slide.body_text,
                   accentWord: slide.body_text,
                   ctaText: slide.body_text,
-                  subtitle: parsed.slides[(slide.slide_number as number) - 1]?.subtitle,
+                  subtitle: parsed.slides[idx]?.subtitle,
                   account: req.account,
                   slideNumber: slide.slide_number,
                   totalSlides,
                 },
-                { account: req.account as "business" | "personal", pillar: req.pillar, variant: theme.variant }
+                { account: req.account as "business" | "personal", pillar: req.pillar, variant: theme.variant, backgroundImage: backgrounds.get(idx) }
               );
               const fileName = `carousel/${slide.id}-${Date.now()}.png`;
               await supabase.storage.from("carousel-images").upload(fileName, imageBuffer, { contentType: "image/png" });
@@ -218,8 +224,7 @@ Respond in JSON:
             } catch (imgErr) {
               console.error(`Image generation failed for slide ${slide.slide_number}:`, imgErr);
             }
-          });
-          await Promise.all(imagePromises);
+          }
         }
       }
 

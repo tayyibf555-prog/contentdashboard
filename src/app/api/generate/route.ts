@@ -3,7 +3,9 @@ import { generateContent } from "@/lib/claude/client";
 import { createClient } from "@supabase/supabase-js";
 import { BUSINESS_PILLARS, PERSONAL_PILLARS, POSTING_SCHEDULE } from "@/lib/constants";
 import { resolveTheme } from "@/lib/carousel/theme";
-import { generateSlideImage } from "@/lib/carousel/generator";
+import { generateSlideImage, generateBackgrounds } from "@/lib/carousel/generator";
+
+export const maxDuration = 120;
 
 function getSupabase() {
   return createClient(
@@ -169,10 +171,15 @@ Respond in JSON format:
     }));
     const { data: insertedSlides } = await supabase.from("carousel_slides").insert(slides).select();
 
-    // Auto-generate images
+    // Pre-generate all AI backgrounds sequentially (avoids Gemini rate limits)
     if (insertedSlides) {
-      const imagePromises = insertedSlides.map(async (slide: Record<string, string | number>) => {
+      const slideTypes = insertedSlides.map((s: Record<string, string | number>) => s.slide_type as "cover" | "content" | "cta");
+      const backgrounds = await generateBackgrounds(theme.variant, slideTypes, theme.accentColor);
+
+      // Now render each slide with its pre-generated background
+      for (const slide of insertedSlides as Record<string, string | number>[]) {
         try {
+          const idx = (slide.slide_number as number) - 1;
           const imageBuffer = await generateSlideImage(
             slide.slide_type as "cover" | "content" | "cta",
             {
@@ -180,12 +187,12 @@ Respond in JSON format:
               bodyText: slide.body_text,
               accentWord: slide.body_text,
               ctaText: slide.body_text,
-              subtitle: parsed.slides[(slide.slide_number as number) - 1]?.subtitle,
+              subtitle: parsed.slides[idx]?.subtitle,
               account,
               slideNumber: slide.slide_number,
               totalSlides,
             },
-            { account: account as "business" | "personal", pillar, variant: theme.variant }
+            { account: account as "business" | "personal", pillar, variant: theme.variant, backgroundImage: backgrounds.get(idx) }
           );
           const fileName = `carousel/${slide.id}-${Date.now()}.png`;
           await supabase.storage.from("carousel-images").upload(fileName, imageBuffer, { contentType: "image/png" });
@@ -194,8 +201,7 @@ Respond in JSON format:
         } catch (imgErr) {
           console.error(`Image generation failed for slide ${slide.slide_number}:`, imgErr);
         }
-      });
-      await Promise.all(imagePromises);
+      }
     }
   }
 

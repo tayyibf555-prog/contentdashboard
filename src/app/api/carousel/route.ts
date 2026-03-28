@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { generateSlideImage } from "@/lib/carousel/generator";
 import { createClient } from "@supabase/supabase-js";
 
+export const maxDuration = 30;
+
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
