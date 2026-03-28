@@ -132,3 +132,34 @@ export function NumberedMarker({ number, color }: { number: number; color: strin
     </div>
   );
 }
+
+/**
+ * AI-generated background image layer.
+ * Renders a full-bleed image with a semi-transparent dark overlay for text readability.
+ * @param base64 — base64-encoded PNG from Gemini
+ * @param overlayOpacity — 0–1, how dark the overlay is (default 0.45)
+ */
+export function BackgroundLayer({ base64, overlayOpacity = 0.45 }: { base64: string; overlayOpacity?: number }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`data:image/png;base64,${base64}`}
+        alt=""
+        width={1080}
+        height={1080}
+        style={{ position: "absolute", top: 0, left: 0, width: 1080, height: 1080, objectFit: "cover" }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: 1080,
+          height: 1080,
+          background: `rgba(0,0,0,${overlayOpacity})`,
+        }}
+      />
+    </>
+  );
+}

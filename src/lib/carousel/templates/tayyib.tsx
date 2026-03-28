@@ -1,6 +1,6 @@
 import React from "react";
 import type { CoverSlideProps, ContentSlideProps, CtaSlideProps } from "../types";
-import { SlideCounter } from "./shared";
+import { SlideCounter, BackgroundLayer } from "./shared";
 
 /**
  * Tayyib personal template — @itstylergermain style.
@@ -29,11 +29,12 @@ function WavyLine({ width, color }: { width: number; color: string }) {
   );
 }
 
-export function TayyibCover({ headline, accentWord, subtitle, slideNumber, totalSlides, theme }: CoverSlideProps) {
+export function TayyibCover({ headline, accentWord, subtitle, slideNumber, totalSlides, theme, backgroundImage }: CoverSlideProps) {
   const parts = headline.split(accentWord);
 
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.5} />}
       {/* Headline — bold, accent word with wavy underline */}
       <div style={{ display: "flex", flexDirection: "column", marginTop: 60 }}>
         <div style={{ color: WHITE, fontSize: 82, fontWeight: 700, lineHeight: 1.15, display: "flex", flexWrap: "wrap", maxWidth: 920 }}>
@@ -67,9 +68,10 @@ export function TayyibCover({ headline, accentWord, subtitle, slideNumber, total
   );
 }
 
-export function TayyibContent({ headline, bodyText, slideNumber, totalSlides, theme }: ContentSlideProps) {
+export function TayyibContent({ headline, bodyText, slideNumber, totalSlides, theme, backgroundImage }: ContentSlideProps) {
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.55} />}
       {/* Headline with accent color */}
       <div style={{ display: "flex", flexDirection: "column", marginTop: 40 }}>
         <div style={{ color: theme.accentColor, fontSize: 52, fontWeight: 700, lineHeight: 1.2, maxWidth: 900 }}>
@@ -97,9 +99,10 @@ export function TayyibContent({ headline, bodyText, slideNumber, totalSlides, th
   );
 }
 
-export function TayyibCta({ headline, ctaText, slideNumber, totalSlides, theme }: CtaSlideProps) {
+export function TayyibCta({ headline, ctaText, slideNumber, totalSlides, theme, backgroundImage }: CtaSlideProps) {
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "80px 80px 60px", position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "80px 80px 60px", position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.5} />}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, gap: 40 }}>
         <div style={{ color: WHITE, fontSize: 72, fontWeight: 700, textAlign: "center", lineHeight: 1.2, maxWidth: 850 }}>
           {headline}

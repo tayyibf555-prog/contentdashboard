@@ -3,6 +3,8 @@ import { Resvg } from "@resvg/resvg-js";
 import { loadFonts } from "./fonts";
 import { getTemplate } from "./templates";
 import { resolveTheme } from "./theme";
+import { generateBackground } from "../gemini/client";
+import { getBackgroundPrompt } from "./backgrounds";
 import type { TemplateVariant } from "./types";
 import React from "react";
 
@@ -25,6 +27,17 @@ export async function generateSlideImage(
 
   const Template = getTemplate(theme.variant, slideType);
 
+  // Generate AI background — falls back to solid color templates if Gemini fails
+  let backgroundImage: string | null = null;
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      const prompt = getBackgroundPrompt(theme.variant, slideType, theme.accentColor);
+      backgroundImage = await generateBackground(prompt);
+    } catch (err) {
+      console.error("Background generation failed, using solid fallback:", err);
+    }
+  }
+
   // Ensure all string props have defaults — Satori crashes on undefined text nodes
   const safeProps = {
     ...props,
@@ -36,6 +49,7 @@ export async function generateSlideImage(
     slideNumber: props.slideNumber ?? 1,
     totalSlides: props.totalSlides ?? 1,
     theme,
+    backgroundImage,
   };
 
   const element = React.createElement(Template, safeProps);

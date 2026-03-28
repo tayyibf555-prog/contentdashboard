@@ -1,18 +1,19 @@
 import React from "react";
 import type { CoverSlideProps, ContentSlideProps, CtaSlideProps } from "../types";
-import { LogoBar, SlideCounter } from "./shared";
+import { LogoBar, SlideCounter, BackgroundLayer } from "./shared";
 
 const BG = "#0a0e1a";
 const WHITE = "#ffffff";
 const MUTED = "#8892b0";
 
-export function BoldCover({ headline, accentWord, subtitle, account, theme, slideNumber, totalSlides }: CoverSlideProps) {
+export function BoldCover({ headline, accentWord, subtitle, account, theme, slideNumber, totalSlides, backgroundImage }: CoverSlideProps) {
   const parts = headline.split(accentWord);
 
   return (
     <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.45} />}
       {/* Large rotated rectangle decoration */}
-      <div style={{ position: "absolute", width: 600, height: 600, background: theme.accentColor, opacity: 0.15, top: -100, right: -100, borderRadius: 40, transform: "rotate(25deg)" }} />
+      {!backgroundImage && <div style={{ position: "absolute", width: 600, height: 600, background: theme.accentColor, opacity: 0.15, top: -100, right: -100, borderRadius: 40, transform: "rotate(25deg)" }} />}
 
       <div style={{ color: WHITE, fontSize: 68, fontWeight: 700, textAlign: "center", lineHeight: 1.2, display: "flex", flexWrap: "wrap", justifyContent: "center", maxWidth: 900, textTransform: "uppercase" as const, letterSpacing: -1 }}>
         {parts[0]}
@@ -32,11 +33,12 @@ export function BoldCover({ headline, accentWord, subtitle, account, theme, slid
   );
 }
 
-export function BoldContent({ headline, bodyText, slideNumber, totalSlides, account, theme }: ContentSlideProps) {
+export function BoldContent({ headline, bodyText, slideNumber, totalSlides, account, theme, backgroundImage }: ContentSlideProps) {
   return (
     <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.5} />}
       {/* Corner triangle decoration */}
-      <div style={{ position: "absolute", width: 300, height: 300, background: theme.accentColor, opacity: 0.12, top: -100, left: -100, borderRadius: 40, transform: "rotate(45deg)" }} />
+      {!backgroundImage && <div style={{ position: "absolute", width: 300, height: 300, background: theme.accentColor, opacity: 0.12, top: -100, left: -100, borderRadius: 40, transform: "rotate(45deg)" }} />}
 
       <div style={{ display: "flex", alignItems: "center", marginBottom: 24 }}>
         <div style={{ fontSize: 72, fontWeight: 700, color: theme.accentColor, marginRight: 20, lineHeight: 1 }}>
@@ -58,7 +60,23 @@ export function BoldContent({ headline, bodyText, slideNumber, totalSlides, acco
   );
 }
 
-export function BoldCta({ headline, ctaText, account, theme, slideNumber, totalSlides }: CtaSlideProps) {
+export function BoldCta({ headline, ctaText, account, theme, slideNumber, totalSlides, backgroundImage }: CtaSlideProps) {
+  if (backgroundImage) {
+    return (
+      <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+        <BackgroundLayer base64={backgroundImage} overlayOpacity={0.45} />
+        <div style={{ color: WHITE, fontSize: 50, fontWeight: 700, textAlign: "center", lineHeight: 1.3, marginBottom: 30, maxWidth: 800, textTransform: "uppercase" as const }}>
+          {headline}
+        </div>
+        <div style={{ color: theme.accentColor, fontSize: 32, fontWeight: 700, textAlign: "center" }}>
+          {ctaText}
+        </div>
+        <LogoBar account={account} color={WHITE} />
+        <SlideCounter current={slideNumber} total={totalSlides} color={MUTED} />
+      </div>
+    );
+  }
+
   return (
     <div style={{ width: 1080, height: 1080, display: "flex", position: "relative", overflow: "hidden" }}>
       {/* Left half */}

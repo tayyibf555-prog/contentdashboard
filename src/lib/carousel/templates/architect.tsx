@@ -1,16 +1,17 @@
 import React from "react";
 import type { CoverSlideProps, ContentSlideProps, CtaSlideProps } from "../types";
-import { LogoBar, SlideCounter, AccentStripe, NumberWatermark } from "./shared";
+import { LogoBar, SlideCounter, AccentStripe, NumberWatermark, BackgroundLayer } from "./shared";
 
 const BG = "#0a0e1a";
 const MUTED = "#8892b0";
 const WHITE = "#ffffff";
 
-export function ArchitectCover({ headline, accentWord, subtitle, account, theme, slideNumber, totalSlides }: CoverSlideProps) {
+export function ArchitectCover({ headline, accentWord, subtitle, account, theme, slideNumber, totalSlides, backgroundImage }: CoverSlideProps) {
   const parts = headline.split(accentWord);
 
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.45} />}
       <AccentStripe orientation="vertical" color={theme.accentColor} thickness={6} length="100%" top={120} left={0} bottom={120} />
 
       <div style={{ color: WHITE, fontSize: 60, fontWeight: 700, textAlign: "center", lineHeight: 1.3, display: "flex", flexWrap: "wrap", justifyContent: "center", maxWidth: 900 }}>
@@ -33,9 +34,10 @@ export function ArchitectCover({ headline, accentWord, subtitle, account, theme,
   );
 }
 
-export function ArchitectContent({ headline, bodyText, slideNumber, totalSlides, account, theme }: ContentSlideProps) {
+export function ArchitectContent({ headline, bodyText, slideNumber, totalSlides, account, theme, backgroundImage }: ContentSlideProps) {
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", padding: 80, position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.5} />}
       <AccentStripe orientation="vertical" color={theme.accentColor} thickness={6} length="100%" top={120} left={0} bottom={120} />
       <NumberWatermark number={slideNumber} color={theme.accentColor} />
 
@@ -52,9 +54,10 @@ export function ArchitectContent({ headline, bodyText, slideNumber, totalSlides,
   );
 }
 
-export function ArchitectCta({ headline, ctaText, account, theme, slideNumber, totalSlides }: CtaSlideProps) {
+export function ArchitectCta({ headline, ctaText, account, theme, slideNumber, totalSlides, backgroundImage }: CtaSlideProps) {
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: BG, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.45} />}
       <AccentStripe orientation="vertical" color={theme.accentColor} thickness={6} length="100%" top={120} left={0} bottom={120} />
 
       <div style={{ color: WHITE, fontSize: 50, fontWeight: 700, textAlign: "center", lineHeight: 1.3, marginBottom: 40, maxWidth: 800 }}>

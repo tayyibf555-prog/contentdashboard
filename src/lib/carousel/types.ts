@@ -15,6 +15,7 @@ export type CoverSlideProps = {
   theme: SlideTheme;
   slideNumber: number;
   totalSlides: number;
+  backgroundImage?: string;
 };
 
 export type ContentSlideProps = {
@@ -24,6 +25,7 @@ export type ContentSlideProps = {
   totalSlides: number;
   account: "business" | "personal";
   theme: SlideTheme;
+  backgroundImage?: string;
 };
 
 export type CtaSlideProps = {
@@ -33,4 +35,5 @@ export type CtaSlideProps = {
   theme: SlideTheme;
   slideNumber: number;
   totalSlides: number;
+  backgroundImage?: string;
 };

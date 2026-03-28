@@ -1,6 +1,6 @@
 import React from "react";
 import type { CoverSlideProps, ContentSlideProps, CtaSlideProps } from "../types";
-import { LogoBar, SlideCounter, DecoCircle, NumberedMarker } from "./shared";
+import { LogoBar, SlideCounter, DecoCircle, NumberedMarker, BackgroundLayer } from "./shared";
 
 const WHITE = "#ffffff";
 const LIGHT = "#e0e0e0";
@@ -12,12 +12,13 @@ function darken(hex: string): string {
   return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
-export function GradientCover({ headline, accentWord, subtitle, account, theme, slideNumber, totalSlides }: CoverSlideProps) {
+export function GradientCover({ headline, accentWord, subtitle, account, theme, slideNumber, totalSlides, backgroundImage }: CoverSlideProps) {
   const dark = darken(theme.accentColor);
   const parts = headline.split(accentWord);
 
   return (
-    <div style={{ width: 1080, height: 1080, background: `radial-gradient(circle at 30% 40%, ${dark} 0%, #080810 100%)`, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: `radial-gradient(circle at 30% 40%, ${dark} 0%, #080810 100%)`, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.35} />}
       <DecoCircle size={350} color={theme.accentColor} opacity={0.12} top={-80} right={-60} />
       <DecoCircle size={200} color={theme.accentColor} opacity={0.08} bottom={100} left={-40} />
 
@@ -41,11 +42,12 @@ export function GradientCover({ headline, accentWord, subtitle, account, theme, 
   );
 }
 
-export function GradientContent({ headline, bodyText, slideNumber, totalSlides, account, theme }: ContentSlideProps) {
+export function GradientContent({ headline, bodyText, slideNumber, totalSlides, account, theme, backgroundImage }: ContentSlideProps) {
   const dark = darken(theme.accentColor);
 
   return (
-    <div style={{ width: 1080, height: 1080, background: `radial-gradient(circle at 70% 60%, ${dark} 0%, #080810 100%)`, display: "flex", flexDirection: "column", justifyContent: "center", padding: 80, position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: `radial-gradient(circle at 70% 60%, ${dark} 0%, #080810 100%)`, display: "flex", flexDirection: "column", justifyContent: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.4} />}
       <DecoCircle size={180} color={theme.accentColor} opacity={0.06} bottom={60} right={40} />
 
       <NumberedMarker number={slideNumber} color={theme.accentColor} />
@@ -63,20 +65,21 @@ export function GradientContent({ headline, bodyText, slideNumber, totalSlides, 
   );
 }
 
-export function GradientCta({ headline, ctaText, account, theme, slideNumber, totalSlides }: CtaSlideProps) {
+export function GradientCta({ headline, ctaText, account, theme, slideNumber, totalSlides, backgroundImage }: CtaSlideProps) {
   return (
-    <div style={{ width: 1080, height: 1080, background: theme.accentColor, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative" }}>
+    <div style={{ width: 1080, height: 1080, background: backgroundImage ? "#080810" : theme.accentColor, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 80, position: "relative", overflow: "hidden" }}>
+      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.35} />}
       <DecoCircle size={400} color="#ffffff" opacity={0.08} top={-100} right={-80} />
 
-      <div style={{ color: "#0a0e1a", fontSize: 50, fontWeight: 700, textAlign: "center", lineHeight: 1.3, marginBottom: 30, maxWidth: 800 }}>
+      <div style={{ color: backgroundImage ? WHITE : "#0a0e1a", fontSize: 50, fontWeight: 700, textAlign: "center", lineHeight: 1.3, marginBottom: 30, maxWidth: 800 }}>
         {headline}
       </div>
-      <div style={{ color: "#0a0e1a", fontSize: 32, fontWeight: 400, textAlign: "center", opacity: 0.8 }}>
+      <div style={{ color: backgroundImage ? LIGHT : "#0a0e1a", fontSize: 32, fontWeight: 400, textAlign: "center", opacity: 0.8 }}>
         {ctaText}
       </div>
 
-      <LogoBar account={account} color="#0a0e1a" />
-      <SlideCounter current={slideNumber} total={totalSlides} color="rgba(10,14,26,0.5)" />
+      <LogoBar account={account} color={backgroundImage ? WHITE : "#0a0e1a"} />
+      <SlideCounter current={slideNumber} total={totalSlides} color={backgroundImage ? LIGHT : "rgba(10,14,26,0.5)"} />
     </div>
   );
 }
