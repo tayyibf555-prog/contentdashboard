@@ -12,7 +12,7 @@ export async function generateBackground(prompt: string): Promise<string | null>
   try {
     const ai = getGemini();
     const response = await ai.models.generateImages({
-      model: "imagen-3.0-generate-002",
+      model: "imagen-4.0-generate-001",
       prompt,
       config: {
         numberOfImages: 1,
