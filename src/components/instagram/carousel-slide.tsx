@@ -33,36 +33,31 @@ export function CarouselSlide({
   const accent = slide.accent_color || "#00d4aa";
   const variant = variantOverride || slide.template_variant || "architect";
   const logo = account === "business" ? "azen" : "tayyib.ai";
-  const azenBlue = "#7eb8ff";
 
-  // Azen variant — clean typography, navy bg, light blue accent
+  // Azen variant — @leadgenman style: dark charcoal, massive centered text, ultra-minimal
   if (variant === "azen") {
     return (
-      <div className="w-full aspect-square rounded-lg flex flex-col justify-center p-8 relative" style={{ background: "#0a0e1a" }}>
+      <div className="w-full aspect-square rounded-lg flex flex-col justify-center items-center p-6 relative" style={{ background: "#222222" }}>
         {slide.slide_type === "cover" && (
           <div className="flex-1 flex items-center justify-center">
-            <div className="text-white text-3xl font-bold text-center leading-tight">
+            <div className="text-4xl font-bold text-center leading-tight" style={{ color: "#f5f5f5" }}>
               {slide.headline}
             </div>
           </div>
         )}
         {slide.slide_type === "content" && (
-          <div className="flex-1 flex items-center">
-            <div className="text-sm leading-relaxed" style={{ color: "#e0e4ea" }}>
-              <span className="font-bold" style={{ color: azenBlue }}>{slide.headline}</span>
-              {" "}
-              {slide.body_text}
-            </div>
+          <div className="flex-1 flex flex-col justify-center gap-2 w-full px-2">
+            <div className="text-lg font-bold leading-tight" style={{ color: accent }}>{slide.headline}</div>
+            <div className="text-sm leading-relaxed" style={{ color: "#f5f5f5" }}>{slide.body_text}</div>
           </div>
         )}
         {slide.slide_type === "cta" && (
           <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <div className="text-white text-2xl font-bold text-center leading-tight">{slide.headline}</div>
-            <div className="text-sm font-bold" style={{ color: azenBlue }}>{slide.body_text}</div>
+            <div className="text-3xl font-bold text-center leading-tight" style={{ color: "#f5f5f5" }}>{slide.headline}</div>
+            <div className="text-base font-bold" style={{ color: accent }}>{slide.body_text}</div>
           </div>
         )}
-        <div className="absolute bottom-3 left-8 text-white text-xs font-semibold">{logo}</div>
-        <div className="absolute top-2 right-3 text-[10px]" style={{ color: "#8892b0" }}>{slide.slide_number}/{totalSlides}</div>
+        <div className="absolute top-2 right-3 text-[10px]" style={{ color: "#666" }}>{slide.slide_number}/{totalSlides}</div>
       </div>
     );
   }
