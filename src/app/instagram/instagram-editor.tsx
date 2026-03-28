@@ -35,15 +35,19 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
   const current = filtered[selectedIndex];
   const slides = current?.carousel_slides?.sort((a, b) => a.slide_number - b.slide_number) || [];
 
-  // Auto-generate slide images when slides exist without image_url
+  const [imageError, setImageError] = useState<string | null>(null);
+
+  // Generate slide images for slides missing image_url
   const generateMissingImages = useCallback(async (post: PostWithSlides) => {
     const sortedSlides = post.carousel_slides?.sort((a, b) => a.slide_number - b.slide_number) || [];
     const missing = sortedSlides.filter((s) => !s.image_url);
     if (missing.length === 0) return;
     if (generatingRef.current === post.id) return;
     generatingRef.current = post.id;
+    setImageError(null);
 
     const total = missing.length;
+    let failCount = 0;
     setImageProgress({ current: 0, total });
 
     for (let i = 0; i < missing.length; i++) {
@@ -51,7 +55,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
       setImageProgress({ current: i + 1, total });
 
       try {
-        await fetch("/api/carousel", {
+        const res = await fetch("/api/carousel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -72,24 +76,46 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
             variant: slide.template_variant || "architect",
           }),
         });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.error(`Slide ${slide.slide_number} failed:`, res.status, errData);
+          failCount++;
+        }
       } catch (err) {
-        console.error(`Failed to generate slide ${slide.slide_number}:`, err);
+        console.error(`Slide ${slide.slide_number} network error:`, err);
+        failCount++;
       }
     }
 
     setImageProgress(null);
     generatingRef.current = null;
+
+    if (failCount > 0) {
+      setImageError(`${failCount} of ${total} slides failed to generate. Click "Generate Images" to retry.`);
+    }
+
     router.refresh();
   }, [router]);
 
+  // Auto-generate on mount when slides are missing images
   useEffect(() => {
     if (current && current.content_type === "carousel" && current.carousel_slides?.length > 0) {
       const hasMissing = current.carousel_slides.some((s) => !s.image_url);
-      if (hasMissing) {
+      if (hasMissing && generatingRef.current !== current.id) {
         generateMissingImages(current);
       }
     }
-  }, [current?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [current?.id, generateMissingImages]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Manual trigger for image generation
+  const handleGenerateImages = () => {
+    if (!current) return;
+    generatingRef.current = null; // Reset guard to allow retry
+    generateMissingImages(current);
+  };
+
+  const hasMissingImages = current?.content_type === "carousel" &&
+    current?.carousel_slides?.some((s) => !s.image_url);
 
   const handleResult = (result: ActionResult, fallbackMsg: string) => {
     if (!result.success) {
@@ -185,6 +211,19 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
                   />
                 </div>
               </div>
+            )}
+            {imageError && (
+              <div className="mt-2 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                <p className="text-red-400 text-[11px]">{imageError}</p>
+              </div>
+            )}
+            {hasMissingImages && !imageProgress && (
+              <button
+                onClick={handleGenerateImages}
+                className="mt-2 w-full bg-azen-accent text-azen-bg px-3 py-2 rounded-md text-xs font-semibold hover:opacity-90 transition-opacity"
+              >
+                Generate Images
+              </button>
             )}
             <SlideNavigator slides={slides} activeIndex={activeSlide} onSelect={setActiveSlide} />
             {slides.length > 0 && (current.status === "pending" || current.status === "draft") && (
