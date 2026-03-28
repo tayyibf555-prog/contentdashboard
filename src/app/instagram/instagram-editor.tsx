@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { PhonePreview } from "@/components/instagram/phone-preview";
 import { SlideNavigator } from "@/components/instagram/slide-navigator";
@@ -23,6 +23,8 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [loading, setLoading] = useState<string | null>(null);
   const [postError, setPostError] = useState<string | null>(null);
+  const [imageProgress, setImageProgress] = useState<{ current: number; total: number } | null>(null);
+  const generatingRef = useRef<string | null>(null);
 
   const filtered = posts.filter((p) => {
     if (tab === "pending") return p.status === "pending" || p.status === "draft";
@@ -32,6 +34,62 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
 
   const current = filtered[selectedIndex];
   const slides = current?.carousel_slides?.sort((a, b) => a.slide_number - b.slide_number) || [];
+
+  // Auto-generate slide images when slides exist without image_url
+  const generateMissingImages = useCallback(async (post: PostWithSlides) => {
+    const sortedSlides = post.carousel_slides?.sort((a, b) => a.slide_number - b.slide_number) || [];
+    const missing = sortedSlides.filter((s) => !s.image_url);
+    if (missing.length === 0) return;
+    if (generatingRef.current === post.id) return;
+    generatingRef.current = post.id;
+
+    const total = missing.length;
+    setImageProgress({ current: 0, total });
+
+    for (let i = 0; i < missing.length; i++) {
+      const slide = missing[i];
+      setImageProgress({ current: i + 1, total });
+
+      try {
+        await fetch("/api/carousel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slideId: slide.id,
+            slideType: slide.slide_type,
+            props: {
+              headline: slide.headline,
+              bodyText: slide.body_text,
+              accentWord: slide.body_text,
+              ctaText: slide.body_text,
+              subtitle: slide.slide_type === "cover" ? slide.body_text : undefined,
+              account: post.account,
+              slideNumber: slide.slide_number,
+              totalSlides: sortedSlides.length,
+            },
+            account: post.account,
+            pillar: post.pillar || "education",
+            variant: slide.template_variant || "architect",
+          }),
+        });
+      } catch (err) {
+        console.error(`Failed to generate slide ${slide.slide_number}:`, err);
+      }
+    }
+
+    setImageProgress(null);
+    generatingRef.current = null;
+    router.refresh();
+  }, [router]);
+
+  useEffect(() => {
+    if (current && current.content_type === "carousel" && current.carousel_slides?.length > 0) {
+      const hasMissing = current.carousel_slides.some((s) => !s.image_url);
+      if (hasMissing) {
+        generateMissingImages(current);
+      }
+    }
+  }, [current?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleResult = (result: ActionResult, fallbackMsg: string) => {
     if (!result.success) {
@@ -112,6 +170,22 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
         <div className="grid grid-cols-2 gap-6">
           <div>
             <PhonePreview slide={slides[activeSlide] || null} account={current.account} totalSlides={slides.length} />
+            {imageProgress && (
+              <div className="mt-2 bg-azen-card rounded-lg p-3 border border-azen-border">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 border-2 border-azen-accent border-t-transparent rounded-full animate-spin" />
+                  <span className="text-azen-text text-[11px]">
+                    Generating slide images... {imageProgress.current}/{imageProgress.total}
+                  </span>
+                </div>
+                <div className="mt-2 h-1 bg-azen-border rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-azen-accent rounded-full transition-all duration-500"
+                    style={{ width: `${(imageProgress.current / imageProgress.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
             <SlideNavigator slides={slides} activeIndex={activeSlide} onSelect={setActiveSlide} />
             {slides.length > 0 && (current.status === "pending" || current.status === "draft") && (
               <TemplatePicker
