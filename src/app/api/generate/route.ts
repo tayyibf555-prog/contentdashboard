@@ -112,6 +112,31 @@ Respond in JSON format:
   ],
   "estimated_duration": "12 min"
 }`;
+  } else if (contentType === "reel") {
+    prompt = `Generate an Instagram Reel script for @tayyib.ai.
+Content pillar: ${pillarLabel}${audienceContext}
+${researchContext ? `Research context: ${researchContext}` : ""}
+
+Reel rules:
+- Total duration: ~30 seconds max
+- Hook (0:00-0:05): One punchy sentence that stops the scroll. Pattern-interrupt or bold claim.
+- Body (0:05-0:25): 2-3 key points delivered conversationally. Speak to one person. No jargon. Real value.
+- CTA (0:25-0:30): Clear next step — follow for more, save this, or DM me.
+- On-screen text: Short text overlays that reinforce key points (max 6 words each)
+- Recording notes: Brief filming tips for this specific reel
+
+Respond in JSON format:
+{
+  "title": "reel topic title",
+  "caption": "Instagram caption for the reel (no emojis, max 500 chars)",
+  "hashtags": ["tag1", "tag2"],
+  "hook": "opening hook script (5-7 seconds when spoken)",
+  "body_script": "main content script (15-20 seconds when spoken)",
+  "cta": "closing CTA script (5-8 seconds when spoken)",
+  "on_screen_text": ["text overlay 1", "text overlay 2", "text overlay 3"],
+  "estimated_duration": "30s",
+  "recording_notes": "brief filming/delivery tips for this reel"
+}`;
   } else {
     prompt = `Generate a short social media post for ${accountHandle} on ${platform}.
 Content pillar: ${pillarLabel}${audienceContext}
@@ -190,6 +215,19 @@ Respond in JSON format:
       description: parsed.description,
       tags: parsed.tags || [],
       estimated_duration: parsed.estimated_duration,
+    });
+  }
+
+  // Store reel script if applicable
+  if (contentType === "reel") {
+    await supabase.from("reel_scripts").insert({
+      generated_content_id: content.id,
+      hook: parsed.hook,
+      body_script: parsed.body_script,
+      cta: parsed.cta,
+      on_screen_text: parsed.on_screen_text || [],
+      estimated_duration: parsed.estimated_duration || "30s",
+      recording_notes: parsed.recording_notes || null,
     });
   }
 

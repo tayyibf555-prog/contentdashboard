@@ -174,7 +174,29 @@ export async function regenerateContent(id: string): Promise<ActionResult> {
 
     const accountHandle = original.account === "business" ? "@azen_ai" : "@tayyib.ai";
 
-    const prompt = `Regenerate a ${original.content_type} for ${accountHandle} on ${original.platform}.
+    let prompt: string;
+
+    if (original.content_type === "reel") {
+      prompt = `Regenerate an Instagram Reel script for ${accountHandle}.
+Topic: ${original.title}
+Content pillar: ${original.pillar}
+
+Generate a completely different take on the same topic. ~30 seconds max.
+
+Respond in JSON format:
+{
+  "title": "reel topic title",
+  "body": "Instagram caption (no emojis, max 500 chars)",
+  "hashtags": ["tag1", "tag2"],
+  "hook": "opening hook script (5-7 seconds)",
+  "body_script": "main content script (15-20 seconds)",
+  "cta": "closing CTA script (5-8 seconds)",
+  "on_screen_text": ["text 1", "text 2"],
+  "estimated_duration": "30s",
+  "recording_notes": "filming tips"
+}`;
+    } else {
+      prompt = `Regenerate a ${original.content_type} for ${accountHandle} on ${original.platform}.
 Topic: ${original.title}
 Content pillar: ${original.pillar}
 
@@ -184,6 +206,7 @@ Generate a completely different take on the same topic. Respond in JSON format:
   "body": "post text (no emojis, clean formatting)",
   "hashtags": ["tag1", "tag2", ...]
 }`;
+    }
 
     const raw = await generateContent(prompt, voice || undefined, original.account as "business" | "personal");
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -199,6 +222,21 @@ Generate a completely different take on the same topic. Respond in JSON format:
       .eq("id", id);
 
     if (error) return { success: false, error: error.message };
+
+    if (original.content_type === "reel") {
+      await supabase
+        .from("reel_scripts")
+        .update({
+          hook: parsed.hook,
+          body_script: parsed.body_script,
+          cta: parsed.cta,
+          on_screen_text: parsed.on_screen_text || [],
+          estimated_duration: parsed.estimated_duration || "30s",
+          recording_notes: parsed.recording_notes || null,
+        })
+        .eq("generated_content_id", id);
+    }
+
     revalidateAll();
     return { success: true };
   } catch (err) {

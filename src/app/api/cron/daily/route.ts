@@ -94,6 +94,7 @@ export async function GET(request: Request) {
     { platform: "instagram", account: "personal", pillar: personalPillar.key, contentType: "carousel" },
     { platform: "linkedin", account: "personal", pillar: personalPillar.key, contentType: "long_form" },
     { platform: "twitter", account: "personal", pillar: personalPillar.key, contentType: "tweet" },
+    { platform: "instagram", account: "personal", pillar: personalPillar.key, contentType: "reel" },
   ];
 
   // Add YouTube on Sundays
@@ -161,6 +162,8 @@ Respond in JSON:
         prompt = `Generate a Twitter/X tweet for ${accountHandle}.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "topic title", "body": "tweet text (max 280 chars, no emojis)", "hashtags": ["tag1"] }`;
       } else if (req.contentType === "video_script") {
         prompt = `Generate a YouTube video script for @tayyib.ai.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "video title", "hook": "first 30s script", "intro": "intro script", "body_sections": [{ "title": "Section", "content": "...", "start_time": "1:30", "end_time": "4:00" }], "cta": "closing CTA mentioning azen.io", "description": "YouTube description", "tags": ["tag1"], "thumbnail_concepts": [{ "label": "A", "description": "concept" }], "estimated_duration": "12 min", "title_variants": [{ "title": "option", "ctr_score": 8.5 }] }`;
+      } else if (req.contentType === "reel") {
+        prompt = `Generate an Instagram Reel script for @tayyib.ai.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nReel rules:\n- Total duration: ~30 seconds max\n- Hook (0:00-0:05): One punchy sentence that stops the scroll.\n- Body (0:05-0:25): 2-3 key points delivered conversationally. Speak to one person. No jargon.\n- CTA (0:25-0:30): Clear next step — follow for more, save this, or DM me.\n- On-screen text: Short text overlays (max 6 words each)\n\nRespond in JSON format:\n{ "title": "reel topic", "caption": "Instagram caption (no emojis, max 500 chars)", "hashtags": ["tag1"], "hook": "opening hook (5-7s)", "body_script": "main content (15-20s)", "cta": "closing CTA (5-8s)", "on_screen_text": ["overlay 1", "overlay 2"], "estimated_duration": "30s", "recording_notes": "filming tips" }`;
       } else {
         prompt = `Generate a short social media post for ${accountHandle} on ${req.platform}.\nContent pillar: ${pillarLabel}${audienceContext}\nResearch context: ${researchContext}\n\nRespond in JSON format:\n{ "title": "post title", "body": "post text (no emojis)", "hashtags": ["tag1"] }`;
       }
@@ -243,6 +246,18 @@ Respond in JSON:
           title_variants: parsed.title_variants || [],
           description: parsed.description, tags: parsed.tags || [],
           estimated_duration: parsed.estimated_duration,
+        });
+      }
+
+      if (content && req.contentType === "reel") {
+        await supabase.from("reel_scripts").insert({
+          generated_content_id: content.id,
+          hook: parsed.hook,
+          body_script: parsed.body_script,
+          cta: parsed.cta,
+          on_screen_text: parsed.on_screen_text || [],
+          estimated_duration: parsed.estimated_duration || "30s",
+          recording_notes: parsed.recording_notes || null,
         });
       }
 

@@ -32,7 +32,7 @@ export type GeneratedContent = {
   id: string;
   platform: string;
   account: "business" | "personal";
-  content_type: "carousel" | "long_form" | "short" | "video_script" | "thread" | "tweet";
+  content_type: "carousel" | "long_form" | "short" | "video_script" | "thread" | "tweet" | "reel";
   title: string;
   body: string | null;
   hashtags: string[];
@@ -104,6 +104,18 @@ export type SocialAuthToken = {
   account_type: "business" | "personal";
   ayrshare_profile_key: string | null;
   connected_at: string;
+};
+
+export type ReelScript = {
+  id: string;
+  generated_content_id: string;
+  hook: string | null;
+  body_script: string | null;
+  cta: string | null;
+  on_screen_text: string[];
+  estimated_duration: string | null;
+  recording_notes: string | null;
+  created_at: string;
 };
 
 export type EvergreenContent = {
