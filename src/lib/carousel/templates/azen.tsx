@@ -1,19 +1,44 @@
 import React from "react";
 import type { CoverSlideProps, ContentSlideProps, CtaSlideProps } from "../types";
+import { getNoiseTexture } from "../noise";
 
 /**
- * Azen business template — bold typography on dark background.
- * 1080x1350 portrait format.
- * Cover: two-line centered serif, line1 white + line2 accent.
- * Content: left-aligned body paragraph with keyword highlighting.
- * CTA: action word + accent keyword + split-color brand name.
+ * Azen business template — exact match to brand JSON spec.
+ * 1080x1350 portrait, #0A0E1A background, subtle noise texture at 8% opacity.
  */
 
 const BG = "#0A0E1A";
 const PRIMARY = "#EEEAE4";
 const ACCENT = "#00D4AA";
+const W = 1080;
+const H = 1350;
 
-// Words that should never be highlighted
+// ─── Noise texture overlay ───────────────────────────────────────────────────
+
+function NoiseOverlay() {
+  const base64 = getNoiseTexture();
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`data:image/png;base64,${base64}`}
+      alt=""
+      width={W}
+      height={H}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: W,
+        height: H,
+        objectFit: "cover",
+        opacity: 0.08,
+      }}
+    />
+  );
+}
+
+// ─── Keyword detection + highlighting ────────────────────────────────────────
+
 const SKIP_WORDS = new Set([
   "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
   "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
@@ -25,13 +50,9 @@ const SKIP_WORDS = new Set([
   "just", "also", "very", "too", "quite", "really", "about", "into",
 ]);
 
-/**
- * Auto-detect 3-6 high-impact keywords from text.
- * Prioritises: brand names, technical terms, numbers, action verbs, key nouns.
- */
 function autoDetectKeywords(text: string): string[] {
   const words = text.split(/\s+/);
-  const scored: { word: string; score: number; index: number }[] = [];
+  const scored: { word: string; score: number }[] = [];
 
   for (let i = 0; i < words.length; i++) {
     const raw = words[i];
@@ -39,38 +60,26 @@ function autoDetectKeywords(text: string): string[] {
     if (clean.length < 3 || SKIP_WORDS.has(clean)) continue;
 
     let score = 0;
-
-    // Numbers and metrics get high priority
     if (/\d/.test(raw)) score += 5;
-    // Capitalised words (likely proper nouns / brand names)
     if (/^[A-Z]/.test(raw) && i > 0) score += 4;
-    // ALL CAPS (acronyms, brand names)
     if (/^[A-Z]{2,}$/.test(raw.replace(/[^A-Za-z]/g, ""))) score += 6;
-    // Longer words tend to be more meaningful
     if (clean.length >= 6) score += 2;
     if (clean.length >= 8) score += 1;
-    // Technical / business terms (heuristic: contains hyphen or camelCase)
     if (raw.includes("-") || /[a-z][A-Z]/.test(raw)) score += 3;
-    // Action verbs (common high-impact ones)
+
     const actionVerbs = ["build", "create", "launch", "scale", "grow", "transform", "automate", "deploy", "implement", "optimize", "generate", "analyze", "deliver", "drive", "boost", "reduce", "increase", "save", "replace", "eliminate"];
     if (actionVerbs.includes(clean)) score += 3;
 
     if (score > 0) {
-      scored.push({ word: raw.replace(/[.,;:!?]+$/, ""), score, index: i });
+      scored.push({ word: raw.replace(/[.,;:!?]+$/, ""), score });
     }
   }
 
-  // Sort by score descending, take top 3-6
   scored.sort((a, b) => b.score - a.score);
   const count = Math.min(Math.max(3, Math.floor(scored.length * 0.3)), 6);
   return scored.slice(0, count).map((s) => s.word);
 }
 
-/**
- * Render text with highlighted keywords — word-by-word with margin spacing.
- * Satori's flex model collapses whitespace between flex children, so we use
- * marginRight on each word-span to simulate natural word spacing.
- */
 function renderHighlightedText(
   text: string,
   keywords: string[],
@@ -79,14 +88,11 @@ function renderHighlightedText(
 ): React.ReactNode[] {
   const keywordsLower = keywords.map((k) => k.toLowerCase());
   const words = text.split(/\s+/).filter(Boolean);
-  // Space width ≈ 0.27em for DM Sans
   const spaceWidth = Math.round(fontSize * 0.27);
 
   return words.map((word, i) => {
     const stripped = word.replace(/[.,;:!?'"()\[\]{}]+$/, "");
-    const isKeyword = keywordsLower.some(
-      (kw) => stripped.toLowerCase() === kw
-    );
+    const isKeyword = keywordsLower.some((kw) => stripped.toLowerCase() === kw);
     const isLast = i === words.length - 1;
 
     return (
@@ -104,7 +110,8 @@ function renderHighlightedText(
   });
 }
 
-/** Subtle "azen" watermark at bottom center */
+// ─── Watermark ───────────────────────────────────────────────────────────────
+
 function AzenWatermark() {
   return (
     <div
@@ -133,7 +140,8 @@ function AzenWatermark() {
   );
 }
 
-/** Hand-drawn circle arrow flourish (SVG) */
+// ─── Decorative arrow flourish ───────────────────────────────────────────────
+
 function CircleArrowFlourish({ color }: { color: string }) {
   return (
     <div
@@ -146,12 +154,7 @@ function CircleArrowFlourish({ color }: { color: string }) {
         marginLeft: -20,
       }}
     >
-      <svg
-        width="160"
-        height="80"
-        viewBox="0 0 160 80"
-        fill="none"
-      >
+      <svg width="160" height="80" viewBox="0 0 160 80" fill="none">
         <path
           d="M20 50 C20 20, 60 10, 90 15 C120 20, 145 35, 140 55 C135 70, 105 75, 80 65 C65 58, 55 48, 65 40"
           stroke={color}
@@ -174,6 +177,9 @@ function CircleArrowFlourish({ color }: { color: string }) {
   );
 }
 
+// ─── COVER SLIDE ─────────────────────────────────────────────────────────────
+// JSON: bold_typography_post — two centered serif lines, line1 white, line2 accent
+
 export function AzenCover({
   headline,
   accentWord,
@@ -181,9 +187,6 @@ export function AzenCover({
 }: CoverSlideProps) {
   const accent = theme.accentColor || ACCENT;
 
-  // Split headline into primary line and accent line
-  // If accentWord is provided, use that as line2
-  // Otherwise treat last word as the accent
   let line1 = headline;
   let line2 = accentWord || "";
 
@@ -195,16 +198,11 @@ export function AzenCover({
     }
   }
 
-  // Add period to line2 if it doesn't have punctuation
-  if (line2 && !/[.!?]$/.test(line2)) {
-    line2 = line2 + ".";
-  }
-
   return (
     <div
       style={{
-        width: 1080,
-        height: 1350,
+        width: W,
+        height: H,
         background: BG,
         display: "flex",
         flexDirection: "column",
@@ -215,7 +213,8 @@ export function AzenCover({
         overflow: "hidden",
       }}
     >
-      {/* Main text block */}
+      <NoiseOverlay />
+
       <div
         style={{
           display: "flex",
@@ -257,6 +256,9 @@ export function AzenCover({
   );
 }
 
+// ─── CONTENT SLIDE ───────────────────────────────────────────────────────────
+// JSON: body_text_slide — left-aligned paragraph with keyword highlighting
+
 export function AzenContent({
   headline,
   bodyText,
@@ -264,22 +266,23 @@ export function AzenContent({
 }: ContentSlideProps) {
   const accent = theme.accentColor || ACCENT;
 
-  // Use bodyText as the main content. If bodyText is short/empty, fall back to headline + bodyText combined
   const displayText = bodyText || headline || "";
   const keywords = autoDetectKeywords(displayText);
 
-  // Dynamic font size: shrink if text is long
+  // overflow: shrink_font — min 32px per JSON spec
   const charCount = displayText.length;
   let fontSize = 42;
+  if (charCount > 250) fontSize = 40;
   if (charCount > 300) fontSize = 38;
+  if (charCount > 350) fontSize = 36;
   if (charCount > 400) fontSize = 34;
   if (charCount > 500) fontSize = 32;
 
   return (
     <div
       style={{
-        width: 1080,
-        height: 1350,
+        width: W,
+        height: H,
         background: BG,
         display: "flex",
         flexDirection: "column",
@@ -289,6 +292,8 @@ export function AzenContent({
         overflow: "hidden",
       }}
     >
+      <NoiseOverlay />
+
       <div
         style={{
           fontFamily: "DM Sans",
@@ -309,6 +314,9 @@ export function AzenContent({
   );
 }
 
+// ─── CTA SLIDE ───────────────────────────────────────────────────────────────
+// JSON: cta_slide — action word + accent keyword + split-color brand name
+
 export function AzenCta({
   headline,
   ctaText,
@@ -316,12 +324,10 @@ export function AzenCta({
 }: CtaSlideProps) {
   const accent = theme.accentColor || ACCENT;
 
-  // headline = action word (e.g. "Comment", "Follow")
-  // ctaText = accent keyword (e.g. '"Skills"', '"AI"')
   const actionWord = headline || "Follow";
   let accentKeyword = ctaText || "";
 
-  // Wrap in quotes if not already quoted
+  // Wrap in curly quotes if not already quoted
   if (accentKeyword && !accentKeyword.startsWith('"') && !accentKeyword.startsWith('\u201C')) {
     accentKeyword = `\u201C${accentKeyword}\u201D`;
   }
@@ -329,8 +335,8 @@ export function AzenCta({
   return (
     <div
       style={{
-        width: 1080,
-        height: 1350,
+        width: W,
+        height: H,
         background: BG,
         display: "flex",
         flexDirection: "column",
@@ -341,7 +347,9 @@ export function AzenCta({
         overflow: "hidden",
       }}
     >
-      {/* CTA text block */}
+      <NoiseOverlay />
+
+      {/* CTA text */}
       <div
         style={{
           display: "flex",
@@ -350,7 +358,6 @@ export function AzenCta({
           gap: 10,
         }}
       >
-        {/* Action word */}
         <div
           style={{
             fontFamily: "DM Serif Display",
@@ -364,8 +371,6 @@ export function AzenCta({
         >
           {actionWord}
         </div>
-
-        {/* Accent keyword */}
         <div
           style={{
             fontFamily: "DM Serif Display",
@@ -381,7 +386,7 @@ export function AzenCta({
         </div>
       </div>
 
-      {/* Brand name with split color + arrow */}
+      {/* Brand name — Outfit 700, split colour, with arrow flourish */}
       <div
         style={{
           display: "flex",
@@ -394,9 +399,9 @@ export function AzenCta({
         <div style={{ display: "flex", position: "relative" }}>
           <span
             style={{
-              fontFamily: "DM Sans",
+              fontFamily: "Outfit",
               fontSize: 60,
-              fontWeight: 600,
+              fontWeight: 700,
               letterSpacing: "0.15em",
               color: accent,
             }}
@@ -405,9 +410,9 @@ export function AzenCta({
           </span>
           <span
             style={{
-              fontFamily: "DM Sans",
+              fontFamily: "Outfit",
               fontSize: 60,
-              fontWeight: 600,
+              fontWeight: 700,
               letterSpacing: "0.15em",
               color: PRIMARY,
             }}
@@ -418,7 +423,7 @@ export function AzenCta({
         <CircleArrowFlourish color={accent} />
       </div>
 
-      {/* No watermark on CTA — brand name is already featured */}
+      {/* No watermark — brand name already featured */}
     </div>
   );
 }
