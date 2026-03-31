@@ -140,43 +140,6 @@ function AzenWatermark() {
   );
 }
 
-// ─── Decorative arrow flourish ───────────────────────────────────────────────
-
-function CircleArrowFlourish({ color }: { color: string }) {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        display: "flex",
-        width: 160,
-        height: 80,
-        marginTop: -10,
-        marginLeft: -20,
-      }}
-    >
-      <svg width="160" height="80" viewBox="0 0 160 80" fill="none">
-        <path
-          d="M20 50 C20 20, 60 10, 90 15 C120 20, 145 35, 140 55 C135 70, 105 75, 80 65 C65 58, 55 48, 65 40"
-          stroke={color}
-          strokeWidth="3"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.9"
-        />
-        <path
-          d="M58 45 L65 40 L62 48"
-          stroke={color}
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          opacity="0.9"
-        />
-      </svg>
-    </div>
-  );
-}
-
 // ─── COVER SLIDE ─────────────────────────────────────────────────────────────
 // JSON: bold_typography_post — two centered serif lines, line1 white, line2 accent
 
@@ -314,8 +277,36 @@ export function AzenContent({
   );
 }
 
+// ─── CTA keyword detection ──────────────────────────────────────────────────
+
+const CTA_PRIORITY_WORDS = new Set([
+  "free", "now", "today", "audit", "call", "strategy", "start", "book",
+  "claim", "unlock", "discover",
+]);
+
+const CTA_NEVER_HIGHLIGHT = new Set([
+  "your", "a", "the", "at", "in", "on", "and", "or", "is", "to",
+]);
+
+function autoDetectCtaKeywords(text: string): string[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  const scored: { word: string; score: number }[] = [];
+
+  for (const word of words) {
+    const clean = word.replace(/[.,;:!?'"()\[\]{}]+/g, "").toLowerCase();
+    if (CTA_NEVER_HIGHLIGHT.has(clean)) continue;
+    let score = 0;
+    if (CTA_PRIORITY_WORDS.has(clean)) score += 10;
+    if (clean.length >= 4) score += 1;
+    if (score > 0) scored.push({ word: word.replace(/[.,;:!?]+$/, ""), score });
+  }
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, 2).map((s) => s.word);
+}
+
 // ─── CTA SLIDE ───────────────────────────────────────────────────────────────
-// JSON: cta_slide — action word + accent keyword + split-color brand name
+// JSON: cta_slide — single centered CTA sentence, 1-2 keywords in accent blue
 
 export function AzenCta({
   headline,
@@ -324,13 +315,14 @@ export function AzenCta({
 }: CtaSlideProps) {
   const accent = ACCENT;
 
-  const actionWord = headline || "Follow";
-  let accentKeyword = ctaText || "";
+  // Build the CTA sentence from headline + ctaText
+  const sentence = ctaText || headline || "Book your free audit now";
+  const keywords = autoDetectCtaKeywords(sentence);
+  const keywordsLower = keywords.map((k) => k.toLowerCase());
 
-  // Wrap in curly quotes if not already quoted
-  if (accentKeyword && !accentKeyword.startsWith('"') && !accentKeyword.startsWith('\u201C')) {
-    accentKeyword = `\u201C${accentKeyword}\u201D`;
-  }
+  const fontSize = 100;
+  const spaceWidth = Math.round(fontSize * 0.27);
+  const words = sentence.split(/\s+/).filter(Boolean);
 
   return (
     <div
@@ -342,88 +334,47 @@ export function AzenCta({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        padding: "0 80px",
+        padding: "0 100px",
         position: "relative",
         overflow: "hidden",
       }}
     >
       <NoiseOverlay />
 
-      {/* CTA text */}
       <div
         style={{
+          fontFamily: "Playfair Display",
+          fontSize,
+          fontWeight: 900,
+          lineHeight: 1.2,
+          letterSpacing: "-0.02em",
+          textAlign: "center",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 10,
+          flexWrap: "wrap",
+          justifyContent: "center",
+          maxWidth: 880,
         }}
       >
-        <div
-          style={{
-            fontFamily: "DM Serif Display",
-            fontSize: 140,
-            fontWeight: 400,
-            color: PRIMARY,
-            textAlign: "center",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-          }}
-        >
-          {actionWord}
-        </div>
-        <div
-          style={{
-            fontFamily: "DM Serif Display",
-            fontSize: 150,
-            fontWeight: 400,
-            color: accent,
-            textAlign: "center",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-          }}
-        >
-          {accentKeyword}
-        </div>
+        {words.map((word, i) => {
+          const stripped = word.replace(/[.,;:!?'"()\[\]{}]+$/, "");
+          const isKeyword = keywordsLower.some((kw) => stripped.toLowerCase() === kw);
+          const isLast = i === words.length - 1;
+
+          return (
+            <span
+              key={i}
+              style={{
+                color: isKeyword ? accent : PRIMARY,
+                marginRight: isLast ? 0 : spaceWidth,
+              }}
+            >
+              {word}
+            </span>
+          );
+        })}
       </div>
 
-      {/* Brand name — Outfit 700, split colour, with arrow flourish */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: 40,
-          position: "relative",
-        }}
-      >
-        <div style={{ display: "flex", position: "relative" }}>
-          <span
-            style={{
-              fontFamily: "Outfit",
-              fontSize: 60,
-              fontWeight: 700,
-              letterSpacing: "0.15em",
-              color: accent,
-            }}
-          >
-            az
-          </span>
-          <span
-            style={{
-              fontFamily: "Outfit",
-              fontSize: 60,
-              fontWeight: 700,
-              letterSpacing: "0.15em",
-              color: PRIMARY,
-            }}
-          >
-            en
-          </span>
-        </div>
-        <CircleArrowFlourish color={accent} />
-      </div>
-
-      {/* No watermark — brand name already featured */}
+      <AzenWatermark />
     </div>
   );
 }
