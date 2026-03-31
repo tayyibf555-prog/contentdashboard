@@ -126,9 +126,9 @@ function AzenWatermark() {
     >
       <span
         style={{
-          fontFamily: "DM Sans",
-          fontSize: 28,
-          fontWeight: 600,
+          fontFamily: "Outfit",
+          fontSize: 20,
+          fontWeight: 700,
           color: PRIMARY,
           opacity: 0.4,
           letterSpacing: "0.05em",
