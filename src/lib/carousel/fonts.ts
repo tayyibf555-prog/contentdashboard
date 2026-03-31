@@ -12,13 +12,15 @@ async function loadFont(filename: string): Promise<ArrayBuffer> {
 }
 
 export async function loadFonts() {
-  const [interBold, interRegular, dmSerifRegular, dmSansRegular, dmSansSemiBold, outfitBold] = await Promise.all([
+  const [interBold, interRegular, dmSerifRegular, dmSansRegular, dmSansSemiBold, outfitBold, outfitRegular, playfairBlack] = await Promise.all([
     loadFont("Inter-Bold.woff"),
     loadFont("Inter-Regular.woff"),
     loadFont("DMSerifDisplay-Regular.ttf"),
     loadFont("DMSans-Regular.ttf"),
     loadFont("DMSans-SemiBold.ttf"),
     loadFont("Outfit-Bold.ttf"),
+    loadFont("Outfit-Regular.ttf"),
+    loadFont("PlayfairDisplay-Black.ttf"),
   ]);
 
   return [
@@ -28,5 +30,7 @@ export async function loadFonts() {
     { name: "DM Sans" as const, data: dmSansRegular, weight: 400 as const, style: "normal" as const },
     { name: "DM Sans" as const, data: dmSansSemiBold, weight: 600 as const, style: "normal" as const },
     { name: "Outfit" as const, data: outfitBold, weight: 700 as const, style: "normal" as const },
+    { name: "Outfit" as const, data: outfitRegular, weight: 400 as const, style: "normal" as const },
+    { name: "Playfair Display" as const, data: playfairBlack, weight: 900 as const, style: "normal" as const },
   ];
 }

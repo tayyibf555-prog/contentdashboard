@@ -117,7 +117,7 @@ function AzenWatermark() {
     <div
       style={{
         position: "absolute",
-        bottom: 60,
+        bottom: 50,
         left: 0,
         right: 0,
         display: "flex",
@@ -127,10 +127,10 @@ function AzenWatermark() {
       <span
         style={{
           fontFamily: "Outfit",
-          fontSize: 20,
-          fontWeight: 700,
+          fontSize: 16,
+          fontWeight: 400,
           color: PRIMARY,
-          opacity: 0.4,
+          opacity: 0.35,
           letterSpacing: "0.05em",
         }}
       >
@@ -225,9 +225,9 @@ export function AzenCover({
       >
         <div
           style={{
-            fontFamily: "DM Serif Display",
-            fontSize: 160,
-            fontWeight: 400,
+            fontFamily: "Playfair Display",
+            fontSize: 180,
+            fontWeight: 900,
             color: PRIMARY,
             textAlign: "center",
             letterSpacing: "-0.02em",
@@ -238,9 +238,9 @@ export function AzenCover({
         </div>
         <div
           style={{
-            fontFamily: "DM Serif Display",
-            fontSize: 160,
-            fontWeight: 400,
+            fontFamily: "Playfair Display",
+            fontSize: 180,
+            fontWeight: 900,
             color: accent,
             textAlign: "center",
             letterSpacing: "-0.02em",
