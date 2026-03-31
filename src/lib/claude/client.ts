@@ -29,6 +29,7 @@ export async function generateContent(
   }
 
   systemParts.push(
+    `Today's date is ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. All content must be current and reference the present time period — never reference past years as if they are the present.`,
     "Never use emojis. Use clean, professional text formatting.",
     "Write content that sounds human and authentic, not AI-generated.",
   );
@@ -58,6 +59,27 @@ export async function generateContent(
 
   const textBlock = message.content.find((block) => block.type === "text");
   return textBlock ? textBlock.text : "";
+}
+
+export async function generateWithClaude(systemPrompt: string, userPrompt: string): Promise<string> {
+  const anthropic = getAnthropic();
+  const message = await anthropic.messages.create({
+    model: "claude-sonnet-4-5-20250929",
+    max_tokens: 4096,
+    system: systemPrompt,
+    messages: [{ role: "user", content: userPrompt }],
+  });
+  const textBlock = message.content.find((b) => b.type === "text");
+  return textBlock?.text || "";
+}
+
+export function extractJSON(raw: string): unknown {
+  const jsonMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (jsonMatch) {
+    return JSON.parse(jsonMatch[1].trim());
+  }
+  const objectMatch = raw.match(/\{[\s\S]*\}/);
+  return objectMatch ? JSON.parse(objectMatch[0]) : JSON.parse(raw);
 }
 
 export async function analyzeResearch(scrapedContent: string) {
