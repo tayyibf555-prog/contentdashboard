@@ -185,7 +185,7 @@ export function AzenCover({
   accentWord,
   theme,
 }: CoverSlideProps) {
-  const accent = theme.accentColor || ACCENT;
+  const accent = ACCENT;
 
   let line1 = headline;
   let line2 = accentWord || "";
@@ -264,7 +264,7 @@ export function AzenContent({
   bodyText,
   theme,
 }: ContentSlideProps) {
-  const accent = theme.accentColor || ACCENT;
+  const accent = ACCENT;
 
   const displayText = bodyText || headline || "";
   const keywords = autoDetectKeywords(displayText);
@@ -322,7 +322,7 @@ export function AzenCta({
   ctaText,
   theme,
 }: CtaSlideProps) {
-  const accent = theme.accentColor || ACCENT;
+  const accent = ACCENT;
 
   const actionWord = headline || "Follow";
   let accentKeyword = ctaText || "";
