@@ -12,7 +12,12 @@ async function loadFont(filename: string): Promise<ArrayBuffer> {
 }
 
 export async function loadFonts() {
-  const [interBold, interRegular, dmSerifRegular, dmSansRegular, dmSansSemiBold, outfitBold, outfitRegular, playfairBlack] = await Promise.all([
+  const [
+    interBold, interRegular,
+    dmSerifRegular, dmSansRegular, dmSansSemiBold,
+    outfitBold, outfitRegular,
+    plusJakartaMedium, plusJakartaBold, plusJakartaExtraBold,
+  ] = await Promise.all([
     loadFont("Inter-Bold.woff"),
     loadFont("Inter-Regular.woff"),
     loadFont("DMSerifDisplay-Regular.ttf"),
@@ -20,7 +25,9 @@ export async function loadFonts() {
     loadFont("DMSans-SemiBold.ttf"),
     loadFont("Outfit-Bold.ttf"),
     loadFont("Outfit-Regular.ttf"),
-    loadFont("PlayfairDisplay-Black.ttf"),
+    loadFont("PlusJakartaSans-Medium.ttf"),
+    loadFont("PlusJakartaSans-Bold.ttf"),
+    loadFont("PlusJakartaSans-ExtraBold.ttf"),
   ]);
 
   return [
@@ -31,6 +38,8 @@ export async function loadFonts() {
     { name: "DM Sans" as const, data: dmSansSemiBold, weight: 600 as const, style: "normal" as const },
     { name: "Outfit" as const, data: outfitBold, weight: 700 as const, style: "normal" as const },
     { name: "Outfit" as const, data: outfitRegular, weight: 400 as const, style: "normal" as const },
-    { name: "Playfair Display" as const, data: playfairBlack, weight: 900 as const, style: "normal" as const },
+    { name: "Plus Jakarta Sans" as const, data: plusJakartaMedium, weight: 500 as const, style: "normal" as const },
+    { name: "Plus Jakarta Sans" as const, data: plusJakartaBold, weight: 700 as const, style: "normal" as const },
+    { name: "Plus Jakarta Sans" as const, data: plusJakartaExtraBold, weight: 800 as const, style: "normal" as const },
   ];
 }
