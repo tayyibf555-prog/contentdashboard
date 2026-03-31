@@ -67,39 +67,38 @@ function autoDetectKeywords(text: string): string[] {
 }
 
 /**
- * Render text with highlighted keywords.
- * Returns an array of JSX spans — regular text in primary, keywords in accent + bold.
+ * Render text with highlighted keywords — word-by-word with margin spacing.
+ * Satori's flex model collapses whitespace between flex children, so we use
+ * marginRight on each word-span to simulate natural word spacing.
  */
 function renderHighlightedText(
   text: string,
   keywords: string[],
-  accentColor: string
+  accentColor: string,
+  fontSize: number
 ): React.ReactNode[] {
-  if (!keywords.length) {
-    return [
-      <span key="all" style={{ color: PRIMARY }}>{text}</span>,
-    ];
-  }
+  const keywordsLower = keywords.map((k) => k.toLowerCase());
+  const words = text.split(/\s+/).filter(Boolean);
+  // Space width ≈ 0.27em for DM Sans
+  const spaceWidth = Math.round(fontSize * 0.27);
 
-  // Build a regex that matches any keyword (case-insensitive, word boundaries)
-  const escaped = keywords.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-  const pattern = new RegExp(`(${escaped.join("|")})`, "gi");
-  const parts = text.split(pattern);
-
-  return parts.map((part, i) => {
-    const isKeyword = keywords.some(
-      (kw) => part.toLowerCase() === kw.toLowerCase()
+  return words.map((word, i) => {
+    const stripped = word.replace(/[.,;:!?'"()\[\]{}]+$/, "");
+    const isKeyword = keywordsLower.some(
+      (kw) => stripped.toLowerCase() === kw
     );
-    if (isKeyword) {
-      return (
-        <span key={i} style={{ color: accentColor, fontWeight: 600 }}>
-          {part}
-        </span>
-      );
-    }
+    const isLast = i === words.length - 1;
+
     return (
-      <span key={i} style={{ color: PRIMARY }}>
-        {part}
+      <span
+        key={i}
+        style={{
+          color: isKeyword ? accentColor : PRIMARY,
+          fontWeight: isKeyword ? 600 : 400,
+          marginRight: isLast ? 0 : spaceWidth,
+        }}
+      >
+        {word}
       </span>
     );
   });
@@ -268,7 +267,6 @@ export function AzenContent({
   // Use bodyText as the main content. If bodyText is short/empty, fall back to headline + bodyText combined
   const displayText = bodyText || headline || "";
   const keywords = autoDetectKeywords(displayText);
-  const highlighted = renderHighlightedText(displayText, keywords, accent);
 
   // Dynamic font size: shrink if text is long
   const charCount = displayText.length;
@@ -297,11 +295,13 @@ export function AzenContent({
           fontSize,
           fontWeight: 400,
           lineHeight: 1.55,
+          color: PRIMARY,
           display: "flex",
           flexWrap: "wrap",
+          maxWidth: 920,
         }}
       >
-        {highlighted}
+        {renderHighlightedText(displayText, keywords, accent, fontSize)}
       </div>
 
       <AzenWatermark />
