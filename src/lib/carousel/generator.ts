@@ -30,8 +30,11 @@ export async function generateSlideImage(
   const Template = getTemplate(theme.variant, slideType);
 
   // Use pre-generated background if provided, otherwise generate one
+  // Azen variant uses solid background — skip Gemini entirely
   let backgroundImage: string | null = options?.backgroundImage ?? null;
-  if (!backgroundImage && hasStaticTexture(theme.variant)) {
+  if (theme.variant === "azen") {
+    backgroundImage = null;
+  } else if (!backgroundImage && hasStaticTexture(theme.variant)) {
     // Static texture — skip Gemini entirely (faster, consistent, free)
     console.log(`[Static] Loading texture for ${theme.variant}/${slideType}`);
     backgroundImage = await loadStaticTexture(theme.variant);
@@ -62,9 +65,12 @@ export async function generateSlideImage(
 
   const element = React.createElement(Template, safeProps);
 
+  // Azen uses 1080x1350 portrait; all other templates use 1080x1080 square
+  const height = theme.variant === "azen" ? 1350 : 1080;
+
   const svg = await satori(element, {
     width: 1080,
-    height: 1080,
+    height,
     fonts,
   });
 
@@ -86,6 +92,12 @@ export async function generateBackgrounds(
   accentColor?: string
 ): Promise<Map<number, string | null>> {
   const results = new Map<number, string | null>();
+
+  // Azen variant uses solid color background — no Gemini needed
+  if (variant === "azen") {
+    console.log("[Azen] Solid background, skipping Gemini");
+    return results;
+  }
 
   // Static texture variants skip Gemini entirely
   if (hasStaticTexture(variant)) {
