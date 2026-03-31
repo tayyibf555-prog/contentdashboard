@@ -52,7 +52,7 @@ ${researchContext ? `Research context: ${researchContext}` : ""}
 Carousel rules:
 - Slide 1: "cover" (hook the reader). Headlines max 8 words. accent_word is the single most impactful word.
 - Slides 2-7: "content" (educate/inform). Headlines max 8 words. Body text max 40 words each.
-- Slide 8: "cta" (drive action). Short punchy CTA.
+- Slide 8: "cta" (drive action). The cta_text must be a short direct sentence, max 8 words, that tells the reader exactly what to do next. Examples: "Book your free AI audit today", "DM us to start saving time", "Visit azen.io for a free strategy call". It must relate to the post topic — not generic. No URLs in the text.
 - Include a subtitle for the cover (short tagline, max 6 words)
 
 Respond in JSON:
