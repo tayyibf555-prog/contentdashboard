@@ -51,7 +51,7 @@ Respond in JSON format:
   "title": "adapted title",
   "body": "adapted content",
   "hashtags": ["tag1", "tag2", ...]
-  ${targetContentType === "carousel" ? ', "slides": [{ "slide_type": "cover", "headline": "...", "accent_word": "..." }, ...]' : ""}
+  ${targetContentType === "carousel" ? ', "slides": [{ "slide_type": "cover", "headline": "line1 (1-4 words, white)", "accent_word": "line2 (1-4 words, blue)" }, { "slide_type": "content", "headline": "...", "body_text": "..." }, { "slide_type": "cta", "headline": "...", "cta_text": "..." }]' : ""}
   ${targetContentType === "thread" ? ', "thread_tweets": ["tweet 2", "tweet 3", ...]' : ""}
 }`;
 

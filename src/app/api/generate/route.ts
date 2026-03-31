@@ -50,7 +50,7 @@ Content pillar: ${pillarLabel}${audienceContext}
 ${researchContext ? `Research context: ${researchContext}` : ""}
 
 Carousel rules:
-- Slide 1: "cover" (hook the reader). Headlines max 8 words. accent_word is the single most impactful word.
+- Slide 1: "cover" (hook the reader). The cover has EXACTLY 2 lines of large text. "headline" is line1 (white text, 1-4 words max). "accent_word" is line2 (blue text, 1-4 words max). Together they form the hook. Examples: headline="5 AI Systems" accent_word="you need.", headline="Claude" accent_word="skills.", headline="Stop Guessing" accent_word="start scaling." NEVER put a full sentence in headline — split it across the two lines.
 - Slides 2-7: "content" (educate/inform). Headlines max 8 words. Body text max 40 words each.
 - Slide 8: "cta" (drive action). The cta_text must be a short direct sentence, max 8 words, that tells the reader exactly what to do next. Examples: "Book your free AI audit today", "DM us to start saving time", "Visit azen.io for a free strategy call". It must relate to the post topic — not generic. No URLs in the text.
 - Include a subtitle for the cover (short tagline, max 6 words)

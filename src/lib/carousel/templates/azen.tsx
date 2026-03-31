@@ -140,21 +140,38 @@ function AzenWatermark() {
 }
 
 // ─── COVER SLIDE ─────────────────────────────────────────────────────────────
+// EXACTLY 2 text lines + 1 watermark. headline = line1 (white), accentWord = line2 (blue).
+// Font size is calculated so the LONGER line fills ~85% of canvas width (920px usable).
+
+function calcCoverFontSize(line1: string, line2: string): number {
+  const maxWidth = 920; // 1080 - 2*80px padding
+  const longer = line1.length >= line2.length ? line1 : line2;
+  if (!longer) return 180;
+  // Plus Jakarta Sans 800 avg char width ≈ 0.55 * fontSize
+  const target = maxWidth * 0.85;
+  const estimated = Math.floor(target / (longer.length * 0.55));
+  return Math.min(220, Math.max(60, estimated));
+}
 
 export function AzenCover({
   headline,
   accentWord,
 }: CoverSlideProps) {
-  let line1 = headline;
+  // headline = line1 (white), accentWord = line2 (blue). Render EXACTLY as provided.
+  let line1 = headline || "";
   let line2 = accentWord || "";
 
-  if (!line2 && headline) {
-    const words = headline.trim().split(/\s+/);
-    if (words.length > 1) {
-      line2 = words.pop()!;
-      line1 = words.join(" ");
+  // Fallback only if no line2 provided — split headline roughly in half
+  if (!line2 && line1) {
+    const words = line1.trim().split(/\s+/);
+    if (words.length >= 2) {
+      const mid = Math.ceil(words.length / 2);
+      line2 = words.slice(mid).join(" ");
+      line1 = words.slice(0, mid).join(" ");
     }
   }
+
+  const fontSize = calcCoverFontSize(line1, line2);
 
   return (
     <div
@@ -184,12 +201,13 @@ export function AzenCover({
         <div
           style={{
             fontFamily: FONT,
-            fontSize: 180,
+            fontSize,
             fontWeight: 800,
             color: PRIMARY,
             textAlign: "center",
             letterSpacing: "-0.02em",
             lineHeight: 1.1,
+            whiteSpace: "nowrap",
           }}
         >
           {line1}
@@ -197,12 +215,13 @@ export function AzenCover({
         <div
           style={{
             fontFamily: FONT,
-            fontSize: 180,
+            fontSize,
             fontWeight: 800,
             color: ACCENT,
             textAlign: "center",
             letterSpacing: "-0.02em",
             lineHeight: 1.1,
+            whiteSpace: "nowrap",
           }}
         >
           {line2}
