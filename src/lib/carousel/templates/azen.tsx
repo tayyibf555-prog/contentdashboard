@@ -31,7 +31,7 @@ function NoiseOverlay() {
         width: W,
         height: H,
         objectFit: "cover",
-        opacity: 0.08,
+        opacity: 0.04,
       }}
     />
   );
