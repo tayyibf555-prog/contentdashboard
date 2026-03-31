@@ -1,6 +1,7 @@
 import { TopBar } from "@/components/layout/top-bar";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { InstagramPageClient } from "./instagram-page-client";
+import { GenerateButton } from "@/components/content/generate-button";
 
 export default async function InstagramPage({ searchParams }: { searchParams: Promise<{ account?: string }> }) {
   const supabase = await createServerSupabaseClient();
@@ -29,11 +30,7 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
       <TopBar
         title="Instagram Content"
         subtitle={`${account === "business" ? "@azen_ai" : "@tayyib.ai"} · Carousels${account === "personal" ? " & Reels" : ""}`}
-        actions={
-          <button className="bg-azen-accent text-azen-bg px-3.5 py-2 rounded-md text-xs font-semibold">
-            Generate New
-          </button>
-        }
+        actions={<GenerateButton platform="instagram" account={account} />}
       />
       <InstagramPageClient
         carouselPosts={carouselPosts || []}

@@ -1,6 +1,7 @@
 import { TopBar } from "@/components/layout/top-bar";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { YouTubeEditor } from "./youtube-editor";
+import { GenerateButton } from "@/components/content/generate-button";
 
 export default async function YouTubePage({ searchParams }: { searchParams: Promise<{ account?: string }> }) {
   const supabase = await createServerSupabaseClient();
@@ -19,11 +20,7 @@ export default async function YouTubePage({ searchParams }: { searchParams: Prom
       <TopBar
         title="YouTube Script Builder"
         subtitle={`${account === "personal" ? "@tayyib.ai · " : ""}Weekly uploads`}
-        actions={
-          <button className="bg-azen-accent text-azen-bg px-3.5 py-2 rounded-md text-xs font-semibold">
-            Generate New Script
-          </button>
-        }
+        actions={<GenerateButton platform="youtube" account={account} label="Generate New Script" />}
       />
       <YouTubeEditor posts={posts || []} />
     </div>

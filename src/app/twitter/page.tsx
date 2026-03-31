@@ -1,6 +1,7 @@
 import { TopBar } from "@/components/layout/top-bar";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { TwitterEditor } from "./twitter-editor";
+import { GenerateButton } from "@/components/content/generate-button";
 
 export default async function TwitterPage({ searchParams }: { searchParams: Promise<{ account?: string }> }) {
   const supabase = await createServerSupabaseClient();
@@ -19,11 +20,7 @@ export default async function TwitterPage({ searchParams }: { searchParams: Prom
       <TopBar
         title="Twitter/X Post Editor"
         subtitle={`${account === "business" ? "@azen_ai" : "@tayyib.ai"} · Craft tweets and threads`}
-        actions={
-          <button className="bg-azen-accent text-azen-bg px-3.5 py-2 rounded-md text-xs font-semibold">
-            Generate New
-          </button>
-        }
+        actions={<GenerateButton platform="twitter" account={account} />}
       />
       <TwitterEditor posts={posts || []} />
     </div>

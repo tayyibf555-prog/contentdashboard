@@ -1,6 +1,7 @@
 import { TopBar } from "@/components/layout/top-bar";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { LinkedInEditor } from "./linkedin-editor";
+import { GenerateButton } from "@/components/content/generate-button";
 
 export default async function LinkedInPage({ searchParams }: { searchParams: Promise<{ account?: string }> }) {
   const supabase = await createServerSupabaseClient();
@@ -19,11 +20,7 @@ export default async function LinkedInPage({ searchParams }: { searchParams: Pro
       <TopBar
         title="LinkedIn Post Editor"
         subtitle={`${account === "business" ? "@azen_ai" : "@tayyib.ai"} · Craft and preview LinkedIn posts`}
-        actions={
-          <button className="bg-azen-accent text-azen-bg px-3.5 py-2 rounded-md text-xs font-semibold">
-            Generate New
-          </button>
-        }
+        actions={<GenerateButton platform="linkedin" account={account} />}
       />
       <LinkedInEditor posts={posts || []} />
     </div>
