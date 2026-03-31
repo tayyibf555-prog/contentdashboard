@@ -13,7 +13,7 @@ export function resolveTheme(
 ): SlideTheme {
   const pillars = account === "business" ? BUSINESS_PILLARS : PERSONAL_PILLARS;
   const pillarDef = pillars.find((p) => p.key === pillar);
-  const accentColor = pillarDef?.color || "#00d4aa";
+  const accentColor = pillarDef?.color || "#5BC4F7";
 
   let variant: TemplateVariant;
   if (variantOverride) {

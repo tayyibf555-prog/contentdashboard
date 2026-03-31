@@ -9,7 +9,7 @@ import { getNoiseTexture } from "../noise";
 
 const BG = "#0A0E1A";
 const PRIMARY = "#EEEAE4";
-const ACCENT = "#00D4AA";
+const ACCENT = "#5BC4F7";
 const W = 1080;
 const H = 1350;
 
@@ -31,7 +31,7 @@ function NoiseOverlay() {
         width: W,
         height: H,
         objectFit: "cover",
-        opacity: 0.04,
+        opacity: 0.08,
       }}
     />
   );
