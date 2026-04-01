@@ -16,7 +16,7 @@ const FONT = "Plus Jakarta Sans";
 
 // ─── Dual-layer paper grain texture ─────────────────────────────────────────
 
-function PaperGrain() {
+function PaperGrain({ opacity = 0.14 }: { opacity?: number }) {
   const base64 = getPaperTexture();
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -32,7 +32,7 @@ function PaperGrain() {
         width: W,
         height: H,
         objectFit: "cover",
-        opacity: 0.12,
+        opacity,
       }}
     />
   );
@@ -145,12 +145,15 @@ function AzenWatermark() {
 
 function calcCoverFontSize(line1: string, line2: string): number {
   const maxWidth = 920; // 1080 - 2*80px padding
-  const longer = line1.length >= line2.length ? line1 : line2;
-  if (!longer) return 180;
-  // Plus Jakarta Sans 800 avg char width ≈ 0.55 * fontSize
-  const target = maxWidth * 0.85;
-  const estimated = Math.floor(target / (longer.length * 0.55));
-  return Math.min(220, Math.max(60, estimated));
+  // Strip trailing periods (rendered as circle dots, not text characters)
+  const clean1 = line1.replace(/\.$/, "");
+  const clean2 = line2.replace(/\.$/, "");
+  const longer = clean1.length >= clean2.length ? clean1 : clean2;
+  if (!longer) return 200;
+  // Plus Jakarta Sans 800 with tight tracking — avg char width ≈ 0.48 * fontSize
+  const target = maxWidth * 0.88;
+  const estimated = Math.floor(target / (longer.length * 0.48));
+  return Math.min(260, Math.max(60, estimated));
 }
 
 export function AzenCover({
@@ -198,37 +201,55 @@ export function AzenCover({
           gap: 10,
         }}
       >
-        <div
-          style={{
-            fontFamily: FONT,
-            fontSize,
-            fontWeight: 800,
-            color: PRIMARY,
-            textAlign: "center",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {line1}
-        </div>
-        <div
-          style={{
-            fontFamily: FONT,
-            fontSize,
-            fontWeight: 800,
-            color: ACCENT,
-            textAlign: "center",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {line2}
-        </div>
+        {[
+          { text: line1, color: PRIMARY },
+          { text: line2, color: ACCENT },
+        ].map(({ text, color }, idx) => {
+          const hasDot = text.endsWith(".");
+          const clean = hasDot ? text.slice(0, -1) : text;
+          const dotSize = Math.round(fontSize * 0.14);
+
+          return (
+            <div
+              key={idx}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-end",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: FONT,
+                  fontSize,
+                  fontWeight: 800,
+                  color,
+                  letterSpacing: "-0.05em",
+                  lineHeight: 1.05,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {clean}
+              </span>
+              {hasDot && (
+                <div
+                  style={{
+                    width: dotSize,
+                    height: dotSize,
+                    borderRadius: dotSize / 2,
+                    backgroundColor: color,
+                    marginLeft: Math.round(fontSize * 0.03),
+                    marginBottom: Math.round(fontSize * 0.06),
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <AzenWatermark />
+      <PaperGrain opacity={0.07} />
     </div>
   );
 }
@@ -304,6 +325,7 @@ export function AzenContent({
       </div>
 
       <AzenWatermark />
+      <PaperGrain opacity={0.07} />
     </div>
   );
 }
@@ -325,7 +347,6 @@ export function AzenCta({
   if (wordCount > 6) fontSize = 100;
   if (wordCount > 8) fontSize = 80;
 
-  const spaceWidth = Math.round(fontSize * 0.27);
   const words = sentence.split(/\s+/).filter(Boolean);
 
   return (
@@ -351,25 +372,25 @@ export function AzenCta({
           fontSize,
           fontWeight: 800,
           lineHeight: 1.15,
-          letterSpacing: "-0.02em",
+          letterSpacing: "-0.05em",
           textAlign: "center",
+          color: PRIMARY,
+          maxWidth: 920,
           display: "flex",
           flexWrap: "wrap",
           justifyContent: "center",
-          maxWidth: 920,
         }}
       >
         {words.map((word, i) => {
           const stripped = word.replace(/[.,;:!?'"()\[\]{}]+$/, "");
           const isKeyword = keywordsLower.some((kw) => stripped.toLowerCase() === kw);
-          const isLast = i === words.length - 1;
 
           return (
             <span
               key={i}
               style={{
                 color: isKeyword ? ACCENT : PRIMARY,
-                marginRight: isLast ? 0 : spaceWidth,
+                marginRight: i < words.length - 1 ? Math.round(fontSize * 0.22) : 0,
               }}
             >
               {word}
@@ -379,6 +400,7 @@ export function AzenCta({
       </div>
 
       <AzenWatermark />
+      <PaperGrain opacity={0.07} />
     </div>
   );
 }

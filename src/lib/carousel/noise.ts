@@ -1,11 +1,9 @@
 import { deflateSync } from "zlib";
 
 /**
- * Dual-layer paper grain texture for the azen template.
- * Combines coarse mottled patches + fine grain into a single PNG tile.
- * Coarse: generated at 1/4 resolution, upscaled — creates organic paper feel.
- * Fine: full resolution noise — adds fine grain on top.
- * Blended together into one grayscale image, rendered at ~15% opacity.
+ * Dark felt/fabric texture for the azen template.
+ * Generates short fiber-like strokes over a subtle base — mimics dark felt material.
+ * Tile is 360x450, Satori stretches 3x for visible fiber grain.
  */
 
 // CRC-32 lookup table
@@ -45,57 +43,43 @@ function createRng(seed: number) {
 
 let cachedTexture: string | null = null;
 
-/**
- * Combined paper grain texture — single PNG with both coarse + fine layers blended.
- * Small tile (120x150) that gets stretched to fill the canvas.
- */
 export function getPaperTexture(): string {
   if (cachedTexture) return cachedTexture;
 
-  const width = 120;
-  const height = 150; // 4:5 aspect ratio
+  const width = 360;
+  const height = 450; // 4:5 aspect ratio — Satori stretches 3x
 
-  // --- Layer 1: Coarse mottled patches ---
-  // Generate at 1/4 size and bilinear upscale
-  const smallW = 30;
-  const smallH = 38;
-  const rand1 = createRng(42);
-  const small = new Uint8Array(smallW * smallH);
-  for (let i = 0; i < small.length; i++) {
-    small[i] = Math.floor(rand1() * 256);
-  }
+  const rand = createRng(42);
 
-  const coarse = new Uint8Array(width * height);
-  for (let y = 0; y < height; y++) {
-    const srcY = (y / height) * (smallH - 1);
-    const y0 = Math.floor(srcY);
-    const y1 = Math.min(y0 + 1, smallH - 1);
-    const fy = srcY - y0;
-    for (let x = 0; x < width; x++) {
-      const srcX = (x / width) * (smallW - 1);
-      const x0 = Math.floor(srcX);
-      const x1 = Math.min(x0 + 1, smallW - 1);
-      const fx = srcX - x0;
-      coarse[y * width + x] = Math.round(
-        small[y0 * smallW + x0] * (1 - fx) * (1 - fy) +
-        small[y0 * smallW + x1] * fx * (1 - fy) +
-        small[y1 * smallW + x0] * (1 - fx) * fy +
-        small[y1 * smallW + x1] * fx * fy
-      );
-    }
-  }
+  // --- Felt/fabric texture: fiber strokes over subtle base ---
 
-  // --- Layer 2: Fine grain ---
-  const rand2 = createRng(1337);
-  const fine = new Uint8Array(width * height);
-  for (let i = 0; i < fine.length; i++) {
-    fine[i] = Math.floor(rand2() * 220) + 18;
-  }
-
-  // --- Blend: coarse (70%) + fine (30%) ---
+  // Base: subtle low-contrast variation
   const pixels = new Uint8Array(width * height);
   for (let i = 0; i < pixels.length; i++) {
-    pixels[i] = Math.round(coarse[i] * 0.7 + fine[i] * 0.3);
+    pixels[i] = 105 + Math.floor(rand() * 25); // 105-129
+  }
+
+  // Short fiber marks — creates the organic felt/fabric texture
+  const numFibers = 75000;
+  for (let f = 0; f < numFibers; f++) {
+    const x = Math.floor(rand() * width);
+    const y = Math.floor(rand() * height);
+    const angle = rand() * Math.PI * 2;
+    const len = 1 + Math.floor(rand() * 4); // 1-4 pixels long
+
+    // Mix of lighter and darker fibers
+    const val = rand() > 0.4
+      ? 145 + Math.floor(rand() * 65) // lighter fibers (60%)
+      : 50 + Math.floor(rand() * 45);  // darker fibers (40%)
+
+    for (let s = 0; s <= len; s++) {
+      const px = Math.round(x + Math.cos(angle) * s);
+      const py = Math.round(y + Math.sin(angle) * s);
+      if (px >= 0 && px < width && py >= 0 && py < height) {
+        const idx = py * width + px;
+        pixels[idx] = Math.round(pixels[idx] * 0.35 + val * 0.65);
+      }
+    }
   }
 
   // Encode as PNG
