@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateSlideImage } from "@/lib/carousel/generator";
 import { createClient } from "@supabase/supabase-js";
+import sharp from "sharp";
 
 export const maxDuration = 30;
 
@@ -16,8 +17,9 @@ export async function POST(request: Request) {
     const supabase = getSupabase();
     const { slideId, slideType, props, account, pillar, variant } = await request.json();
 
-    // If this slide has a user-uploaded custom background, fetch it and pass as base64
-    // so the generator skips Gemini and uses the user's image instead.
+    // If this slide has a user-uploaded custom background, fetch it, apply the
+    // personal-template image treatment (grayscale + brightness 0.75 + contrast 1.1),
+    // and pass as base64. The generator skips Gemini when backgroundImage is set.
     let customBg: string | null = null;
     if (slideId) {
       const { data: slideRow } = await supabase
@@ -28,8 +30,15 @@ export async function POST(request: Request) {
       if (slideRow?.custom_background_url) {
         const res = await fetch(slideRow.custom_background_url);
         if (res.ok) {
-          const buf = Buffer.from(await res.arrayBuffer());
-          customBg = buf.toString("base64");
+          const raw = Buffer.from(await res.arrayBuffer());
+          const processed = await sharp(raw)
+            .resize(1080, 1350, { fit: "cover", position: "center" })
+            .grayscale()
+            .linear(1.1, -(0.1 * 128)) // contrast ~1.1 around midpoint
+            .modulate({ brightness: 0.75 })
+            .png()
+            .toBuffer();
+          customBg = processed.toString("base64");
         }
       }
     }

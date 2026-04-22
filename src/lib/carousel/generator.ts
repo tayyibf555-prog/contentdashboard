@@ -65,8 +65,8 @@ export async function generateSlideImage(
 
   const element = React.createElement(Template, safeProps);
 
-  // Azen uses 1080x1350 portrait; all other templates use 1080x1080 square
-  const height = theme.variant === "azen" ? 1350 : 1080;
+  // Azen and tayyib use 1080x1350 portrait; other templates use 1080x1080 square
+  const height = theme.variant === "azen" || theme.variant === "tayyib" ? 1350 : 1080;
 
   const svg = await satori(element, {
     width: 1080,

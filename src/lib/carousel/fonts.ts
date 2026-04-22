@@ -17,6 +17,7 @@ export async function loadFonts() {
     dmSerifRegular, dmSansRegular, dmSansSemiBold,
     outfitBold, outfitRegular,
     plusJakartaMedium, plusJakartaBold, plusJakartaExtraBold,
+    permanentMarker, playfairBlackItalic,
   ] = await Promise.all([
     loadFont("Inter-Bold.woff"),
     loadFont("Inter-Regular.woff"),
@@ -28,6 +29,8 @@ export async function loadFonts() {
     loadFont("PlusJakartaSans-Medium.ttf"),
     loadFont("PlusJakartaSans-Bold.ttf"),
     loadFont("PlusJakartaSans-ExtraBold.ttf"),
+    loadFont("PermanentMarker-Regular.ttf"),
+    loadFont("PlayfairDisplay-BlackItalic.ttf"),
   ]);
 
   return [
@@ -41,5 +44,7 @@ export async function loadFonts() {
     { name: "Plus Jakarta Sans" as const, data: plusJakartaMedium, weight: 500 as const, style: "normal" as const },
     { name: "Plus Jakarta Sans" as const, data: plusJakartaBold, weight: 700 as const, style: "normal" as const },
     { name: "Plus Jakarta Sans" as const, data: plusJakartaExtraBold, weight: 800 as const, style: "normal" as const },
+    { name: "Permanent Marker" as const, data: permanentMarker, weight: 400 as const, style: "normal" as const },
+    { name: "Playfair Display" as const, data: playfairBlackItalic, weight: 900 as const, style: "italic" as const },
   ];
 }

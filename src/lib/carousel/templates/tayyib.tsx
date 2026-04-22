@@ -1,126 +1,310 @@
 import type { CoverSlideProps, ContentSlideProps, CtaSlideProps } from "../types";
-import { SlideCounter, BackgroundLayer } from "./shared";
+import { getPaperTexture } from "../noise";
 
 /**
- * Tayyib personal template — azen.io brand spec.
- * Dark navy bg (#020817), cyan accent (#22D3EE), Outfit font.
- * Bottom bar: @tayyib.ai + save for later.
+ * Tayyib personal template — 4:5 (1080x1350) carousel.
+ * User-uploaded background (grayscale/dim/contrast treated upstream by sharp).
+ * Accent: lime green #C5F04A. Eyebrow: Permanent Marker. Hero: Playfair Italic 900.
  */
 
-const BG = "#020817";
-const WHITE = "#f5f5f5";
-const BODY = "#c8c8c8";
-const MUTED = "#666666";
-const ACCENT = "#22D3EE";
-const FONT = "Outfit";
+const W = 1080;
+const H = 1350;
+const ACCENT = "#C5F04A";
+const WHITE = "#FFFFFF";
+const MARKER = "Permanent Marker";
+const SERIF = "Playfair Display";
+const SANS = "Plus Jakarta Sans";
 
-function WavyLine({ width, color }: { width: number; color: string }) {
-  // Hand-drawn style wavy underline using SVG path
-  const w = width;
+function BackgroundImage({ base64 }: { base64: string }) {
   return (
-    <svg width={w} height={24} viewBox={`0 0 ${w} 24`} style={{ marginTop: 4 }}>
-      <path
-        d={`M 5 16 C ${w * 0.12} 6, ${w * 0.25} 22, ${w * 0.4} 10 S ${w * 0.65} 20, ${w * 0.82} 8 C ${w * 0.9} 4, ${w * 0.95} 14, ${w - 5} 12`}
-        stroke={color}
-        fill="none"
-        strokeWidth={5}
-        strokeLinecap="round"
-      />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`data:image/png;base64,${base64}`}
+      alt=""
+      width={W}
+      height={H}
+      style={{ position: "absolute", top: 0, left: 0, width: W, height: H, objectFit: "cover" }}
+    />
   );
 }
 
+function GradientOverlay() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: W,
+        height: H,
+        background:
+          "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.55) 100%)",
+      }}
+    />
+  );
+}
+
+function GrainOverlay() {
+  const base64 = getPaperTexture();
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`data:image/png;base64,${base64}`}
+      alt=""
+      width={W}
+      height={H}
+      style={{ position: "absolute", top: 0, left: 0, width: W, height: H, objectFit: "cover", opacity: 0.08 }}
+    />
+  );
+}
+
+function SolidFallback() {
+  return (
+    <div style={{ position: "absolute", top: 0, left: 0, width: W, height: H, background: "#0B0F14" }} />
+  );
+}
+
+function PageCounter({ current, total }: { current: number; total: number }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 40,
+        right: 40,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "6px 14px",
+        borderRadius: 20,
+        background: "rgba(0,0,0,0.45)",
+      }}
+    >
+      <span style={{ fontFamily: SANS, fontSize: 22, fontWeight: 500, color: WHITE }}>
+        {current}/{total}
+      </span>
+    </div>
+  );
+}
+
+function Byline() {
+  return (
+    <div style={{ position: "absolute", bottom: 50, left: 60, display: "flex", alignItems: "center" }}>
+      <span style={{ fontFamily: SANS, fontSize: 22, fontWeight: 600, color: ACCENT }}>by @tayyib.ai</span>
+    </div>
+  );
+}
+
+function SwipeArrow() {
+  return (
+    <div style={{ position: "absolute", bottom: 46, right: 60, display: "flex", alignItems: "center" }}>
+      <span style={{ fontFamily: SANS, fontSize: 40, fontWeight: 700, color: ACCENT, lineHeight: 1 }}>→</span>
+    </div>
+  );
+}
+
+// ─── COVER ──────────────────────────────────────────────────────────────────
+
 export function TayyibCover({ headline, accentWord, subtitle, slideNumber, totalSlides, backgroundImage }: CoverSlideProps) {
-  const parts = headline.split(accentWord);
+  const eyebrow = (headline || "").toUpperCase();
+  const hero = accentWord || "";
+  const sub = subtitle || "";
+
+  // Adjust hero font size based on length so it fits the canvas
+  let heroSize = 200;
+  if (hero.length > 8) heroSize = 160;
+  if (hero.length > 12) heroSize = 130;
+  if (hero.length > 16) heroSize = 100;
 
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, fontFamily: FONT, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative", overflow: "hidden" }}>
-      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.5} />}
-      {/* Headline — bold, accent word with wavy underline */}
-      <div style={{ display: "flex", flexDirection: "column", marginTop: 60 }}>
-        <div style={{ fontFamily: FONT, color: WHITE, fontSize: 82, fontWeight: 700, lineHeight: 1.15, display: "flex", flexWrap: "wrap", maxWidth: 920 }}>
-          {parts[0]}
-          <span style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ color: ACCENT }}>{accentWord}</span>
-            <WavyLine width={Math.max(300, accentWord.length * 52)} color={ACCENT} />
-          </span>
-          {parts[1] || ""}
-        </div>
+    <div style={{ width: W, height: H, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+      {backgroundImage ? <BackgroundImage base64={backgroundImage} /> : <SolidFallback />}
+      <GradientOverlay />
+      <GrainOverlay />
+
+      <PageCounter current={slideNumber} total={totalSlides} />
+
+      {/* Eyebrow */}
+      <div
+        style={{
+          position: "absolute",
+          top: 110,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: MARKER,
+            fontWeight: 400,
+            fontSize: 42,
+            color: WHITE,
+            letterSpacing: 1,
+            textAlign: "center",
+            maxWidth: 900,
+          }}
+        >
+          {eyebrow}
+        </span>
       </div>
 
-      {/* Subtitle */}
-      {subtitle && (
-        <div style={{ fontFamily: FONT, color: BODY, fontSize: 36, fontWeight: 400, marginTop: 50, lineHeight: 1.5, maxWidth: 800 }}>
-          {subtitle}
+      {/* Hero title */}
+      <div
+        style={{
+          position: "absolute",
+          top: 180,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: SERIF,
+            fontWeight: 900,
+            fontStyle: "italic",
+            fontSize: heroSize,
+            color: ACCENT,
+            lineHeight: 1,
+            textAlign: "center",
+          }}
+        >
+          {hero}
+        </span>
+      </div>
+
+      {/* Subhead */}
+      {sub && (
+        <div
+          style={{
+            position: "absolute",
+            top: 760,
+            left: 60,
+            display: "flex",
+            maxWidth: 620,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: SANS,
+              fontWeight: 500,
+              fontSize: 48,
+              color: ACCENT,
+              lineHeight: 1.2,
+            }}
+          >
+            {sub}
+          </span>
         </div>
       )}
 
-      {/* Spacer */}
-      <div style={{ flex: 1 }} />
-
-      {/* Bottom bar — handle left, save for later right */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontFamily: FONT, color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
-        <span style={{ fontFamily: FONT, color: MUTED, fontSize: 20, fontWeight: 400 }}>save for later</span>
-      </div>
-
-      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED} />
+      <Byline />
+      <SwipeArrow />
     </div>
   );
 }
+
+// ─── CONTENT ────────────────────────────────────────────────────────────────
 
 export function TayyibContent({ headline, bodyText, slideNumber, totalSlides, backgroundImage }: ContentSlideProps) {
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, fontFamily: FONT, display: "flex", flexDirection: "column", padding: "80px 80px 60px", position: "relative", overflow: "hidden" }}>
-      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.55} />}
-      {/* Headline with accent color */}
-      <div style={{ display: "flex", flexDirection: "column", marginTop: 40 }}>
-        <div style={{ fontFamily: FONT, color: ACCENT, fontSize: 52, fontWeight: 700, lineHeight: 1.2, maxWidth: 900 }}>
-          {headline}
-        </div>
-        <WavyLine width={Math.min(500, Math.max(200, headline.length * 28))} color={ACCENT} />
+    <div style={{ width: W, height: H, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+      {backgroundImage ? <BackgroundImage base64={backgroundImage} /> : <SolidFallback />}
+      <GradientOverlay />
+      <GrainOverlay />
+
+      <PageCounter current={slideNumber} total={totalSlides} />
+
+      {/* Headline — italic serif accent, positioned upper-left */}
+      <div style={{ position: "absolute", top: 160, left: 60, right: 60, display: "flex", flexDirection: "column" }}>
+        <span
+          style={{
+            fontFamily: SERIF,
+            fontWeight: 900,
+            fontStyle: "italic",
+            fontSize: 84,
+            color: ACCENT,
+            lineHeight: 1.05,
+            maxWidth: 960,
+          }}
+        >
+          {headline || ""}
+        </span>
       </div>
 
-      {/* Body text */}
-      <div style={{ fontFamily: FONT, color: BODY, fontSize: 34, lineHeight: 1.7, fontWeight: 400, marginTop: 50, maxWidth: 900 }}>
-        {bodyText}
+      {/* Body — sans, white */}
+      <div style={{ position: "absolute", top: 520, left: 60, right: 60, display: "flex", flexDirection: "column" }}>
+        <span
+          style={{
+            fontFamily: SANS,
+            fontWeight: 500,
+            fontSize: 40,
+            color: WHITE,
+            lineHeight: 1.4,
+            maxWidth: 960,
+          }}
+        >
+          {bodyText || ""}
+        </span>
       </div>
 
-      {/* Spacer */}
-      <div style={{ flex: 1 }} />
-
-      {/* Bottom bar */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontFamily: FONT, color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
-        <span style={{ fontFamily: FONT, color: MUTED, fontSize: 20, fontWeight: 400 }}>save for later</span>
-      </div>
-
-      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED} />
+      <Byline />
+      <SwipeArrow />
     </div>
   );
 }
 
+// ─── CTA ────────────────────────────────────────────────────────────────────
+
 export function TayyibCta({ headline, ctaText, slideNumber, totalSlides, backgroundImage }: CtaSlideProps) {
+  const cta = ctaText || headline || "";
+
   return (
-    <div style={{ width: 1080, height: 1080, background: BG, fontFamily: FONT, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "80px 80px 60px", position: "relative", overflow: "hidden" }}>
-      {backgroundImage && <BackgroundLayer base64={backgroundImage} overlayOpacity={0.5} />}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, gap: 40 }}>
-        <div style={{ fontFamily: FONT, color: WHITE, fontSize: 72, fontWeight: 700, textAlign: "center", lineHeight: 1.2, maxWidth: 850 }}>
-          {headline}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <span style={{ fontFamily: FONT, color: ACCENT, fontSize: 40, fontWeight: 700, textAlign: "center" }}>{ctaText}</span>
-          <WavyLine width={Math.max(250, ctaText.length * 24)} color={ACCENT} />
-        </div>
+    <div style={{ width: W, height: H, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+      {backgroundImage ? <BackgroundImage base64={backgroundImage} /> : <SolidFallback />}
+      <GradientOverlay />
+      <GrainOverlay />
+
+      <PageCounter current={slideNumber} total={totalSlides} />
+
+      {/* Eyebrow */}
+      <div style={{ position: "absolute", top: 380, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+        <span
+          style={{
+            fontFamily: MARKER,
+            fontWeight: 400,
+            fontSize: 42,
+            color: WHITE,
+            letterSpacing: 1,
+            textAlign: "center",
+          }}
+        >
+          YOUR NEXT STEP
+        </span>
       </div>
 
-      {/* Bottom bar */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-        <span style={{ fontFamily: FONT, color: WHITE, fontSize: 24, fontWeight: 700 }}>@tayyib.ai</span>
-        <span style={{ fontFamily: FONT, color: MUTED, fontSize: 20, fontWeight: 400 }}>save for later</span>
+      {/* Big italic CTA */}
+      <div style={{ position: "absolute", top: 460, left: 60, right: 60, display: "flex", justifyContent: "center" }}>
+        <span
+          style={{
+            fontFamily: SERIF,
+            fontWeight: 900,
+            fontStyle: "italic",
+            fontSize: 110,
+            color: ACCENT,
+            lineHeight: 1.05,
+            textAlign: "center",
+            maxWidth: 960,
+          }}
+        >
+          {cta}
+        </span>
       </div>
 
-      <SlideCounter current={slideNumber} total={totalSlides} color={MUTED} />
+      <Byline />
+      <SwipeArrow />
     </div>
   );
 }
