@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { approveContent, regenerateContent, postContent, approveAndPostContent, switchCarouselTemplate, type ActionResult } from "@/app/actions";
 import { TemplatePicker } from "@/components/instagram/template-picker";
 import { ManualPostKit } from "@/components/instagram/manual-post-kit";
+import { BackgroundUploader } from "@/components/instagram/background-uploader";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
 type PostWithSlides = GeneratedContent & { carousel_slides: CarouselSlide[] };
@@ -97,15 +98,22 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
     router.refresh();
   }, [router]);
 
-  // Auto-generate on mount when slides are missing images
+  // Personal carousels require user-uploaded background before generation
+  const needsBackgroundUpload = current?.account === "personal" &&
+    current?.content_type === "carousel" &&
+    (current?.carousel_slides?.length ?? 0) > 0 &&
+    current.carousel_slides.some((s) => !s.image_url && !s.custom_background_url);
+
+  // Auto-generate on mount when slides are missing images.
+  // Skip for personal carousels that still need a user-uploaded background.
   useEffect(() => {
     if (current && current.content_type === "carousel" && current.carousel_slides?.length > 0) {
       const hasMissing = current.carousel_slides.some((s) => !s.image_url);
-      if (hasMissing && generatingRef.current !== current.id) {
+      if (hasMissing && generatingRef.current !== current.id && !needsBackgroundUpload) {
         generateMissingImages(current);
       }
     }
-  }, [current?.id, generateMissingImages]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [current?.id, generateMissingImages, needsBackgroundUpload]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Manual trigger for image generation
   const handleGenerateImages = () => {
@@ -217,7 +225,20 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
                 <p className="text-red-400 text-[11px]">{imageError}</p>
               </div>
             )}
-            {hasMissingImages && !imageProgress && (
+            {needsBackgroundUpload && !imageProgress && (
+              <div className="mt-2">
+                <BackgroundUploader
+                  slides={slides.map((s) => ({
+                    id: s.id,
+                    slide_number: s.slide_number,
+                    slide_type: s.slide_type,
+                    custom_background_url: s.custom_background_url,
+                  }))}
+                  onComplete={handleGenerateImages}
+                />
+              </div>
+            )}
+            {hasMissingImages && !imageProgress && !needsBackgroundUpload && (
               <button
                 onClick={handleGenerateImages}
                 className="mt-2 w-full bg-azen-accent text-azen-bg px-3 py-2 rounded-md text-xs font-semibold hover:opacity-90 transition-opacity"

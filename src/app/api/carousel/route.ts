@@ -16,10 +16,29 @@ export async function POST(request: Request) {
     const supabase = getSupabase();
     const { slideId, slideType, props, account, pillar, variant } = await request.json();
 
+    // If this slide has a user-uploaded custom background, fetch it and pass as base64
+    // so the generator skips Gemini and uses the user's image instead.
+    let customBg: string | null = null;
+    if (slideId) {
+      const { data: slideRow } = await supabase
+        .from("carousel_slides")
+        .select("custom_background_url")
+        .eq("id", slideId)
+        .single();
+      if (slideRow?.custom_background_url) {
+        const res = await fetch(slideRow.custom_background_url);
+        if (res.ok) {
+          const buf = Buffer.from(await res.arrayBuffer());
+          customBg = buf.toString("base64");
+        }
+      }
+    }
+
     const imageBuffer = await generateSlideImage(slideType, props, {
       account,
       pillar,
       variant,
+      backgroundImage: customBg,
     });
 
     // Upload to Supabase Storage
