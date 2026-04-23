@@ -16,7 +16,7 @@ type ScrapeResult = {
 };
 
 const ACTOR_IDS: Record<string, string> = {
-  instagram: "apify~instagram-scraper",
+  instagram: "apify~instagram-post-scraper",
   youtube: "streamers~youtube-scraper",
   twitter: "apidojo~tweet-scraper",
   linkedin: "curious_coder~linkedin-post-search-scraper",
@@ -70,14 +70,8 @@ export async function scrapeAccount(
 
 function buildInput(platform: string, handle: string): Record<string, unknown> {
   switch (platform) {
-    case "instagram": {
-      const cleanHandle = handle.replace("@", "");
-      return {
-        directUrls: [`https://www.instagram.com/${cleanHandle}/`],
-        resultsType: "posts",
-        resultsLimit: 10,
-      };
-    }
+    case "instagram":
+      return { username: [handle.replace("@", "")], resultsLimit: 10 };
     case "youtube":
       return {
         startUrls: [{ url: `https://www.youtube.com/@${handle.replace("@", "")}/videos` }],
@@ -117,7 +111,7 @@ function normalizeResult(platform: string, item: Record<string, unknown>): Scrap
           likes: (item.likesCount as number) || 0,
           comments: (item.commentsCount as number) || 0,
           shares: 0,
-          views: (item.videoViewCount as number) || (item.viewCount as number) || 0,
+          views: (item.videoPlayCount as number) || (item.videoViewCount as number) || (item.viewCount as number) || 0,
         },
         url: (item.url as string) || "",
         postedAt: (item.timestamp as string) || new Date().toISOString(),
