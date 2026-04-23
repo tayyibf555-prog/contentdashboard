@@ -12,14 +12,18 @@ type ScrapedRow = {
   platform: string;
   title: string | null;
   content_summary: string | null;
-  engagement_stats: Record<string, number> | null;
+  engagement_stats: Record<string, number | string> | null;
   url: string | null;
   scraped_at: string;
 };
 
-function score(e: Record<string, number> | null): number {
+function num(v: number | string | undefined): number {
+  return typeof v === "number" ? v : 0;
+}
+
+function score(e: Record<string, number | string> | null): number {
   if (!e) return 0;
-  return (e.likes || 0) + (e.comments || 0) * 5 + (e.shares || 0) * 10 + (e.saves || 0) * 15 + (e.views || 0) * 0.1;
+  return num(e.likes) + num(e.comments) * 5 + num(e.shares) * 10 + num(e.saves) * 15 + num(e.views) * 0.1;
 }
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {

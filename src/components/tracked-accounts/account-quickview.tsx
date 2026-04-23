@@ -9,9 +9,31 @@ type ScrapedRow = {
   platform: string;
   title: string | null;
   content_summary: string | null;
-  engagement_stats: Record<string, number> | null;
+  engagement_stats: Record<string, number | string> | null;
   url: string | null;
   scraped_at: string;
+};
+
+function getPostType(row: ScrapedRow): "carousel" | "reel" | "video" | "tweet" | "post" {
+  const e = row.engagement_stats || {};
+  const stored = typeof e.postType === "string" ? (e.postType as string) : null;
+  if (stored) return stored as "carousel" | "reel" | "video" | "post";
+  // Fallbacks for rows scraped before we started storing postType
+  if (row.platform === "youtube") return "video";
+  if (row.platform === "twitter") return "tweet";
+  if (row.platform === "instagram") {
+    if ((e.views as number) > 0) return "reel";
+    return "post";
+  }
+  return "post";
+}
+
+const POST_TYPE_STYLES: Record<string, string> = {
+  carousel: "bg-azen-accent/20 text-azen-accent",
+  reel: "bg-purple-500/20 text-purple-300",
+  video: "bg-red-500/20 text-red-300",
+  tweet: "bg-sky-500/20 text-sky-300",
+  post: "bg-azen-border text-azen-text",
 };
 
 const PLATFORM_ORDER = ["instagram", "youtube", "twitter", "linkedin"] as const;
@@ -145,6 +167,7 @@ function PostCard({ post }: { post: ScrapedRow }) {
   const [recreated, setRecreated] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const e = post.engagement_stats || {};
+  const postType = getPostType(post);
 
   async function recreate() {
     setRecreating(true);
@@ -157,6 +180,8 @@ function PostCard({ post }: { post: ScrapedRow }) {
           url: post.url,
           account: "personal",
           saveAsDraft: true,
+          // Tell Claude to keep the same format as the source post
+          forceFormat: postType === "carousel" ? "carousel" : postType === "reel" ? "reel" : "post",
         }),
       });
       const data = await res.json();
@@ -180,8 +205,13 @@ function PostCard({ post }: { post: ScrapedRow }) {
         >
           {post.title || post.content_summary?.slice(0, 80) || "Untitled"}
         </a>
-        <div className="text-[10px] text-azen-text flex-shrink-0">
-          {new Date(post.scraped_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${POST_TYPE_STYLES[postType] || POST_TYPE_STYLES.post}`}>
+            {postType}
+          </span>
+          <div className="text-[10px] text-azen-text">
+            {new Date(post.scraped_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+          </div>
         </div>
       </div>
       {post.content_summary && (
@@ -189,11 +219,11 @@ function PostCard({ post }: { post: ScrapedRow }) {
       )}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-3 text-[10px] text-azen-text">
-          {e.views ? <span>👁 {fmt(e.views)}</span> : null}
-          {e.likes ? <span>♥ {fmt(e.likes)}</span> : null}
-          {e.comments ? <span>💬 {fmt(e.comments)}</span> : null}
-          {e.shares ? <span>↗ {fmt(e.shares)}</span> : null}
-          {e.saves ? <span>⛉ {fmt(e.saves)}</span> : null}
+          {typeof e.views === "number" && e.views ? <span>👁 {fmt(e.views)}</span> : null}
+          {typeof e.likes === "number" && e.likes ? <span>♥ {fmt(e.likes)}</span> : null}
+          {typeof e.comments === "number" && e.comments ? <span>💬 {fmt(e.comments)}</span> : null}
+          {typeof e.shares === "number" && e.shares ? <span>↗ {fmt(e.shares)}</span> : null}
+          {typeof e.saves === "number" && e.saves ? <span>⛉ {fmt(e.saves)}</span> : null}
         </div>
         <button
           onClick={recreate}

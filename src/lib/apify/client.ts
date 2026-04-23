@@ -10,7 +10,7 @@ type ScrapeResult = {
   platform: string;
   title: string;
   content: string;
-  engagement: Record<string, number>;
+  engagement: Record<string, number | string>;
   url: string;
   postedAt: string;
 };
@@ -102,7 +102,15 @@ function normalizeResult(platform: string, item: Record<string, unknown>): Scrap
         url: (item.url as string) || "",
         postedAt: (item.date as string) || new Date().toISOString(),
       };
-    case "instagram":
+    case "instagram": {
+      // Derive post type from Apify fields: "Sidecar"=carousel, "Video"+productType="clips"=reel, "Image"=post
+      let postType: "carousel" | "reel" | "video" | "post" = "post";
+      const rawType = item.type as string | undefined;
+      const productType = item.productType as string | undefined;
+      if (rawType === "Sidecar") postType = "carousel";
+      else if (rawType === "Video") postType = productType === "clips" ? "reel" : "video";
+      else if (rawType === "Image") postType = "post";
+
       return {
         platform,
         title: ((item.caption as string) || "").slice(0, 100),
@@ -112,10 +120,12 @@ function normalizeResult(platform: string, item: Record<string, unknown>): Scrap
           comments: (item.commentsCount as number) || 0,
           shares: 0,
           views: (item.videoPlayCount as number) || (item.videoViewCount as number) || (item.viewCount as number) || 0,
-        },
+          postType,
+        } as Record<string, number | string>,
         url: (item.url as string) || "",
         postedAt: (item.timestamp as string) || new Date().toISOString(),
       };
+    }
     case "twitter":
       return {
         platform,

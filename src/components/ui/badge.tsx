@@ -1,5 +1,24 @@
 import { PLATFORMS } from "@/lib/constants";
 
+export function Badge({
+  children,
+  color = "#8892b0",
+  className = "",
+}: {
+  children: React.ReactNode;
+  color?: string;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded ${className}`}
+      style={{ backgroundColor: `${color}20`, color }}
+    >
+      {children}
+    </span>
+  );
+}
+
 export function PlatformBadge({ platform }: { platform: string }) {
   const config = PLATFORMS[platform as keyof typeof PLATFORMS];
   if (!config) return null;

@@ -21,30 +21,38 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const pathname = usePathname();
 
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  }
+
+  function NavLink({ href, label }: { href: string; label: string }) {
+    const active = isActive(href);
+    return (
+      <Link
+        href={href}
+        className={`block px-5 py-2.5 text-[13px] transition-colors ${
+          active
+            ? "text-azen-accent font-semibold bg-azen-accent/[0.08] border-l-[3px] border-azen-accent"
+            : "text-azen-text hover:text-white border-l-[3px] border-transparent"
+        }`}
+      >
+        {label}
+      </Link>
+    );
+  }
+
   return (
     <aside className="w-[220px] bg-azen-card border-r border-azen-border flex flex-col h-screen fixed left-0 top-0">
       <div className="px-5 py-6 border-b border-azen-border">
         <span className="text-white text-[22px] font-bold">azen</span>
-        <span className="text-azen-accent text-[10px] ml-1">content</span>
+        <span className="text-azen-accent text-[10px] ml-1">hub</span>
       </div>
 
-      <nav className="flex-1 py-4">
-        {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`block px-5 py-2.5 text-[13px] transition-colors ${
-                isActive
-                  ? "text-azen-accent font-semibold bg-azen-accent/[0.08] border-l-[3px] border-azen-accent"
-                  : "text-azen-text hover:text-white border-l-[3px] border-transparent"
-              }`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 py-4 overflow-y-auto">
+        {NAV_ITEMS.map((item) => (
+          <NavLink key={item.href} href={item.href} label={item.label} />
+        ))}
       </nav>
 
       <div className="px-5 py-4 border-t border-azen-border">

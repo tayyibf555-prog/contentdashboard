@@ -63,7 +63,13 @@ Return ONLY a JSON array, wrapped in \`\`\`json ... \`\`\` if you must format it
  */
 export async function generateRecreationPlan(
   account: "business" | "personal",
-  source: { url?: string; caption?: string; engagement?: Record<string, number>; description?: string }
+  source: {
+    url?: string;
+    caption?: string;
+    engagement?: Record<string, number | string>;
+    description?: string;
+    forceFormat?: "carousel" | "reel" | "post";
+  }
 ): Promise<{
   format: "reel" | "carousel" | "post";
   topic: string;
@@ -78,17 +84,21 @@ export async function generateRecreationPlan(
     ? "Azen — an AI agency helping founders Audit, Educate, Deploy. Direct, founder-focused, practical."
     : "Tayyib — a solo founder documenting AI + business lessons. Personal, opinionated, conversational.";
 
+  const formatRule = source.forceFormat
+    ? `\n\nMANDATORY FORMAT: The output MUST be a "${source.forceFormat}". Do not pick a different format — the source post is a ${source.forceFormat} and the user wants the recreation in the same format.`
+    : "";
+
   const systemPrompt = `You are a senior content strategist helping the user recreate high-performing Instagram content in their own voice.
 
-Account voice: ${voice}
+Account voice: ${voice}${formatRule}
 
 Given the source (either a URL + caption with engagement stats, OR a plain description), produce a recreation plan.
 
 Output JSON with these exact keys:
-- format: "reel" | "carousel" | "post"
+- format: "reel" | "carousel" | "post"${source.forceFormat ? ` (MUST be "${source.forceFormat}")` : ""}
 - topic: 3-8 words
 - hook: the exact opening line to use (voice-matched)
-- structure: ordered array. For reels: objects with beat, on_screen_text, voiceover, notes. For carousels: objects with slide_or_beat (slide headline), notes.
+- structure: ordered array. For reels: objects with beat, on_screen_text, voiceover, notes. For carousels: 6-8 objects with slide_or_beat (slide headline) + notes.
 - engagement_mechanic: exact wording of the mechanic (e.g. "Comment 'PLAYBOOK' and I'll DM you the Notion template")
 - cta: final CTA line
 - shot_list_or_slide_notes: for reels = shot list as plain text; for carousels = slide-by-slide visual direction
@@ -99,10 +109,10 @@ Return ONLY a JSON object, wrapped in \`\`\`json ... \`\`\` if you must format i
 
   const userPrompt = source.description
     ? `Description from user:\n${source.description}`
-    : `Source URL: ${source.url || "unknown"}\nCaption: ${source.caption || ""}\nEngagement: ${JSON.stringify(source.engagement || {})}`;
+    : `Source URL: ${source.url || "unknown"}\nSource format: ${source.forceFormat || "unknown"}\nCaption: ${source.caption || ""}\nEngagement: ${JSON.stringify(source.engagement || {})}`;
 
   const raw = await generateWithClaude(systemPrompt, userPrompt);
-  return extractJSON(raw) as {
+  const parsed = extractJSON(raw) as {
     format: "reel" | "carousel" | "post";
     topic: string;
     hook: string;
@@ -112,4 +122,7 @@ Return ONLY a JSON object, wrapped in \`\`\`json ... \`\`\` if you must format i
     shot_list_or_slide_notes: string;
     recording_tips?: string;
   };
+  // If caller forced a format, override whatever Claude returned — be strict
+  if (source.forceFormat) parsed.format = source.forceFormat;
+  return parsed;
 }

@@ -17,14 +17,15 @@ function extractHandleFromUrl(url: string): string | null {
   return m ? m[1] : null;
 }
 
-// POST /api/recreate — accepts { url?, description?, account }
+// POST /api/recreate — accepts { url?, description?, account, forceFormat? }
 export async function POST(request: Request) {
   try {
-    const { url, description, account, saveAsDraft } = (await request.json()) as {
+    const { url, description, account, saveAsDraft, forceFormat } = (await request.json()) as {
       url?: string;
       description?: string;
       account: "business" | "personal";
       saveAsDraft?: boolean;
+      forceFormat?: "carousel" | "reel" | "post";
     };
 
     if (!url && !description) {
@@ -32,7 +33,8 @@ export async function POST(request: Request) {
     }
 
     let caption = "";
-    let engagement: Record<string, number> = {};
+    let engagement: Record<string, number | string> = {};
+    let detectedFormat: "carousel" | "reel" | "post" | undefined = forceFormat;
 
     // If URL provided and it's Instagram, try to scrape for caption + engagement.
     if (url && url.includes("instagram.com")) {
@@ -41,12 +43,15 @@ export async function POST(request: Request) {
         try {
           const results = await scrapeAccount("instagram", handle);
           const match = results.find((r) => r.url === url || url.includes(r.url.split("/").slice(-2).join("/")));
-          if (match) {
-            caption = match.content;
-            engagement = match.engagement;
-          } else if (results[0]) {
-            caption = results[0].content;
-            engagement = results[0].engagement;
+          const pick = match || results[0];
+          if (pick) {
+            caption = pick.content;
+            engagement = pick.engagement;
+            // If caller didn't force a format, inherit from the source post
+            if (!detectedFormat && typeof pick.engagement.postType === "string") {
+              const t = pick.engagement.postType as string;
+              if (t === "carousel" || t === "reel") detectedFormat = t;
+            }
           }
         } catch (e) {
           console.warn("[recreate] scrape failed, continuing with url-only:", e);
@@ -59,6 +64,7 @@ export async function POST(request: Request) {
       caption,
       engagement,
       description,
+      forceFormat: detectedFormat,
     });
 
     // Optionally save as a draft immediately
