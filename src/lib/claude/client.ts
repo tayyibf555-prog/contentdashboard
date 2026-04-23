@@ -61,11 +61,23 @@ export async function generateContent(
   return textBlock ? textBlock.text : "";
 }
 
-export async function generateWithClaude(systemPrompt: string, userPrompt: string): Promise<string> {
+export type ClaudeModel = "sonnet" | "haiku" | "opus";
+
+const MODEL_IDS: Record<ClaudeModel, string> = {
+  sonnet: "claude-sonnet-4-5-20250929",
+  haiku: "claude-haiku-4-5-20251001",
+  opus: "claude-opus-4-7",
+};
+
+export async function generateWithClaude(
+  systemPrompt: string,
+  userPrompt: string,
+  opts: { model?: ClaudeModel; maxTokens?: number } = {}
+): Promise<string> {
   const anthropic = getAnthropic();
   const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-5-20250929",
-    max_tokens: 4096,
+    model: MODEL_IDS[opts.model || "sonnet"],
+    max_tokens: opts.maxTokens ?? 4096,
     system: systemPrompt,
     messages: [{ role: "user", content: userPrompt }],
   });

@@ -45,12 +45,12 @@ Output ONE JSON object with these exact keys:
 - title: punchy playbook title (6-10 words)
 - subtitle: one-line subtitle
 - keyword: the UPPERCASE keyword the CTA asks commenters to type (infer from the post — usually the single uppercase word in quotes)
-- overview: 2-3 short paragraphs (~120 words) explaining who this is for and what they'll get
-- sections: 5-7 items, each:
+- overview: 2 short paragraphs (~80 words) explaining who this is for and what they'll get
+- sections: 4-6 items, each:
     - number: 1-based index
     - title: the section heading (short)
-    - body: 200-400 words of real expansion of the corresponding idea in the post — not fluff
-    - example: optional concrete mini-example (1-2 sentences)
+    - body: 160-240 words of real expansion of the corresponding idea — tight, not fluff
+    - example: optional concrete mini-example (1 sentence)
     - action: one concrete action step
 - framework_type: "sequential" if the post describes a numbered process (1 → 2 → 3), else "none"
 - framework_nodes: if sequential, 3-7 nodes [{label, number}] capturing the flow; otherwise []
@@ -75,6 +75,7 @@ ${source.details}
 
 Produce the playbook JSON.`;
 
-  const raw = await generateWithClaude(systemPrompt, user);
+  // Haiku is 3-5x faster than Sonnet for structured JSON expansion — plenty for this task
+  const raw = await generateWithClaude(systemPrompt, user, { model: "haiku", maxTokens: 3500 });
   return extractJSON(raw) as Playbook;
 }
