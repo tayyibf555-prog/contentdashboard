@@ -70,8 +70,14 @@ export async function scrapeAccount(
 
 function buildInput(platform: string, handle: string): Record<string, unknown> {
   switch (platform) {
-    case "instagram":
-      return { usernames: [handle.replace("@", "")], resultsLimit: 10 };
+    case "instagram": {
+      const cleanHandle = handle.replace("@", "");
+      return {
+        directUrls: [`https://www.instagram.com/${cleanHandle}/`],
+        resultsType: "posts",
+        resultsLimit: 10,
+      };
+    }
     case "youtube":
       return {
         startUrls: [{ url: `https://www.youtube.com/@${handle.replace("@", "")}/videos` }],
