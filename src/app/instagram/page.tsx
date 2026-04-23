@@ -8,39 +8,49 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
   const supabase = await createServerSupabaseClient();
   const { account = "business" } = await searchParams;
 
-  const { data: carouselPosts } = await supabase
-    .from("generated_content")
-    .select("*, carousel_slides(*)")
-    .eq("platform", "instagram")
-    .eq("account", account)
-    .eq("content_type", "carousel")
-    .order("created_at", { ascending: false })
-    .limit(20);
+  // Fire all queries in parallel — was 4 sequential round-trips
+  const [
+    carouselResult,
+    reelResult,
+    ideasResult,
+    recreatedResult,
+  ] = await Promise.all([
+    supabase
+      .from("generated_content")
+      .select("*, carousel_slides(*)")
+      .eq("platform", "instagram")
+      .eq("account", account)
+      .eq("content_type", "carousel")
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("generated_content")
+      .select("*, reel_scripts(*)")
+      .eq("platform", "instagram")
+      .eq("account", account)
+      .eq("content_type", "reel")
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase
+      .from("engagement_ideas")
+      .select("*")
+      .eq("account", account)
+      .order("created_at", { ascending: false })
+      .limit(100),
+    supabase
+      .from("generated_content")
+      .select("*, carousel_slides(*), reel_scripts(*)")
+      .eq("platform", "instagram")
+      .eq("account", account)
+      .like("source_type", "recreate_%")
+      .order("created_at", { ascending: false })
+      .limit(50),
+  ]);
 
-  const { data: reelPosts } = await supabase
-    .from("generated_content")
-    .select("*, reel_scripts(*)")
-    .eq("platform", "instagram")
-    .eq("account", account)
-    .eq("content_type", "reel")
-    .order("created_at", { ascending: false })
-    .limit(20);
-
-  const { data: ideas } = await supabase
-    .from("engagement_ideas")
-    .select("*")
-    .eq("account", account)
-    .order("created_at", { ascending: false })
-    .limit(100);
-
-  const { data: recreatedPosts } = await supabase
-    .from("generated_content")
-    .select("*, carousel_slides(*), reel_scripts(*)")
-    .eq("platform", "instagram")
-    .eq("account", account)
-    .like("source_type", "recreate_%")
-    .order("created_at", { ascending: false })
-    .limit(50);
+  const carouselPosts = carouselResult.data;
+  const reelPosts = reelResult.data;
+  const ideas = ideasResult.data;
+  const recreatedPosts = recreatedResult.data;
 
   return (
     <div>

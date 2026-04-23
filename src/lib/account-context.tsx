@@ -39,9 +39,14 @@ function AccountProviderInner({ children }: { children: ReactNode }) {
 
   const setAccount = (newAccount: AccountType) => {
     setAccountState(newAccount);
+    // Reflect in the DOM immediately so theme variables flip before React finishes
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-account", newAccount);
+    }
     const params = new URLSearchParams(searchParams.toString());
     params.set("account", newAccount);
-    router.push(`${pathname}?${params.toString()}`);
+    // replace (not push) avoids history entries; scroll:false avoids a jump
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (

@@ -10,24 +10,34 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const supabase = await createServerSupabaseClient();
   const { account = "business" } = await searchParams;
 
-  const { data: pendingContent } = await supabase
-    .from("generated_content")
-    .select("*")
-    .eq("status", "pending")
-    .eq("account", account)
-    .order("created_at", { ascending: false });
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const { count: postedThisWeek } = await supabase
-    .from("generated_content")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "posted")
-    .eq("account", account)
-    .gte("posted_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+  const [
+    pendingRes,
+    postedCountRes,
+    engagementRes,
+  ] = await Promise.all([
+    supabase
+      .from("generated_content")
+      .select("*")
+      .eq("status", "pending")
+      .eq("account", account)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("generated_content")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "posted")
+      .eq("account", account)
+      .gte("posted_at", weekAgo),
+    supabase
+      .from("engagement_metrics")
+      .select("*, generated_content(title, platform)")
+      .gte("recorded_at", weekAgo),
+  ]);
 
-  const { data: weeklyEngagement } = await supabase
-    .from("engagement_metrics")
-    .select("*, generated_content(title, platform)")
-    .gte("recorded_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+  const pendingContent = pendingRes.data;
+  const postedThisWeek = postedCountRes.count;
+  const weeklyEngagement = engagementRes.data;
 
   const engagementTotals = (weeklyEngagement || []).reduce(
     (acc, m) => ({
