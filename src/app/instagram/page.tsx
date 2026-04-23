@@ -33,6 +33,15 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
     .order("created_at", { ascending: false })
     .limit(100);
 
+  const { data: recreatedPosts } = await supabase
+    .from("generated_content")
+    .select("*, carousel_slides(*), reel_scripts(*)")
+    .eq("platform", "instagram")
+    .eq("account", account)
+    .like("source_type", "recreate_%")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
   return (
     <div>
       <TopBar
@@ -49,6 +58,7 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
         carouselPosts={carouselPosts || []}
         reelPosts={reelPosts || []}
         ideas={ideas || []}
+        recreatedPosts={recreatedPosts || []}
         account={account}
       />
     </div>

@@ -79,9 +79,7 @@ export function AccountQuickView({ account, onClose }: { account: TrackedAccount
       setScrapeProgress({ done: i + 1, total: entries.length });
     }
     setScraping(null);
-    // Reload top posts with whatever we got
     await loadTopPosts(account.id);
-    // Leave progress visible briefly so user sees the final state
     setTimeout(() => setScrapeProgress(null), 2500);
   }
 
@@ -143,18 +141,45 @@ export function AccountQuickView({ account, onClose }: { account: TrackedAccount
 }
 
 function PostCard({ post }: { post: ScrapedRow }) {
+  const [recreating, setRecreating] = useState(false);
+  const [recreated, setRecreated] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   const e = post.engagement_stats || {};
+
+  async function recreate() {
+    setRecreating(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/recreate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: post.url,
+          account: "personal",
+          saveAsDraft: true,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Recreate failed");
+      setRecreated(true);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed");
+    } finally {
+      setRecreating(false);
+    }
+  }
+
   return (
-    <a
-      href={post.url || "#"}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block bg-azen-bg border border-azen-border rounded-md p-3 hover:border-azen-accent transition-colors"
-    >
+    <div className="bg-azen-bg border border-azen-border rounded-md p-3 hover:border-azen-accent transition-colors">
       <div className="flex items-start justify-between gap-3 mb-1">
-        <div className="text-white text-xs font-medium line-clamp-2 flex-1">
+        <a
+          href={post.url || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white text-xs font-medium line-clamp-2 flex-1 hover:underline"
+        >
           {post.title || post.content_summary?.slice(0, 80) || "Untitled"}
-        </div>
+        </a>
         <div className="text-[10px] text-azen-text flex-shrink-0">
           {new Date(post.scraped_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
         </div>
@@ -162,14 +187,28 @@ function PostCard({ post }: { post: ScrapedRow }) {
       {post.content_summary && (
         <div className="text-[11px] text-azen-text/80 line-clamp-2 mb-2">{post.content_summary}</div>
       )}
-      <div className="flex gap-3 text-[10px] text-azen-text">
-        {e.views ? <span>👁 {fmt(e.views)}</span> : null}
-        {e.likes ? <span>♥ {fmt(e.likes)}</span> : null}
-        {e.comments ? <span>💬 {fmt(e.comments)}</span> : null}
-        {e.shares ? <span>↗ {fmt(e.shares)}</span> : null}
-        {e.saves ? <span>⛉ {fmt(e.saves)}</span> : null}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex gap-3 text-[10px] text-azen-text">
+          {e.views ? <span>👁 {fmt(e.views)}</span> : null}
+          {e.likes ? <span>♥ {fmt(e.likes)}</span> : null}
+          {e.comments ? <span>💬 {fmt(e.comments)}</span> : null}
+          {e.shares ? <span>↗ {fmt(e.shares)}</span> : null}
+          {e.saves ? <span>⛉ {fmt(e.saves)}</span> : null}
+        </div>
+        <button
+          onClick={recreate}
+          disabled={recreating || recreated}
+          className={`text-[10px] font-semibold px-2 py-1 rounded transition-colors ${
+            recreated
+              ? "bg-azen-accent/20 text-azen-accent border border-azen-accent"
+              : "bg-azen-accent text-azen-bg hover:bg-azen-accent/90 disabled:opacity-50"
+          }`}
+        >
+          {recreated ? "Saved ✓" : recreating ? "Recreating…" : "Recreate"}
+        </button>
       </div>
-    </a>
+      {err && <div className="mt-1 text-[10px] text-red-400">{err}</div>}
+    </div>
   );
 }
 

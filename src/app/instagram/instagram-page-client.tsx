@@ -5,22 +5,26 @@ import { InstagramEditor } from "./instagram-editor";
 import { ReelEditor } from "@/components/instagram/reel-editor";
 import { IdeasTab } from "@/components/instagram/ideas-tab";
 import { RecreateTab } from "@/components/instagram/recreate-tab";
+import { RecreatedTab } from "@/components/instagram/recreated-tab";
 import type { GeneratedContent, CarouselSlide, ReelScript, EngagementIdea } from "@/types";
 
 type CarouselPost = GeneratedContent & { carousel_slides: CarouselSlide[] };
 type ReelPost = GeneratedContent & { reel_scripts: ReelScript[] };
+type RecreatedPost = GeneratedContent & { carousel_slides?: CarouselSlide[]; reel_scripts?: ReelScript[] };
 
-type Tab = "carousels" | "reels" | "ideas" | "recreate";
+type Tab = "carousels" | "reels" | "ideas" | "recreate" | "recreated";
 
 export function InstagramPageClient({
   carouselPosts,
   reelPosts,
   ideas,
+  recreatedPosts,
   account,
 }: {
   carouselPosts: CarouselPost[];
   reelPosts: ReelPost[];
   ideas: EngagementIdea[];
+  recreatedPosts: RecreatedPost[];
   account: string;
 }) {
   const [tab, setTab] = useState<Tab>("carousels");
@@ -34,6 +38,7 @@ export function InstagramPageClient({
     { key: "reels", label: `Reels (${reelPosts.length})`, personalOnly: true },
     { key: "ideas", label: "Ideas", badge: newIdeaCount, personalOnly: true },
     { key: "recreate", label: "Recreate", personalOnly: true },
+    { key: "recreated", label: `Recreated (${recreatedPosts.length})`, personalOnly: true },
   ];
 
   const visibleTabs = tabs.filter((t) => !t.personalOnly || isPersonal);
@@ -65,6 +70,7 @@ export function InstagramPageClient({
       {tab === "reels" && isPersonal && <ReelEditor posts={reelPosts} />}
       {tab === "ideas" && isPersonal && <IdeasTab ideas={ideas} account={acc} />}
       {tab === "recreate" && isPersonal && <RecreateTab account={acc} />}
+      {tab === "recreated" && isPersonal && <RecreatedTab posts={recreatedPosts} />}
     </div>
   );
 }
