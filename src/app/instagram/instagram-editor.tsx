@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { approveContent, regenerateContent, postContent, approveAndPostContent, switchCarouselTemplate, type ActionResult } from "@/app/actions";
 import { TemplatePicker } from "@/components/instagram/template-picker";
 import { ManualPostKit } from "@/components/instagram/manual-post-kit";
+import { CompanionPdfButton } from "@/components/instagram/companion-pdf-button";
 import { BackgroundUploader } from "@/components/instagram/background-uploader";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
@@ -262,6 +263,12 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
               </button>
             )}
             <SlideNavigator slides={slides} activeIndex={activeSlide} onSelect={setActiveSlide} />
+            <CompanionPdfButton
+              contentId={current.id}
+              pdfUrl={current.companion_pdf_url}
+              account={current.account}
+              contentType={current.content_type}
+            />
             {slides.length > 0 && (current.status === "pending" || current.status === "draft") && (
               <TemplatePicker
                 slides={slides}

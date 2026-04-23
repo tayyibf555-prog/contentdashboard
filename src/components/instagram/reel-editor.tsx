@@ -9,6 +9,7 @@ import { HashtagManager } from "@/components/content/hashtag-manager";
 import { PostDetails } from "@/components/content/post-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CompanionPdfButton } from "@/components/instagram/companion-pdf-button";
 import { approveContent, regenerateContent, type ActionResult } from "@/app/actions";
 import type { GeneratedContent, ReelScript } from "@/types";
 
@@ -100,6 +101,12 @@ export function ReelEditor({ posts }: { posts: ReelPost[] }) {
                 onUpdate={() => {}}
               />
             </Card>
+            <CompanionPdfButton
+              contentId={current.id}
+              pdfUrl={current.companion_pdf_url}
+              account={current.account}
+              contentType={current.content_type}
+            />
           </div>
           <div>
             <Card>

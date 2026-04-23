@@ -45,6 +45,7 @@ export type GeneratedContent = {
   repurposed_from: string | null;
   scheduled_for: string | null;
   posted_at: string | null;
+  companion_pdf_url: string | null;
   created_at: string;
 };
 

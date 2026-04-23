@@ -25,11 +25,40 @@ function revalidateAll() {
 export async function approveContent(id: string): Promise<ActionResult> {
   try {
     const supabase = getSupabase();
+    // Fetch so we can decide if a companion PDF should be kicked off
+    const { data: content } = await supabase
+      .from("generated_content")
+      .select("account, content_type, companion_pdf_url")
+      .eq("id", id)
+      .single();
+
     const { error } = await supabase
       .from("generated_content")
       .update({ status: "approved" })
       .eq("id", id);
     if (error) return { success: false, error: error.message };
+
+    // Fire-and-forget: personal carousels + reels get a playbook PDF on approval
+    // (only if one doesn't already exist). Does not block the approve response.
+    if (
+      content &&
+      content.account === "personal" &&
+      (content.content_type === "carousel" || content.content_type === "reel") &&
+      !content.companion_pdf_url
+    ) {
+      // Fire without awaiting — the PDF API has its own 60s timeout
+      const base = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL || ""}`
+        : "";
+      if (base) {
+        fetch(`${base}/api/companion-pdf`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contentId: id }),
+        }).catch((e) => console.warn("[approve] PDF trigger failed:", e));
+      }
+    }
+
     revalidateAll();
     return { success: true };
   } catch (err) {

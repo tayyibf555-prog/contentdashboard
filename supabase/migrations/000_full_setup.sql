@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS generated_content (
   repurposed_from UUID REFERENCES generated_content(id),
   scheduled_for TIMESTAMPTZ,
   posted_at TIMESTAMPTZ,
+  companion_pdf_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
