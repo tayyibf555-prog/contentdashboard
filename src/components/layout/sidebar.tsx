@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import {
   LayoutDashboard,
   Radar,
@@ -54,6 +55,21 @@ const SETTINGS_ITEMS: NavItem[] = [{ href: "/settings", label: "Voice Settings",
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  // Prefetch every nav destination as soon as the sidebar mounts so the
+  // first click after load is served from cache and feels instant.
+  useEffect(() => {
+    const ALL: NavItem[] = [...NAV_GROUPS.flatMap((g) => g.items), ...SETTINGS_ITEMS];
+    ALL.forEach((item) => router.prefetch(item.href));
+  }, [router]);
+
+  // Reset the optimistic pending state once navigation settles
+  useEffect(() => {
+    if (!pending) setPendingHref(null);
+  }, [pending]);
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -62,19 +78,36 @@ export function Sidebar() {
 
   function NavLink({ item }: { item: NavItem }) {
     const active = isActive(item.href);
+    const isPending = pendingHref === item.href;
+    // Treat the clicked link as visually active immediately so the UI feels instant
+    const highlight = active || isPending;
     const Icon = item.icon;
     return (
       <Link
         href={item.href}
-        className={`group relative flex items-center gap-3 mx-3 px-3 py-2 rounded-md text-[13px] transition-all duration-200 ${
-          active
+        prefetch
+        onClick={(e) => {
+          // Immediate visual state flip + soft replace (no history spam)
+          if (item.href === pathname) return;
+          e.preventDefault();
+          setPendingHref(item.href);
+          startTransition(() => {
+            router.push(item.href);
+          });
+        }}
+        className={`group relative flex items-center gap-3 mx-3 px-3 py-2 rounded-md text-[13px] transition-all duration-150 ${
+          highlight
             ? "bg-azen-accent/10 text-white font-semibold shadow-[inset_0_0_0_1px_rgba(var(--color-azen-accent-rgb), 0.25)]"
             : "text-azen-text hover:text-white hover:bg-azen-surface-2"
         }`}
       >
-        <Icon size={16} strokeWidth={active ? 2.3 : 1.8} />
+        <Icon size={16} strokeWidth={highlight ? 2.3 : 1.8} />
         <span className="flex-1">{item.label}</span>
-        {active && <span className="h-1.5 w-1.5 rounded-full bg-azen-accent shadow-[0_0_8px_rgba(var(--color-azen-accent-rgb), 0.8)]" />}
+        {isPending ? (
+          <span className="h-3 w-3 border-2 border-azen-accent border-t-transparent rounded-full animate-spin" />
+        ) : active ? (
+          <span className="h-1.5 w-1.5 rounded-full bg-azen-accent shadow-[0_0_8px_rgba(var(--color-azen-accent-rgb), 0.8)]" />
+        ) : null}
       </Link>
     );
   }
