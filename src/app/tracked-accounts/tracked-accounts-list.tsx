@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -29,6 +30,52 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
   const [deleting, setDeleting] = useState<string | null>(null);
   const [seeding, setSeeding] = useState(false);
   const [quickView, setQuickView] = useState<TrackedAccount | null>(null);
+  const [scraping, setScraping] = useState<{ current: string; done: number; total: number; errors: number } | null>(null);
+  const cancelScrapeRef = useRef(false);
+  const router = useRouter();
+
+  async function scrapeAll() {
+    const jobs: Array<{ account: TrackedAccount; platform: string; handle: string }> = [];
+    for (const account of accounts) {
+      const handles = (account.handles as Record<string, string>) || {};
+      for (const [platform, handle] of Object.entries(handles)) {
+        if (handle) jobs.push({ account, platform, handle });
+      }
+    }
+    if (jobs.length === 0) {
+      alert("No account handles to scrape.");
+      return;
+    }
+    if (!confirm(`About to scrape ${jobs.length} account-platform combinations. This can take a while. Continue?`)) return;
+
+    cancelScrapeRef.current = false;
+    let errors = 0;
+    setScraping({ current: "", done: 0, total: jobs.length, errors: 0 });
+
+    for (let i = 0; i < jobs.length; i++) {
+      if (cancelScrapeRef.current) break;
+      const { account, platform, handle } = jobs[i];
+      setScraping({ current: `${account.name} · ${platform}`, done: i, total: jobs.length, errors });
+      try {
+        const res = await fetch("/api/scrape", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accountId: account.id, platform, handle }),
+        });
+        if (!res.ok) errors++;
+      } catch {
+        errors++;
+      }
+      setScraping({ current: `${account.name} · ${platform}`, done: i + 1, total: jobs.length, errors });
+    }
+
+    setScraping(null);
+    router.refresh();
+  }
+
+  function cancelScrape() {
+    cancelScrapeRef.current = true;
+  }
 
   const filtered = useMemo(() => {
     const byCategory = filter === "all" ? accounts : accounts.filter((a) => a.category === filter);
@@ -122,6 +169,12 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
         ))}
         <div className="ml-auto flex gap-2">
           <button
+            onClick={scraping ? cancelScrape : scrapeAll}
+            className={`px-3 py-1 rounded text-[11px] font-semibold ${scraping ? "bg-red-500/20 text-red-300 border border-red-500/40" : "bg-azen-card border border-azen-accent text-azen-accent hover:bg-azen-accent hover:text-azen-bg transition-colors"}`}
+          >
+            {scraping ? "Cancel scrape" : "Scrape all"}
+          </button>
+          <button
             onClick={async () => {
               setSeeding(true);
               try {
@@ -146,6 +199,25 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
           </button>
         </div>
       </div>
+
+      {scraping && (
+        <div className="mb-4 bg-azen-card border border-azen-border rounded-lg p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-xs text-white">
+              Scraping <span className="text-azen-accent">{scraping.current || "…"}</span>
+            </div>
+            <div className="text-[11px] text-azen-text">
+              {scraping.done} / {scraping.total}{scraping.errors > 0 ? ` · ${scraping.errors} errors` : ""}
+            </div>
+          </div>
+          <div className="h-1 bg-azen-border rounded-full overflow-hidden">
+            <div
+              className="h-full bg-azen-accent transition-all duration-500"
+              style={{ width: `${(scraping.done / scraping.total) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         {filtered.map((account) => (
