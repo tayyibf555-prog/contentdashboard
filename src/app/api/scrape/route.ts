@@ -19,58 +19,74 @@ export async function POST(request: Request) {
 
     const results = await scrapeAccount(platform, handle);
 
-    for (const result of results) {
-      // Check for duplicates by URL
-      const { data: existing } = await supabase
-        .from("scraped_posts")
-        .select("id")
-        .eq("url", result.url)
-        .single();
+    // 1. Dedupe by URL in one query
+    const urls = results.map((r) => r.url).filter(Boolean);
+    const { data: existingRows } = await supabase
+      .from("scraped_posts")
+      .select("url")
+      .in("url", urls);
+    const existingUrls = new Set((existingRows || []).map((r) => r.url));
+    const newResults = results.filter((r) => r.url && !existingUrls.has(r.url));
 
-      if (existing) continue;
+    if (newResults.length === 0) {
+      return NextResponse.json({ scraped: 0, skipped: results.length });
+    }
 
-      // Insert scraped post
-      const { data: post } = await supabase
-        .from("scraped_posts")
-        .insert({
+    // 2. Bulk-insert all new posts in one round-trip
+    const { data: insertedPosts } = await supabase
+      .from("scraped_posts")
+      .insert(
+        newResults.map((result) => ({
           tracked_account_id: accountId,
           platform: result.platform,
           title: result.title,
           content_summary: result.content,
           engagement_stats: result.engagement,
           url: result.url,
-        })
-        .select()
-        .single();
+        }))
+      )
+      .select();
 
-      if (!post) continue;
-
-      // Analyze with Claude
-      const analysisRaw = await analyzeResearch(
-        `Title: ${result.title}\nContent: ${result.content}\nPlatform: ${result.platform}\nEngagement: ${JSON.stringify(result.engagement)}`
-      );
-
-      try {
-        // Strip markdown code block markers if present
-        const cleanJson = analysisRaw.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-        const analysis = JSON.parse(cleanJson);
-        await supabase.from("ai_analysis").insert({
-          scraped_post_id: post.id,
-          key_insight: analysis.key_insight,
-          content_opportunity: analysis.content_opportunity,
-          suggested_pillar: analysis.suggested_pillar,
-          trending_topics: analysis.trending_topics || [],
-        });
-      } catch {
-        // If Claude response isn't valid JSON, store raw text as insight
-        await supabase.from("ai_analysis").insert({
-          scraped_post_id: post.id,
-          key_insight: analysisRaw,
-        });
-      }
+    if (!insertedPosts || insertedPosts.length === 0) {
+      return NextResponse.json({ scraped: 0 });
     }
 
-    return NextResponse.json({ scraped: results.length });
+    // 3. Claude analysis in parallel (10 at a time vs serial). If analysis
+    // fails for a post, the scrape still succeeds — analysis is best-effort.
+    const analyses = await Promise.all(
+      insertedPosts.map(async (post) => {
+        try {
+          const result = newResults.find((r) => r.url === post.url);
+          if (!result) return null;
+          const raw = await analyzeResearch(
+            `Title: ${result.title}\nContent: ${result.content}\nPlatform: ${result.platform}\nEngagement: ${JSON.stringify(result.engagement)}`
+          );
+          const cleanJson = raw.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+          try {
+            const analysis = JSON.parse(cleanJson);
+            return {
+              scraped_post_id: post.id,
+              key_insight: analysis.key_insight || null,
+              content_opportunity: analysis.content_opportunity || null,
+              suggested_pillar: analysis.suggested_pillar || null,
+              trending_topics: analysis.trending_topics || [],
+            };
+          } catch {
+            return { scraped_post_id: post.id, key_insight: raw.slice(0, 2000) };
+          }
+        } catch (e) {
+          console.warn("[scrape] analysis failed for", post.url, e);
+          return null;
+        }
+      })
+    );
+
+    const validAnalyses = analyses.filter((a): a is NonNullable<typeof a> => !!a);
+    if (validAnalyses.length > 0) {
+      await supabase.from("ai_analysis").insert(validAnalyses);
+    }
+
+    return NextResponse.json({ scraped: newResults.length, skipped: results.length - newResults.length });
   } catch (error) {
     console.error("Scrape error:", error);
     return NextResponse.json(

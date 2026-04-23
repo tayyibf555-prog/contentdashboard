@@ -34,7 +34,7 @@ export async function scrapeAccount(
 
   // Start actor run and wait for it to finish
   const runResponse = await fetch(
-    `${APIFY_BASE}/acts/${actorId}/runs?token=${token}&waitForFinish=120`,
+    `${APIFY_BASE}/acts/${actorId}/runs?token=${token}&waitForFinish=45`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
