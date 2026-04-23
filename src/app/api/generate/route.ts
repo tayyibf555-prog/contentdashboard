@@ -15,7 +15,38 @@ function getSupabase() {
 
 export async function POST(request: Request) {
   const supabase = getSupabase();
-  const { platform, account, pillar, researchContext, contentType } = await request.json();
+  const { platform, account, pillar, researchContext, contentType, useWinners } = await request.json();
+
+  // If useWinners is set, build a research context from the top-engagement
+  // scraped posts for this platform. Weights comments/shares/saves higher than
+  // raw likes because those correlate with the engagement mechanics we care about.
+  let seedContext = "";
+  if (useWinners) {
+    const { data: scraped } = await supabase
+      .from("scraped_posts")
+      .select("title, content_summary, engagement_stats, url")
+      .eq("platform", platform)
+      .order("scraped_at", { ascending: false })
+      .limit(40);
+    const scored = (scraped || [])
+      .map((s) => {
+        const e = (s.engagement_stats as Record<string, number>) || {};
+        const score = (e.likes || 0) + (e.comments || 0) * 5 + (e.shares || 0) * 10 + (e.saves || 0) * 15 + (e.views || 0) * 0.1;
+        return { ...s, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+    if (scored.length > 0) {
+      seedContext = `\n\nTOP-PERFORMING POSTS FROM TRACKED ACCOUNTS (use as inspiration for hook patterns + engagement mechanics, do NOT copy directly):\n${
+        scored
+          .map((s, i) => `${i + 1}. "${s.title}" — ${JSON.stringify(s.engagement_stats)}\n   ${s.content_summary?.slice(0, 400) || ""}`)
+          .join("\n\n")
+      }`;
+    }
+  }
+
+  // Merge user-supplied research context with any winners seed
+  const mergedResearchContext = [researchContext, seedContext].filter(Boolean).join("");
 
   // Fetch voice settings
   const { data: voice } = await supabase
@@ -51,7 +82,7 @@ Strategic angle: Educate with real value so they see the gap between where they 
 
     prompt = `Generate an Instagram carousel post for ${accountHandle}.
 Content pillar: ${pillarLabel}${audienceContext}
-${researchContext ? `Research context: ${researchContext}` : ""}
+${mergedResearchContext ? `Research context: ${mergedResearchContext}` : ""}
 
 Carousel rules:
 - Slide 1: "cover" (hook the reader). The cover has EXACTLY 2 lines of large text. "headline" is line1 (white text, 1-4 words max). "accent_word" is line2 (blue text, 1-4 words max). Together they form the hook. Examples: headline="5 AI Systems" accent_word="you need.", headline="Claude" accent_word="skills.", headline="Stop Guessing" accent_word="start scaling." NEVER put a full sentence in headline — split it across the two lines.
@@ -64,7 +95,7 @@ Respond in JSON:
   } else if (contentType === "long_form") {
     prompt = `Generate a LinkedIn long-form post for ${accountHandle}.
 Content pillar: ${pillarLabel}${audienceContext}
-${researchContext ? `Research context: ${researchContext}` : ""}
+${mergedResearchContext ? `Research context: ${mergedResearchContext}` : ""}
 
 Respond in JSON format:
 {
@@ -80,7 +111,7 @@ Respond in JSON format:
   } else if (contentType === "tweet" || contentType === "thread") {
     prompt = `Generate a Twitter/X ${contentType === "thread" ? "thread" : "single tweet"} for ${accountHandle}.
 Content pillar: ${pillarLabel}${audienceContext}
-${researchContext ? `Research context: ${researchContext}` : ""}
+${mergedResearchContext ? `Research context: ${mergedResearchContext}` : ""}
 
 Respond in JSON format:
 {
@@ -92,7 +123,7 @@ Respond in JSON format:
   } else if (contentType === "video_script") {
     prompt = `Generate a YouTube video script for @tayyib.ai.
 Content pillar: ${pillarLabel}${audienceContext}
-${researchContext ? `Research context: ${researchContext}` : ""}
+${mergedResearchContext ? `Research context: ${mergedResearchContext}` : ""}
 The script should naturally include a CTA to azen.io for lead generation — woven into the content, not a hard sell.
 
 Respond in JSON format:
@@ -119,7 +150,7 @@ Respond in JSON format:
   } else if (contentType === "reel") {
     prompt = `Generate an Instagram Reel script for @tayyib.ai.
 Content pillar: ${pillarLabel}${audienceContext}
-${researchContext ? `Research context: ${researchContext}` : ""}
+${mergedResearchContext ? `Research context: ${mergedResearchContext}` : ""}
 
 Reel rules:
 - Total duration: ~30 seconds max
@@ -144,7 +175,7 @@ Respond in JSON format:
   } else {
     prompt = `Generate a short social media post for ${accountHandle} on ${platform}.
 Content pillar: ${pillarLabel}${audienceContext}
-${researchContext ? `Research context: ${researchContext}` : ""}
+${mergedResearchContext ? `Research context: ${mergedResearchContext}` : ""}
 
 Respond in JSON format:
 {
@@ -176,8 +207,8 @@ Respond in JSON format:
       body: parsed.body || parsed.caption || "",
       hashtags: parsed.hashtags || [],
       pillar,
-      source_type: researchContext ? "research" : "original",
-      source_reference: researchContext || null,
+      source_type: useWinners ? "winners" : researchContext ? "research" : "original",
+      source_reference: researchContext || (useWinners ? "Seeded from top-engagement tracked posts" : null),
       best_time: platformSchedule?.label || null,
       status: "pending",
     })
