@@ -204,7 +204,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
                 </span>
               </span>
               {active && (
-                <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-azen-accent rounded-full" style={{ boxShadow: "0 0 12px rgba(0,212,170,0.6)" }} />
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-azen-accent rounded-full" style={{ boxShadow: "0 0 12px rgba(var(--color-azen-accent-rgb), 0.6)" }} />
               )}
             </button>
           );
@@ -215,7 +215,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
         <div className="mb-6 rounded-lg bg-azen-surface border border-azen-line shadow-lift p-4">
           <div className="flex items-center justify-between gap-3 mb-2.5">
             <div className="inline-flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-azen-accent animate-pulse-dot" style={{ boxShadow: "0 0 8px rgba(0,212,170,0.8)" }} />
+              <span className="h-2 w-2 rounded-full bg-azen-accent animate-pulse-dot" style={{ boxShadow: "0 0 8px rgba(var(--color-azen-accent-rgb), 0.8)" }} />
               <span className="text-[12px] text-white">
                 Scraping <span className="text-azen-accent font-semibold">{scraping.current || "…"}</span>
               </span>
@@ -227,7 +227,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
           <div className="h-1 bg-azen-line rounded-full overflow-hidden">
             <div
               className="h-full bg-azen-accent transition-all duration-500 rounded-full"
-              style={{ width: `${(scraping.done / scraping.total) * 100}%`, boxShadow: "0 0 12px rgba(0,212,170,0.6)" }}
+              style={{ width: `${(scraping.done / scraping.total) * 100}%`, boxShadow: "0 0 12px rgba(var(--color-azen-accent-rgb), 0.6)" }}
             />
           </div>
         </div>

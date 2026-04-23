@@ -205,7 +205,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
               {active && (
                 <span
                   className="absolute bottom-0 left-2 right-2 h-[2px] bg-azen-accent rounded-full"
-                  style={{ boxShadow: "0 0 12px rgba(0,212,170,0.6)" }}
+                  style={{ boxShadow: "0 0 12px rgba(var(--color-azen-accent-rgb), 0.6)" }}
                 />
               )}
             </button>

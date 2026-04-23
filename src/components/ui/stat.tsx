@@ -96,11 +96,11 @@ function Sparkline({ values }: { values: number[] }) {
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="mt-1">
       <defs>
         <linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#00d4aa" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#00d4aa" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--color-azen-accent)" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="var(--color-azen-accent)" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <polyline points={points} fill="none" stroke="#00d4aa" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points={points} fill="none" stroke="var(--color-azen-accent)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
       <polygon points={`0,${h} ${points} ${w},${h}`} fill="url(#spark)" />
     </svg>
   );

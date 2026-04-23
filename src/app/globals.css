@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Depth-layered surface palette */
+  /* Depth-layered surface palette (Business theme defaults) */
   --color-azen-bg: #07090F;
   --color-azen-surface: #0D1220;
   --color-azen-surface-2: #131A2D;
@@ -14,6 +14,7 @@
   --color-azen-accent: #00d4aa;
   --color-azen-accent-soft: #00d4aa22;
   --color-azen-accent-glow: #00d4aa66;
+  --color-azen-accent-rgb: 0, 212, 170; /* used by rgba() in body bloom */
 
   /* Legacy aliases (existing components reference these) */
   --color-azen-card: #0D1220;
@@ -47,14 +48,35 @@ html {
   scroll-behavior: smooth;
 }
 
+/* --- Personal account theme: pure black background + blue accent --- */
+html[data-account="personal"] {
+  --color-azen-bg: #000000;
+  --color-azen-surface: #0A0A0A;
+  --color-azen-surface-2: #141414;
+  --color-azen-line: #1F1F1F;
+  --color-azen-line-strong: #2A2A2A;
+  --color-azen-muted: #6F6F6F;
+  --color-azen-text: #A0A0A5;
+  --color-azen-text-strong: #E8E8EC;
+  --color-azen-accent: #3B82F6;
+  --color-azen-accent-soft: #3B82F622;
+  --color-azen-accent-glow: #3B82F666;
+  --color-azen-accent-rgb: 59, 130, 246;
+
+  /* Legacy alias sync */
+  --color-azen-card: #0A0A0A;
+  --color-azen-border: #1F1F1F;
+}
+
 body {
-  background-color: #07090F;
+  background-color: var(--color-azen-bg);
   color: #E6EAF4;
   font-family: var(--font-outfit), system-ui, sans-serif;
   font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.005em;
+  transition: background-color 280ms ease;
 }
 
 /* Atmospheric background — grain + top-right cyan bloom. Pure CSS, no runtime cost. */
@@ -78,8 +100,14 @@ body::after {
   height: 900px;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(closest-side, rgba(0, 212, 170, 0.15), rgba(0, 212, 170, 0.04) 40%, transparent 70%);
+  background: radial-gradient(
+    closest-side,
+    rgba(var(--color-azen-accent-rgb), 0.15),
+    rgba(var(--color-azen-accent-rgb), 0.04) 40%,
+    transparent 70%
+  );
   filter: blur(20px);
+  transition: background 280ms ease;
 }
 
 /* Keep actual page content above the atmospheric layers */
@@ -98,7 +126,7 @@ body::after {
 
 /* Accessible focus ring used by interactive elements */
 :focus-visible {
-  outline: 2px solid #00d4aa;
+  outline: 2px solid var(--color-azen-accent);
   outline-offset: 2px;
   border-radius: 6px;
 }

@@ -66,13 +66,13 @@ export function Sidebar() {
         href={item.href}
         className={`group relative flex items-center gap-3 mx-3 px-3 py-2 rounded-md text-[13px] transition-all duration-200 ${
           active
-            ? "bg-azen-accent/10 text-white font-semibold shadow-[inset_0_0_0_1px_rgba(0,212,170,0.25)]"
+            ? "bg-azen-accent/10 text-white font-semibold shadow-[inset_0_0_0_1px_rgba(var(--color-azen-accent-rgb), 0.25)]"
             : "text-azen-text hover:text-white hover:bg-azen-surface-2"
         }`}
       >
         <Icon size={16} strokeWidth={active ? 2.3 : 1.8} />
         <span className="flex-1">{item.label}</span>
-        {active && <span className="h-1.5 w-1.5 rounded-full bg-azen-accent shadow-[0_0_8px_rgba(0,212,170,0.8)]" />}
+        {active && <span className="h-1.5 w-1.5 rounded-full bg-azen-accent shadow-[0_0_8px_rgba(var(--color-azen-accent-rgb), 0.8)]" />}
       </Link>
     );
   }

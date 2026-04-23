@@ -30,6 +30,13 @@ function AccountProviderInner({ children }: { children: ReactNode }) {
     }
   }, [paramAccount]);
 
+  // Reflect the active account on <html data-account="..."> so CSS can theme
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-account", account);
+    }
+  }, [account]);
+
   const setAccount = (newAccount: AccountType) => {
     setAccountState(newAccount);
     const params = new URLSearchParams(searchParams.toString());

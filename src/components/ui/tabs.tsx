@@ -92,7 +92,7 @@ export function Tabs({
             style={{
               transform: `translate3d(${underline.left}px, 0, 0)`,
               width: underline.width,
-              boxShadow: "0 0 12px rgba(0,212,170,0.6)",
+              boxShadow: "0 0 12px rgba(var(--color-azen-accent-rgb), 0.6)",
             }}
           />
         )}

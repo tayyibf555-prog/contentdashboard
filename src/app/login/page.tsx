@@ -37,7 +37,7 @@ export default function LoginPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(600px circle at 50% 30%, rgba(0,212,170,0.14), transparent 60%), radial-gradient(800px circle at 80% 80%, rgba(0,212,170,0.06), transparent 70%)",
+            "radial-gradient(600px circle at 50% 30%, rgba(var(--color-azen-accent-rgb), 0.14), transparent 60%), radial-gradient(800px circle at 80% 80%, rgba(var(--color-azen-accent-rgb), 0.06), transparent 70%)",
         }}
       />
       <div className="relative w-full max-w-md">

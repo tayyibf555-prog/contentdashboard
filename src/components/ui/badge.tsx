@@ -72,23 +72,33 @@ export function PillarBadge({ label, color }: { label: string; color: string }) 
  * Status chip — includes a pulsing dot for "live" statuses.
  */
 export function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { color: string; pulse?: boolean }> = {
+  // When `accent` is true, the status reflects the active theme accent (cyan or blue)
+  type Cfg = { color: string; pulse?: boolean; accent?: boolean };
+  const map: Record<string, Cfg> = {
     pending: { color: "#F3A01B", pulse: true },
-    approved: { color: "#00d4aa" },
-    scheduled: { color: "#00d4aa", pulse: true },
+    approved: { accent: true, color: "" },
+    scheduled: { accent: true, color: "", pulse: true },
     posted: { color: "#5ACB7B" },
     draft: { color: "#8892b0" },
-    live: { color: "#00d4aa", pulse: true },
+    live: { accent: true, color: "", pulse: true },
   };
   const cfg = map[status] || { color: "#8892b0" };
+  const fgColor = cfg.accent ? "var(--color-azen-accent)" : cfg.color;
+  const borderColor = cfg.accent
+    ? "rgba(var(--color-azen-accent-rgb), 0.3)"
+    : `${cfg.color}33`;
+  const bgColor = cfg.accent
+    ? "rgba(var(--color-azen-accent-rgb), 0.08)"
+    : `${cfg.color}10`;
+
   return (
     <span
       className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border"
-      style={{ color: cfg.color, borderColor: `${cfg.color}33`, backgroundColor: `${cfg.color}10` }}
+      style={{ color: fgColor, borderColor, backgroundColor: bgColor }}
     >
       <span
         className={`h-1.5 w-1.5 rounded-full ${cfg.pulse ? "animate-pulse-dot" : ""}`}
-        style={{ backgroundColor: cfg.color }}
+        style={{ backgroundColor: fgColor }}
       />
       {status}
     </span>

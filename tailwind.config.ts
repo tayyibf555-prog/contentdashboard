@@ -82,8 +82,10 @@ const config: Config = {
         raised: "0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.35)",
         lift: "0 8px 24px -12px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.03) inset",
         pop: "0 20px 60px -20px rgba(0,0,0,0.7), 0 4px 0 rgba(255,255,255,0.04) inset",
-        accent: "0 0 0 1px #00d4aa44, 0 8px 30px -8px #00d4aa55",
-        "accent-strong": "0 0 0 1px #00d4aa88, 0 20px 60px -12px #00d4aa66",
+        accent:
+          "0 0 0 1px rgba(var(--color-azen-accent-rgb), 0.26), 0 8px 30px -8px rgba(var(--color-azen-accent-rgb), 0.33)",
+        "accent-strong":
+          "0 0 0 1px rgba(var(--color-azen-accent-rgb), 0.55), 0 20px 60px -12px rgba(var(--color-azen-accent-rgb), 0.4)",
       },
       keyframes: {
         "fade-in-up": {
