@@ -44,6 +44,7 @@ Rules:
 - No emojis
 - Match the tone for ${targetAccount === "business" ? "a professional AI agency" : "a personal brand / entrepreneur"}
 ${targetContentType === "carousel" ? "- Return JSON with slides array" : ""}
+${targetContentType === "carousel" && targetAccount === "personal" ? `- The final "cta" slide MUST be a comment-keyword engagement CTA: pick one uppercase topic keyword (e.g. "AI", "PLAYBOOK", "GUIDE", "STACK"), set cta_text to "Comment '[KEYWORD]' and I'll DM you the [guide / step-by-step plan / playbook]". Max 12 words, no URLs, no exceptions.` : ""}
 ${targetContentType === "thread" ? "- Return JSON with thread_tweets array" : ""}
 
 Respond in JSON format:

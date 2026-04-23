@@ -81,6 +81,10 @@ Strategic angle: Educate with real value so they see the gap between where they 
 
       let prompt = "";
       if (req.contentType === "carousel") {
+        const ctaRule = req.account === "personal"
+          ? `- Slide 8: "cta" — MUST be a comment-keyword engagement CTA. Pick ONE uppercase keyword closely tied to the post topic (e.g. "AI", "PLAYBOOK", "GUIDE", "STACK", "SYSTEM", "SCALE", "FOUNDER"). The cta_text MUST follow this pattern: "Comment '[KEYWORD]' and I'll DM you the [guide / step-by-step plan / playbook / breakdown]". Max 12 words. No URLs. Every single personal carousel MUST end this way — no exceptions.`
+          : `- Slide 8: "cta" (drive action). Short punchy CTA.`;
+
         prompt = `Generate an Instagram carousel post for ${accountHandle}.
 Content pillar: ${pillarLabel}${audienceContext}
 Research context: ${researchContext}
@@ -88,7 +92,7 @@ Research context: ${researchContext}
 Carousel rules:
 - Slide 1: "cover" (hook the reader). The cover has EXACTLY 2 lines of large text. "headline" is line1 (white text, 1-4 words max). "accent_word" is line2 (blue text, 1-4 words max). Together they form the hook. Examples: headline="5 AI Systems" accent_word="you need.", headline="Stop Guessing" accent_word="start scaling." NEVER put a full sentence in headline — split it across the two lines.
 - Slides 2-7: "content" (educate/inform). Headlines max 8 words. Body text max 40 words each.
-- Slide 8: "cta" (drive action). Short punchy CTA.
+${ctaRule}
 - Include a subtitle for the cover (short tagline, max 6 words)
 
 Respond in JSON:
