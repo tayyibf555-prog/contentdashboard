@@ -120,7 +120,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       <Card variant="elevated">
         <div className="flex items-center gap-2 mb-5">
           <Trophy size={16} strokeWidth={2.2} className="text-azen-accent" />
-          <h3 className="text-white font-display italic text-display-sm tracking-tight leading-none">
+          <h3 className="text-white font-display font-semibold text-display-sm tracking-tight leading-none">
             Top performers{activePlatform !== "all" ? ` · ${activePlatform}` : ""}
           </h3>
         </div>
@@ -134,7 +134,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           <div className="divide-y divide-azen-line/60">
             {bestPosts.map((post, i) => (
               <div key={post.id} className="flex items-center gap-4 py-3.5">
-                <span className="font-display italic text-azen-accent text-[22px] leading-none w-8">{i + 1}</span>
+                <span className="font-display font-semibold text-azen-accent text-[22px] leading-none w-8">{i + 1}</span>
                 <PlatformBadge platform={post.generated_content?.platform || post.platform} />
                 <div className="flex-1 min-w-0">
                   <div className="text-white text-[13px] font-medium truncate">{post.generated_content?.title || "Untitled"}</div>

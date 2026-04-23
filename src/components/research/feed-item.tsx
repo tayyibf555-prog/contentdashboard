@@ -109,7 +109,7 @@ export function FeedItem({ post }: FeedItemProps) {
         </div>
 
         {post.title && (
-          <div className="text-white font-display italic text-[18px] leading-[1.25] mb-2 line-clamp-2">
+          <div className="text-white font-display font-semibold text-[18px] leading-[1.25] mb-2 line-clamp-2">
             {post.title}
           </div>
         )}

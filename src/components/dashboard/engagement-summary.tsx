@@ -14,7 +14,7 @@ export function EngagementSummary({ data }: { data: EngagementData }) {
       <div className="flex items-end justify-between mb-5 flex-wrap gap-2">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-azen-muted mb-1">Engagement</div>
-          <h3 className="text-white font-display italic text-display-sm tracking-tight leading-none">This week&apos;s pulse</h3>
+          <h3 className="text-white font-display font-semibold text-display-sm tracking-tight leading-none">This week&apos;s pulse</h3>
         </div>
         <span className="text-azen-text text-[11px]">vs. last 7 days</span>
       </div>

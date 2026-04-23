@@ -47,7 +47,7 @@ export default function LoginPage() {
             <Sparkles size={18} strokeWidth={2.2} className="text-azen-bg" />
           </span>
           <div>
-            <div className="font-display italic text-white text-[36px] leading-none tracking-tight">azen</div>
+            <div className="font-display font-semibold text-white text-[36px] leading-none tracking-tight">azen</div>
             <div className="text-azen-muted text-[10px] uppercase tracking-[0.3em] mt-1">content · hub</div>
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function LoginPage() {
         >
           <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-azen-accent/70 to-transparent" />
           <div className="p-8">
-            <h2 className="font-display italic text-white text-display-sm tracking-tight leading-none mb-1">
+            <h2 className="font-display font-semibold text-white text-display-sm tracking-tight leading-none mb-1">
               Welcome back.
             </h2>
             <p className="text-azen-text text-[13px] mb-7">Sign in to your content hub.</p>

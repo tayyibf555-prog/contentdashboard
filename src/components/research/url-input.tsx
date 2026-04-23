@@ -37,7 +37,7 @@ export function UrlInput() {
       <div className="flex items-end justify-between flex-wrap gap-2 mb-4">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-azen-muted mb-1">URL Analysis</div>
-          <h3 className="text-white font-display italic text-display-sm tracking-tight leading-none">Analyse any link</h3>
+          <h3 className="text-white font-display font-semibold text-display-sm tracking-tight leading-none">Analyse any link</h3>
         </div>
       </div>
       <div className="flex gap-2">

@@ -13,11 +13,14 @@ const outfit = localFont({
   display: "swap",
 });
 
-const playfair = localFont({
+const clashDisplay = localFont({
   src: [
-    { path: "../../public/fonts/PlayfairDisplay-BlackItalic.ttf", weight: "900", style: "italic" },
+    { path: "../../public/fonts/ClashDisplay-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../../public/fonts/ClashDisplay-Medium.ttf", weight: "500", style: "normal" },
+    { path: "../../public/fonts/ClashDisplay-Semibold.ttf", weight: "600", style: "normal" },
+    { path: "../../public/fonts/ClashDisplay-Bold.ttf", weight: "700", style: "normal" },
   ],
-  variable: "--font-playfair",
+  variable: "--font-clash",
   display: "swap",
 });
 
@@ -41,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${playfair.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${clashDisplay.variable} ${jetbrains.variable}`}>
       <body>
         <AccountProvider>
           <div className="flex min-h-screen">

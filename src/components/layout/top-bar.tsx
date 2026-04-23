@@ -19,7 +19,7 @@ export function TopBar({
             {eyebrow}
           </div>
         )}
-        <h1 className="text-white font-display italic text-display leading-none tracking-[-0.02em]">{title}</h1>
+        <h1 className="text-white font-display font-semibold text-display leading-none tracking-[-0.02em]">{title}</h1>
         {subtitle && (
           <p className="text-azen-text text-[13px] mt-3 max-w-2xl leading-relaxed">{subtitle}</p>
         )}

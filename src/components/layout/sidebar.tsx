@@ -86,7 +86,7 @@ export function Sidebar() {
             <Sparkles size={14} strokeWidth={2.2} className="text-azen-bg" />
           </span>
           <div className="leading-none">
-            <div className="font-display italic text-white text-[22px] tracking-tight">azen</div>
+            <div className="font-display font-semibold text-white text-[22px] tracking-tight">azen</div>
             <div className="text-azen-muted text-[9px] uppercase tracking-[0.2em] mt-0.5">content · hub</div>
           </div>
         </Link>

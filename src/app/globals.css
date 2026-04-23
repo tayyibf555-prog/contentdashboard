@@ -38,7 +38,7 @@
   --color-pillar-trends: #81ecec;
 
   /* Typography tokens — loaded from next/font in layout.tsx */
-  --font-display: var(--font-playfair), "Playfair Display", serif;
+  --font-display: var(--font-clash), "Clash Display", system-ui, sans-serif;
   --font-sans: var(--font-outfit), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", monospace;
 }

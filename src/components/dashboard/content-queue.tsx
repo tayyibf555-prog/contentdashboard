@@ -22,7 +22,7 @@ export function ContentQueue({
       <div className="flex items-end justify-between mb-5 flex-wrap gap-2">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-azen-muted mb-1">Queue</div>
-          <h2 className="text-white font-display italic text-display-sm tracking-tight leading-none">
+          <h2 className="text-white font-display font-semibold text-display-sm tracking-tight leading-none">
             Ready for approval
           </h2>
         </div>

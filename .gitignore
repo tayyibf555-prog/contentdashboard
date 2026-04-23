@@ -40,3 +40,7 @@ test-cover-*.png
 test-tayyib-*.png
 test-content.png
 test-cta.png
+.env.vercel
+
+.env.vercel
+.superpowers/

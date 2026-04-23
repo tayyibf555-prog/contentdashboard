@@ -44,9 +44,9 @@ export function Stat({
   }, [numericValue, value, animate]);
 
   const valueClass = size === "hero"
-    ? "text-hero font-display italic"
+    ? "text-hero font-display font-semibold"
     : size === "lg"
-      ? "text-display-sm font-display italic"
+      ? "text-display-sm font-display font-semibold"
       : "text-display-sm font-mono";
 
   const formatted = typeof display === "number" && format === "number"
