@@ -68,14 +68,17 @@ html[data-account="personal"] {
   --color-azen-border: #1F1F1F;
 }
 
+/* Global body gradient: black at top fading into royal blue at bottom.
+   Hardcoded royal blue so the fade stays royal blue even when the active
+   theme's accent is cyan (business). */
 body {
-  background-color: var(--color-azen-bg);
+  background-color: #000000;
   background-image: linear-gradient(
-    175deg,
-    var(--color-azen-bg) 0%,
-    var(--color-azen-bg) 35%,
-    rgba(var(--color-azen-accent-rgb), 0.12) 70%,
-    rgba(var(--color-azen-accent-rgb), 0.32) 100%
+    180deg,
+    #000000 0%,
+    #000000 35%,
+    rgba(74, 108, 247, 0.22) 75%,
+    rgba(74, 108, 247, 0.55) 100%
   );
   background-attachment: fixed;
   color: #E6EAF4;
@@ -84,17 +87,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.005em;
-  transition: background-color 280ms ease;
 }
 
-/* Personal theme: stronger black-to-blue fade */
 html[data-account="personal"] body {
   background-image: linear-gradient(
     180deg,
     #000000 0%,
     #000000 30%,
-    rgba(var(--color-azen-accent-rgb), 0.18) 75%,
-    rgba(var(--color-azen-accent-rgb), 0.45) 100%
+    rgba(74, 108, 247, 0.28) 75%,
+    rgba(74, 108, 247, 0.65) 100%
   );
 }
 
@@ -119,14 +120,14 @@ body::after {
   height: 900px;
   pointer-events: none;
   z-index: 0;
+  /* Royal blue bloom so the overall atmosphere is consistent black→royal blue */
   background: radial-gradient(
     closest-side,
-    rgba(var(--color-azen-accent-rgb), 0.15),
-    rgba(var(--color-azen-accent-rgb), 0.04) 40%,
+    rgba(74, 108, 247, 0.18),
+    rgba(74, 108, 247, 0.05) 40%,
     transparent 70%
   );
   filter: blur(20px);
-  transition: background 280ms ease;
 }
 
 /* Keep actual page content above the atmospheric layers */
