@@ -75,7 +75,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
             },
             account: post.account,
             pillar: post.pillar || "education",
-            variant: slide.template_variant || "architect",
+            variant: slide.template_variant || "tayyib",
           }),
         });
         if (!res.ok) {
@@ -271,7 +271,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
             {slides.length > 0 && (current.status === "pending" || current.status === "draft") && (
               <TemplatePicker
                 slides={slides}
-                currentVariant={slides[0]?.template_variant || "architect"}
+                currentVariant={slides[0]?.template_variant || "tayyib"}
                 account={current.account}
                 onApply={handleSwitchTemplate}
                 loading={loading === "template"}

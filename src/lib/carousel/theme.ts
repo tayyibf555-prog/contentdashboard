@@ -1,11 +1,12 @@
 import { BUSINESS_PILLARS, PERSONAL_PILLARS } from "@/lib/constants";
 import type { TemplateVariant, SlideTheme } from "./types";
 
-const ACCOUNT_VARIANTS: Record<string, TemplateVariant[]> = {
-  business: ["azen", "architect"],
-  personal: ["tayyib", "gradient"],
-};
-
+/**
+ * Every generated carousel — business or personal — now defaults to the
+ * tayyib template (black + royal-blue radial + subtle grain + spec-literal
+ * typography). Manual template overrides from the UI still work via
+ * variantOverride, so you can pick a different variant per-post if needed.
+ */
 export function resolveTheme(
   account: "business" | "personal",
   pillar: string,
@@ -13,16 +14,11 @@ export function resolveTheme(
 ): SlideTheme {
   const pillars = account === "business" ? BUSINESS_PILLARS : PERSONAL_PILLARS;
   const pillarDef = pillars.find((p) => p.key === pillar);
-  const accentColor = pillarDef?.color || "#5BC4F7";
+  // Accent defaults to the tayyib royal blue; a non-default variant can still
+  // read the pillar colour if it wants to
+  const accentColor = pillarDef?.color || "#3B82F6";
 
-  let variant: TemplateVariant;
-  if (variantOverride) {
-    variant = variantOverride;
-  } else {
-    const defaults = ACCOUNT_VARIANTS[account];
-    const pillarIndex = pillars.findIndex((p) => p.key === pillar);
-    variant = defaults[Math.max(0, pillarIndex) % defaults.length];
-  }
+  const variant: TemplateVariant = variantOverride || "tayyib";
 
   return { variant, accentColor, account, pillar };
 }
