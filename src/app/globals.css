@@ -68,17 +68,16 @@ html[data-account="personal"] {
   --color-azen-border: #1F1F1F;
 }
 
-/* Global body gradient: black at top fading into royal blue at bottom.
-   Hardcoded royal blue so the fade stays royal blue even when the active
-   theme's accent is cyan (business). */
+/* Body gradient — different per active account so switching is visible. */
 body {
   background-color: #000000;
+  /* Business default: black → dark teal */
   background-image: linear-gradient(
     180deg,
     #000000 0%,
     #000000 35%,
-    rgba(74, 108, 247, 0.22) 75%,
-    rgba(74, 108, 247, 0.55) 100%
+    rgba(14, 75, 75, 0.45) 75%,
+    rgba(20, 115, 108, 0.75) 100%
   );
   background-attachment: fixed;
   color: #E6EAF4;
@@ -87,8 +86,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.005em;
+  transition: background-image 350ms ease;
 }
 
+/* Personal: black → royal blue */
 html[data-account="personal"] body {
   background-image: linear-gradient(
     180deg,
@@ -120,14 +121,25 @@ body::after {
   height: 900px;
   pointer-events: none;
   z-index: 0;
-  /* Royal blue bloom so the overall atmosphere is consistent black→royal blue */
+  /* Business: deep teal bloom (matches black→teal bg) */
   background: radial-gradient(
     closest-side,
-    rgba(74, 108, 247, 0.18),
-    rgba(74, 108, 247, 0.05) 40%,
+    rgba(20, 115, 108, 0.22),
+    rgba(14, 75, 75, 0.08) 40%,
     transparent 70%
   );
   filter: blur(20px);
+  transition: background 350ms ease;
+}
+
+html[data-account="personal"] body::after {
+  /* Personal: royal blue bloom */
+  background: radial-gradient(
+    closest-side,
+    rgba(74, 108, 247, 0.22),
+    rgba(74, 108, 247, 0.06) 40%,
+    transparent 70%
+  );
 }
 
 /* Keep actual page content above the atmospheric layers */
