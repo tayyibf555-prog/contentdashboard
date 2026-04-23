@@ -10,15 +10,27 @@ const TABS = [
   { key: "linkedin", label: "LinkedIn" },
 ] as const;
 
-export function PlatformTabs({ active, counts }: { active: string; counts: Record<string, number> }) {
+export function PlatformTabs({
+  active,
+  counts,
+  basePath = "/research",
+  showCounts = true,
+}: {
+  active: string;
+  counts?: Record<string, number>;
+  basePath?: string;
+  showCounts?: boolean;
+}) {
   return (
     <div className="flex gap-2 mb-4 flex-wrap">
       {TABS.map((t) => {
-        const href = t.key === "all" ? "/research" : `/research?platform=${t.key}`;
+        const href = t.key === "all" ? basePath : `${basePath}?platform=${t.key}`;
         const isActive = active === t.key || (t.key === "all" && !active);
-        const count = t.key === "all"
-          ? Object.values(counts).reduce((a, b) => a + b, 0)
-          : (counts[t.key] || 0);
+        const count = counts
+          ? t.key === "all"
+            ? Object.values(counts).reduce((a, b) => a + b, 0)
+            : counts[t.key] || 0
+          : undefined;
         return (
           <Link
             key={t.key}
@@ -30,9 +42,11 @@ export function PlatformTabs({ active, counts }: { active: string; counts: Recor
             }`}
           >
             {t.label}
-            <span className={`text-[10px] px-1.5 py-0.5 rounded ${isActive ? "bg-azen-bg/20 text-azen-bg" : "bg-azen-border text-azen-text"}`}>
-              {count}
-            </span>
+            {showCounts && counts && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${isActive ? "bg-azen-bg/20 text-azen-bg" : "bg-azen-border text-azen-text"}`}>
+                {count}
+              </span>
+            )}
           </Link>
         );
       })}

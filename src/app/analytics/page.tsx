@@ -1,24 +1,39 @@
 import { TopBar } from "@/components/layout/top-bar";
 import { Card } from "@/components/ui/card";
 import { PlatformBadge } from "@/components/ui/badge";
+import { PlatformTabs } from "@/components/research/platform-tabs";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export default async function AnalyticsPage() {
+export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<{ platform?: string }> }) {
   const supabase = await createServerSupabaseClient();
+  const { platform } = await searchParams;
+  const activePlatform = platform || "all";
 
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: thisWeek } = await supabase
+  // Per-platform counts across the last 7 days (for tab badges)
+  const { data: weekCountsRaw } = await supabase
+    .from("engagement_metrics")
+    .select("platform")
+    .gte("recorded_at", weekAgo);
+  const counts: Record<string, number> = {};
+  for (const m of weekCountsRaw || []) counts[m.platform] = (counts[m.platform] || 0) + 1;
+
+  let thisWeekQuery = supabase
     .from("engagement_metrics")
     .select("*, generated_content(title, platform, pillar)")
     .gte("recorded_at", weekAgo);
+  if (activePlatform !== "all") thisWeekQuery = thisWeekQuery.eq("platform", activePlatform);
+  const { data: thisWeek } = await thisWeekQuery;
 
-  const { data: lastWeek } = await supabase
+  let lastWeekQuery = supabase
     .from("engagement_metrics")
     .select("*")
     .gte("recorded_at", twoWeeksAgo)
     .lt("recorded_at", weekAgo);
+  if (activePlatform !== "all") lastWeekQuery = lastWeekQuery.eq("platform", activePlatform);
+  const { data: lastWeek } = await lastWeekQuery;
 
   const thisWeekTotals = (thisWeek || []).reduce(
     (acc, m) => ({
@@ -52,16 +67,23 @@ export default async function AnalyticsPage() {
     { label: "Views", value: thisWeekTotals.views, change: change(thisWeekTotals.views, lastWeekTotals.views) },
   ];
 
-  // Best performing posts
   const bestPosts = (thisWeek || [])
     .sort((a, b) => (b.likes + b.comments + b.shares) - (a.likes + a.comments + a.shares))
     .slice(0, 5);
 
   return (
     <div>
-      <TopBar title="Analytics" subtitle="Engagement metrics across all platforms" />
+      <TopBar
+        title="Analytics"
+        subtitle={
+          activePlatform === "all"
+            ? "Engagement metrics across all platforms"
+            : `${activePlatform.charAt(0).toUpperCase() + activePlatform.slice(1)} engagement · last 7 days`
+        }
+      />
 
-      {/* Metrics Cards */}
+      <PlatformTabs active={activePlatform} counts={counts} basePath="/analytics" />
+
       <div className="grid grid-cols-4 gap-3 mb-6">
         {metrics.map((m) => (
           <Card key={m.label}>
@@ -74,11 +96,16 @@ export default async function AnalyticsPage() {
         ))}
       </div>
 
-      {/* Best Posts */}
       <Card>
-        <h3 className="text-white text-sm font-semibold mb-3">Top Performing Posts</h3>
+        <h3 className="text-white text-sm font-semibold mb-3">
+          Top Performing Posts{activePlatform !== "all" ? ` · ${activePlatform}` : ""}
+        </h3>
         {bestPosts.length === 0 ? (
-          <p className="text-azen-text text-xs">No engagement data yet.</p>
+          <p className="text-azen-text text-xs">
+            {activePlatform === "all"
+              ? "No engagement data yet."
+              : `No ${activePlatform} engagement data yet.`}
+          </p>
         ) : (
           <div className="space-y-2">
             {bestPosts.map((post) => (
