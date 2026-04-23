@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Radar,
+  BookOpen,
   Camera,
   Briefcase,
   MessageSquare,
@@ -31,6 +32,7 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Content",
     items: [
+      { href: "/strategy", label: "Strategy", icon: BookOpen },
       { href: "/instagram", label: "Instagram", icon: Camera },
       { href: "/linkedin", label: "LinkedIn", icon: Briefcase },
       { href: "/twitter", label: "Twitter / X", icon: MessageSquare },

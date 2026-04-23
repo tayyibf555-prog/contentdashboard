@@ -48,6 +48,23 @@ export type GeneratedContent = {
   created_at: string;
 };
 
+export type Strategy = {
+  id: string;
+  platform: "instagram" | "linkedin" | "twitter" | "youtube";
+  account: "personal" | "business" | "both";
+  category: "hook" | "format" | "engagement" | "cadence" | "distribution" | "positioning";
+  title: string;
+  summary: string;
+  when_to_use: string;
+  how_to_apply: string[];
+  example: string | null;
+  why_it_works: string;
+  sources: Array<{ title: string; url: string }>;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type EngagementIdea = {
   id: string;
   account: "business" | "personal";
