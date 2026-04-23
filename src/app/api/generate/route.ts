@@ -15,7 +15,30 @@ function getSupabase() {
 
 export async function POST(request: Request) {
   const supabase = getSupabase();
-  const { platform, account, pillar, researchContext, contentType, useWinners } = await request.json();
+  const { platform, account, pillar, researchContext, contentType, useWinners, strategyId } = await request.json();
+
+  // If a strategyId is provided, fetch and inject it as the primary playbook
+  let strategyContext = "";
+  if (strategyId) {
+    const { data: strat } = await supabase
+      .from("strategies")
+      .select("title, summary, when_to_use, how_to_apply, example, why_it_works, category")
+      .eq("id", strategyId)
+      .single();
+    if (strat) {
+      strategyContext = `\n\nPRIMARY STRATEGY PLAYBOOK — FOLLOW THIS EXACTLY:
+Title: ${strat.title}
+Category: ${strat.category}
+Summary: ${strat.summary}
+When to use: ${strat.when_to_use}
+How to apply:
+${(strat.how_to_apply as string[]).map((s, i) => `  ${i + 1}. ${s}`).join("\n")}
+${strat.example ? `Example: ${strat.example}` : ""}
+Why it works: ${strat.why_it_works}
+
+IMPORTANT: The generated content MUST follow this strategy's hook pattern, format, and engagement mechanic. Do not deviate.`;
+    }
+  }
 
   // If useWinners is set, build a research context from the top-engagement
   // scraped posts for this platform. Weights comments/shares/saves higher than
@@ -45,8 +68,8 @@ export async function POST(request: Request) {
     }
   }
 
-  // Merge user-supplied research context with any winners seed
-  const mergedResearchContext = [researchContext, seedContext].filter(Boolean).join("");
+  // Merge user-supplied research context + winners seed + strategy playbook
+  const mergedResearchContext = [researchContext, seedContext, strategyContext].filter(Boolean).join("");
 
   // Fetch voice settings
   const { data: voice } = await supabase
@@ -207,8 +230,10 @@ Respond in JSON format:
       body: parsed.body || parsed.caption || "",
       hashtags: parsed.hashtags || [],
       pillar,
-      source_type: useWinners ? "winners" : researchContext ? "research" : "original",
-      source_reference: researchContext || (useWinners ? "Seeded from top-engagement tracked posts" : null),
+      source_type: strategyId ? "strategy" : useWinners ? "winners" : researchContext ? "research" : "original",
+      source_reference: strategyId
+        ? `strategy:${strategyId}`
+        : researchContext || (useWinners ? "Seeded from top-engagement tracked posts" : null),
       best_time: platformSchedule?.label || null,
       status: "pending",
     })

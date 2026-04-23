@@ -41,11 +41,19 @@ export function TemplatePicker({
 
   if (!previewSlide) return null;
 
+  // Personal account only ever uses the tayyib template — hide the rest
+  const availableVariants = account === "personal"
+    ? VARIANTS.filter((v) => v.key === "tayyib")
+    : VARIANTS;
+
+  // Personal has a single option — no picker UI needed at all
+  if (availableVariants.length <= 1) return null;
+
   return (
     <div className="mt-4">
       <div className="text-xs font-semibold text-white mb-2">Template Style</div>
       <div className="grid grid-cols-6 gap-2">
-        {VARIANTS.map((v) => (
+        {availableVariants.map((v) => (
           <button
             key={v.key}
             onClick={() => setSelected(v.key)}
@@ -76,7 +84,7 @@ export function TemplatePicker({
           disabled={loading}
           className="mt-2 w-full py-1.5 rounded-lg text-xs font-semibold bg-azen-accent text-azen-bg hover:bg-azen-accent/90 disabled:opacity-50 transition-colors"
         >
-          {loading ? "Applying template..." : `Apply "${VARIANTS.find((v) => v.key === selected)?.label}" to all slides`}
+          {loading ? "Applying template..." : `Apply "${availableVariants.find((v) => v.key === selected)?.label}" to all slides`}
         </button>
       )}
     </div>

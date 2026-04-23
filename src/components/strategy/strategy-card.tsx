@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ExternalLink, Pencil, Archive } from "lucide-react";
+import { ChevronDown, ExternalLink, Pencil, Archive, Sparkles } from "lucide-react";
 import type { Strategy } from "@/types";
 
 const CATEGORY_COLORS: Record<Strategy["category"], string> = {
@@ -19,10 +19,12 @@ export function StrategyCard({
   strategy,
   onEdit,
   onArchive,
+  onGenerate,
 }: {
   strategy: Strategy;
   onEdit: (s: Strategy) => void;
   onArchive: (s: Strategy) => void;
+  onGenerate: (s: Strategy) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const dotColor = CATEGORY_COLORS[strategy.category];
@@ -45,13 +47,18 @@ export function StrategyCard({
       </h3>
       <p className="text-azen-text text-[13px] leading-relaxed mb-4">{strategy.summary}</p>
 
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="inline-flex items-center gap-1 text-[11px] font-semibold text-white hover:text-azen-accent transition-colors"
-      >
-        {expanded ? "Hide details" : "Read more"}
-        <ChevronDown size={13} className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
-      </button>
+      <div className="flex items-center justify-between gap-3">
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="inline-flex items-center gap-1 text-[11px] font-semibold text-white hover:text-azen-accent transition-colors"
+        >
+          {expanded ? "Hide details" : "Read more"}
+          <ChevronDown size={13} className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
+        </button>
+        <Button variant="primary" size="sm" onClick={() => onGenerate(strategy)}>
+          <Sparkles size={12} /> Generate from this
+        </Button>
+      </div>
 
       {expanded && (
         <div className="mt-4 pt-4 border-t border-azen-line space-y-4 animate-fade-in">

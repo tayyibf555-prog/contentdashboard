@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StrategyCard } from "@/components/strategy/strategy-card";
 import { StrategyForm } from "@/components/strategy/strategy-form";
+import { GenerateFromStrategy } from "@/components/strategy/generate-from-strategy";
 import { BookOpen, Plus, Search } from "lucide-react";
 import type { Strategy } from "@/types";
 
@@ -25,6 +26,8 @@ export function StrategyClient({
   const [accountFilter, setAccountFilter] = useState<Account>(activeAccount);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Strategy | null>(null);
+  const [generateOpen, setGenerateOpen] = useState(false);
+  const [generating, setGenerating] = useState<Strategy | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -54,6 +57,10 @@ export function StrategyClient({
   function openEdit(s: Strategy) {
     setEditing(s);
     setFormOpen(true);
+  }
+  function openGenerate(s: Strategy) {
+    setGenerating(s);
+    setGenerateOpen(true);
   }
   function onSaved() {
     setFormOpen(false);
@@ -124,12 +131,13 @@ export function StrategyClient({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger">
           {filtered.map((s) => (
-            <StrategyCard key={s.id} strategy={s} onEdit={openEdit} onArchive={archive} />
+            <StrategyCard key={s.id} strategy={s} onEdit={openEdit} onArchive={archive} onGenerate={openGenerate} />
           ))}
         </div>
       )}
 
       <StrategyForm open={formOpen} onClose={() => setFormOpen(false)} initial={editing} onSaved={onSaved} />
+      <GenerateFromStrategy open={generateOpen} onClose={() => setGenerateOpen(false)} strategy={generating} />
     </div>
   );
 }
