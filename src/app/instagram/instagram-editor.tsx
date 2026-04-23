@@ -99,11 +99,10 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
     router.refresh();
   }, [router]);
 
-  // Personal carousels require user-uploaded background before generation
-  const needsBackgroundUpload = current?.account === "personal" &&
-    current?.content_type === "carousel" &&
-    (current?.carousel_slides?.length ?? 0) > 0 &&
-    current.carousel_slides.some((s) => !s.image_url && !s.custom_background_url);
+  // Personal carousels now fall back to the black→royal-blue gradient when no
+  // custom background is uploaded, so we no longer force an upload before
+  // generation. Upload is still OFFERED as an optional override below.
+  const needsBackgroundUpload = false;
 
   // Auto-generate on mount when slides are missing images.
   // Skip for personal carousels that still need a user-uploaded background.

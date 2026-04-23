@@ -58,9 +58,37 @@ function GrainOverlay() {
   );
 }
 
-function SolidFallback() {
+/**
+ * Default background when the user hasn't uploaded an image — matches the
+ * dashboard's black → royal-blue gradient so the rendered carousel feels like
+ * it came from the same design system as the app.
+ */
+function GradientFallback() {
   return (
-    <div style={{ position: "absolute", top: 0, left: 0, width: W, height: H, background: "#0B0F14" }} />
+    <>
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: W,
+          height: H,
+          background:
+            "linear-gradient(180deg, #000000 0%, #000000 30%, rgba(74,108,247,0.28) 75%, rgba(74,108,247,0.65) 100%)",
+        }}
+      />
+      {/* Top-right royal blue bloom so the flat page gets atmosphere, matching the app shell */}
+      <div
+        style={{
+          position: "absolute",
+          top: -280,
+          right: -180,
+          width: 900,
+          height: 900,
+          background: "radial-gradient(closest-side, rgba(74,108,247,0.22), rgba(74,108,247,0.06) 40%, transparent 70%)",
+        }}
+      />
+    </>
   );
 }
 
@@ -117,8 +145,14 @@ export function TayyibCover({ headline, accentWord, subtitle, slideNumber, total
 
   return (
     <div style={{ width: W, height: H, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
-      {backgroundImage ? <BackgroundImage base64={backgroundImage} /> : <SolidFallback />}
-      <GradientOverlay />
+      {backgroundImage ? (
+        <>
+          <BackgroundImage base64={backgroundImage} />
+          <GradientOverlay />
+        </>
+      ) : (
+        <GradientFallback />
+      )}
       <GrainOverlay />
 
       <PageCounter current={slideNumber} total={totalSlides} />
@@ -211,8 +245,14 @@ export function TayyibCover({ headline, accentWord, subtitle, slideNumber, total
 export function TayyibContent({ headline, bodyText, slideNumber, totalSlides, backgroundImage }: ContentSlideProps) {
   return (
     <div style={{ width: W, height: H, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
-      {backgroundImage ? <BackgroundImage base64={backgroundImage} /> : <SolidFallback />}
-      <GradientOverlay />
+      {backgroundImage ? (
+        <>
+          <BackgroundImage base64={backgroundImage} />
+          <GradientOverlay />
+        </>
+      ) : (
+        <GradientFallback />
+      )}
       <GrainOverlay />
 
       <PageCounter current={slideNumber} total={totalSlides} />
@@ -263,8 +303,14 @@ export function TayyibCta({ headline, ctaText, slideNumber, totalSlides, backgro
 
   return (
     <div style={{ width: W, height: H, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
-      {backgroundImage ? <BackgroundImage base64={backgroundImage} /> : <SolidFallback />}
-      <GradientOverlay />
+      {backgroundImage ? (
+        <>
+          <BackgroundImage base64={backgroundImage} />
+          <GradientOverlay />
+        </>
+      ) : (
+        <GradientFallback />
+      )}
       <GrainOverlay />
 
       <PageCounter current={slideNumber} total={totalSlides} />
