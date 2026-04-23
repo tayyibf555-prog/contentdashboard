@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { InstagramEditor } from "./instagram-editor";
 import { ReelEditor } from "@/components/instagram/reel-editor";
 import { IdeasTab } from "@/components/instagram/ideas-tab";
@@ -13,6 +14,7 @@ type ReelPost = GeneratedContent & { reel_scripts: ReelScript[] };
 type RecreatedPost = GeneratedContent & { carousel_slides?: CarouselSlide[]; reel_scripts?: ReelScript[] };
 
 type Tab = "carousels" | "reels" | "ideas" | "recreate" | "recreated";
+const VALID_TABS: Tab[] = ["carousels", "reels", "ideas", "recreate", "recreated"];
 
 export function InstagramPageClient({
   carouselPosts,
@@ -27,7 +29,26 @@ export function InstagramPageClient({
   recreatedPosts: RecreatedPost[];
   account: string;
 }) {
-  const [tab, setTab] = useState<Tab>("carousels");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const urlTab = searchParams.get("tab") as Tab | null;
+  const [tab, setTab] = useState<Tab>(urlTab && VALID_TABS.includes(urlTab) ? urlTab : "carousels");
+
+  // Keep state in sync when the user clicks a deep link with ?tab=...
+  useEffect(() => {
+    if (urlTab && VALID_TABS.includes(urlTab) && urlTab !== tab) setTab(urlTab);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlTab]);
+
+  function switchTab(next: Tab) {
+    setTab(next);
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === "carousels") params.delete("tab");
+    else params.set("tab", next);
+    const query = params.toString();
+    router.replace(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
+  }
   const isPersonal = account === "personal";
   const acc = (account === "business" ? "business" : "personal") as "business" | "personal";
 
@@ -49,7 +70,7 @@ export function InstagramPageClient({
         {visibleTabs.map((t) => (
           <button
             key={t.key}
-            onClick={() => setTab(t.key)}
+            onClick={() => switchTab(t.key)}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 ${
               tab === t.key
                 ? "bg-azen-accent text-azen-bg"

@@ -79,7 +79,11 @@ function RecreatedCard({ post }: { post: RecreatedPost }) {
 
       <div className="flex gap-2 mt-auto pt-2 border-t border-azen-border">
         <Link
-          href={`/instagram?account=personal`}
+          href={isReel
+            ? `/instagram?account=personal&tab=reels`
+            : isCarousel
+              ? `/instagram?account=personal&tab=carousels`
+              : `/instagram?account=personal`}
           className="flex-1 py-1.5 rounded-md text-xs font-semibold bg-azen-accent text-azen-bg hover:opacity-90 text-center"
         >
           Open to edit

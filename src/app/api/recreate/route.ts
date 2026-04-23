@@ -67,12 +67,13 @@ export async function POST(request: Request) {
       forceFormat: detectedFormat,
     });
 
-    // Optionally save as a draft immediately
+    // Optionally save as a draft immediately (including child rows so the
+    // post opens properly in the Instagram editor)
     let draftId: string | null = null;
     if (saveAsDraft) {
       const supabase = getSupabase();
       const contentType = plan.format === "carousel" ? "carousel" : plan.format === "reel" ? "reel" : "short";
-      const { data } = await supabase
+      const { data: content } = await supabase
         .from("generated_content")
         .insert({
           platform: "instagram",
@@ -85,9 +86,78 @@ export async function POST(request: Request) {
           source_reference: url || description || null,
           status: "draft",
         })
-        .select("id")
+        .select()
         .single();
-      if (data) draftId = data.id as string;
+
+      if (content) {
+        draftId = content.id as string;
+
+        if (contentType === "carousel" && plan.structure.length > 0) {
+          // Map Claude's flat structure into cover / content / cta slides.
+          // First slot is cover (uses plan.hook split across headline + accent).
+          // Last slot is CTA (uses plan.cta + plan.engagement_mechanic).
+          const hookWords = plan.hook.trim().split(/\s+/);
+          const splitAt = Math.ceil(hookWords.length / 2);
+          const coverHeadline = hookWords.slice(0, splitAt).join(" ");
+          const coverAccent = hookWords.slice(splitAt).join(" ") || plan.topic;
+
+          const slides: Array<{
+            generated_content_id: string;
+            slide_number: number;
+            slide_type: "cover" | "content" | "cta";
+            headline: string;
+            body_text: string;
+            template_variant: "architect";
+            accent_color: string;
+          }> = [
+            {
+              generated_content_id: draftId,
+              slide_number: 1,
+              slide_type: "cover",
+              headline: coverHeadline,
+              body_text: coverAccent,
+              template_variant: "architect",
+              accent_color: "#C5F04A",
+            },
+          ];
+
+          const contentBeats = plan.structure.slice(0, 6);
+          contentBeats.forEach((beat, i) => {
+            slides.push({
+              generated_content_id: draftId!,
+              slide_number: i + 2,
+              slide_type: "content",
+              headline: beat.slide_or_beat || `Beat ${i + 1}`,
+              body_text: beat.notes || "",
+              template_variant: "architect",
+              accent_color: "#C5F04A",
+            });
+          });
+
+          slides.push({
+            generated_content_id: draftId,
+            slide_number: slides.length + 1,
+            slide_type: "cta",
+            headline: plan.cta || "Next step",
+            body_text: plan.engagement_mechanic || plan.cta,
+            template_variant: "architect",
+            accent_color: "#C5F04A",
+          });
+
+          await supabase.from("carousel_slides").insert(slides);
+        }
+
+        if (contentType === "reel") {
+          await supabase.from("reel_scripts").insert({
+            generated_content_id: draftId,
+            hook: plan.hook,
+            body_script: plan.structure.map((s, i) => `${i + 1}. ${s.slide_or_beat}${s.voiceover ? `\n   ${s.voiceover}` : ""}`).join("\n\n"),
+            cta: `${plan.cta}\n\n${plan.engagement_mechanic}`,
+            on_screen_text: plan.structure.map((s) => s.on_screen_text).filter(Boolean) as string[],
+            recording_notes: [plan.recording_tips, plan.shot_list_or_slide_notes].filter(Boolean).join("\n\n"),
+          });
+        }
+      }
     }
 
     return NextResponse.json({ plan, draftId });
