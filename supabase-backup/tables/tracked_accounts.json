@@ -1,0 +1,432 @@
+[
+  {
+    "id": "6f11aee7-e759-4380-8d5e-58ec596e966b",
+    "name": "Liam Ottley",
+    "category": "leader",
+    "platforms": [
+      "youtube",
+      "twitter",
+      "instagram"
+    ],
+    "handles": {
+      "twitter": "@liloai",
+      "youtube": "@LiamOttley",
+      "instagram": "@liamottley"
+    },
+    "created_at": "2026-03-22T21:28:49.637258+00:00"
+  },
+  {
+    "id": "edc8a523-e769-473a-9663-fd9819757a96",
+    "name": "Nate Herk",
+    "category": "leader",
+    "platforms": [
+      "youtube",
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "@nateherk",
+      "youtube": "@NateHerk"
+    },
+    "created_at": "2026-03-22T21:28:49.637258+00:00"
+  },
+  {
+    "id": "4469c3ab-11c8-48ab-b8de-159408b4451d",
+    "name": "Tyler Germain",
+    "category": "leader",
+    "platforms": [
+      "youtube",
+      "linkedin"
+    ],
+    "handles": {
+      "youtube": "@TylerGermain",
+      "linkedin": "tylergermain"
+    },
+    "created_at": "2026-03-22T21:28:49.637258+00:00"
+  },
+  {
+    "id": "2b97d673-874c-4bfa-ba7c-122f911857b4",
+    "name": "Sam Altman",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "sama"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "4afa5b48-0353-43ee-85b6-8a59a9cb9734",
+    "name": "Dario Amodei",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "DarioAmodei"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "fc67b11c-77c2-40a1-8bb9-3026f63b83ef",
+    "name": "Demis Hassabis",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "demishassabis"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "dd69ebee-062a-44af-bef7-edfda90ec59a",
+    "name": "Andrej Karpathy",
+    "category": "leader",
+    "platforms": [
+      "twitter",
+      "youtube"
+    ],
+    "handles": {
+      "twitter": "karpathy",
+      "youtube": "AndrejKarpathy"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "fe4c0ed6-3236-4f68-85a0-d3d0ac47cc8b",
+    "name": "Yann LeCun",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "ylecun"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "31e74a42-2cf4-4a30-87ef-846e6b8b61f0",
+    "name": "Francois Chollet",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "fchollet"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "1d4ee182-149a-49fa-96a2-3be4eddbf235",
+    "name": "Ethan Mollick",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "emollick"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "b3ea8efa-ffb0-4fad-8e42-b090b9e8d719",
+    "name": "Jim Fan",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "DrJimFan"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "ba12a3f6-495d-44b3-81fe-e6e542b6293b",
+    "name": "Gary Marcus",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "GaryMarcus"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "904f5466-babf-4491-83fc-cff4adc940c2",
+    "name": "Lex Fridman",
+    "category": "leader",
+    "platforms": [
+      "instagram",
+      "twitter",
+      "youtube"
+    ],
+    "handles": {
+      "twitter": "lexfridman",
+      "youtube": "lexfridman",
+      "instagram": "lexfridman"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "4f124214-e5c1-48ae-a8f9-868656ec63c5",
+    "name": "Satya Nadella",
+    "category": "leader",
+    "platforms": [
+      "twitter",
+      "linkedin"
+    ],
+    "handles": {
+      "twitter": "satyanadella",
+      "linkedin": "satyanadella"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "f1fbcff7-db72-4ab4-833b-e4ae51a5cb84",
+    "name": "Sundar Pichai",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "sundarpichai"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "471305a7-c3da-4e3f-8de3-3ac97f47a4b9",
+    "name": "Peter Diamandis",
+    "category": "leader",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "PeterDiamandis"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "5a0a1438-af27-4791-aadd-70f647231a01",
+    "name": "Lead Gen Man",
+    "category": "competitor",
+    "platforms": [
+      "instagram"
+    ],
+    "handles": {
+      "instagram": "leadgenman"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "6e689306-e816-4795-b18d-8acb0eef0344",
+    "name": "Allie K. Miller",
+    "category": "competitor",
+    "platforms": [
+      "instagram",
+      "twitter",
+      "linkedin"
+    ],
+    "handles": {
+      "twitter": "alliekmiller",
+      "linkedin": "alliekmiller",
+      "instagram": "alliekmiller"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "1f40c3da-f29e-402f-ae3c-aeed53f3fa86",
+    "name": "Ruben Hassid",
+    "category": "competitor",
+    "platforms": [
+      "instagram",
+      "twitter",
+      "linkedin"
+    ],
+    "handles": {
+      "twitter": "rubenhassid",
+      "linkedin": "rubenhassid",
+      "instagram": "rubenhassid"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "6bd40bd3-3f97-4de5-b888-a027c51ae316",
+    "name": "Alex Hormozi",
+    "category": "competitor",
+    "platforms": [
+      "instagram",
+      "twitter",
+      "youtube"
+    ],
+    "handles": {
+      "twitter": "AlexHormozi",
+      "youtube": "AlexHormozi",
+      "instagram": "hormozi"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "da138f77-24fc-4801-af66-a419667d14d8",
+    "name": "Jordan Wilson",
+    "category": "competitor",
+    "platforms": [
+      "twitter",
+      "linkedin"
+    ],
+    "handles": {
+      "twitter": "jordanwilson",
+      "linkedin": "jordanwilson"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "b7c15ac8-f754-46d7-8ecf-dae4384ae62d",
+    "name": "Matt Wolfe",
+    "category": "other",
+    "platforms": [
+      "twitter",
+      "youtube"
+    ],
+    "handles": {
+      "twitter": "mreflow",
+      "youtube": "mreflow"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "c1a5df7c-d297-400a-9f97-662fa05a5a7b",
+    "name": "Wes Roth",
+    "category": "other",
+    "platforms": [
+      "youtube"
+    ],
+    "handles": {
+      "youtube": "WesRoth"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "58066490-4d5b-43b1-a116-8a071cf660a7",
+    "name": "David Ondrej",
+    "category": "other",
+    "platforms": [
+      "youtube"
+    ],
+    "handles": {
+      "youtube": "DavidOndrej"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "e237ab0c-11c1-431b-8d2e-3f62a863df56",
+    "name": "Matthew Berman",
+    "category": "other",
+    "platforms": [
+      "youtube"
+    ],
+    "handles": {
+      "youtube": "MatthewBerman"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "69ad057f-e800-430f-982a-94d0c22443bd",
+    "name": "Fireship",
+    "category": "other",
+    "platforms": [
+      "youtube"
+    ],
+    "handles": {
+      "youtube": "Fireship"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "01a31e42-0514-4673-83c5-d2f0acec4b61",
+    "name": "Two Minute Papers",
+    "category": "other",
+    "platforms": [
+      "youtube"
+    ],
+    "handles": {
+      "youtube": "TwoMinutePapers"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "b91f7049-db5d-44d7-bc1d-eee7b9ba3cc9",
+    "name": "The AI Advantage",
+    "category": "other",
+    "platforms": [
+      "youtube"
+    ],
+    "handles": {
+      "youtube": "TheAIAdvantage"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "26b777c2-0ebd-4afc-acb0-6cffbc964986",
+    "name": "Riley Brown",
+    "category": "other",
+    "platforms": [
+      "instagram"
+    ],
+    "handles": {
+      "instagram": "rileybrown.ai"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "aa4a8f14-cd8f-43f4-a631-3d7b6fa68993",
+    "name": "Rowan Cheung",
+    "category": "other",
+    "platforms": [
+      "instagram",
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "rowancheung",
+      "instagram": "rowancheung"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "293d5810-cc6f-4295-a479-46f8e9ac811d",
+    "name": "Zain Kahn",
+    "category": "other",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "heyzain"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "a8b6069c-128a-496b-b9cc-28e263c5f8f2",
+    "name": "Ben Tossell",
+    "category": "other",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "bentossell"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  },
+  {
+    "id": "6c3fc20b-7e22-4863-87d4-2d64ee290c28",
+    "name": "Dan Shipper",
+    "category": "other",
+    "platforms": [
+      "twitter"
+    ],
+    "handles": {
+      "twitter": "danshipper"
+    },
+    "created_at": "2026-03-28T21:47:40.147966+00:00"
+  }
+]

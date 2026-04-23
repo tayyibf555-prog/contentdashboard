@@ -28,8 +28,9 @@ export default async function EvergreenPage() {
   return (
     <div>
       <TopBar
-        title="Evergreen Library"
-        subtitle={`${enriched.length} flagged posts · ${enriched.filter((e) => e.eligible_for_reshare).length} eligible for reshare`}
+        eyebrow="Archive"
+        title="Evergreen library."
+        subtitle={`${enriched.length} flagged posts · ${enriched.filter((e) => e.eligible_for_reshare).length} eligible for reshare after cooldown.`}
       />
       <EvergreenLibrary items={enriched} />
     </div>

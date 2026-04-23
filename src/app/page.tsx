@@ -2,6 +2,7 @@ import { TopBar } from "@/components/layout/top-bar";
 import { StatsRow } from "@/components/dashboard/stats-row";
 import { EngagementSummary } from "@/components/dashboard/engagement-summary";
 import { ContentQueue } from "@/components/dashboard/content-queue";
+import { Button } from "@/components/ui/button";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { approveContent, regenerateContent, approveAndPostContent } from "./actions";
 
@@ -23,7 +24,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     .eq("account", account)
     .gte("posted_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
-  // Fetch engagement data for "best post" and weekly totals
   const { data: weeklyEngagement } = await supabase
     .from("engagement_metrics")
     .select("*, generated_content(title, platform)")
@@ -43,25 +43,28 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   )[0];
 
   const now = new Date();
-  const greeting = now.getHours() < 12 ? "Good Morning" : now.getHours() < 18 ? "Good Afternoon" : "Good Evening";
+  const greeting = now.getHours() < 12 ? "Morning" : now.getHours() < 18 ? "Afternoon" : "Evening";
   const dateStr = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
 
   const stats = [
-    { label: "Pending Approval", value: pendingContent?.length || 0, sub: "Ready to post", subColor: "#00d4aa" },
+    { label: "Pending Approval", value: pendingContent?.length || 0, sub: "Ready to post" },
     { label: "Posted This Week", value: postedThisWeek || 0, sub: "Across all platforms" },
-    { label: "Trending Topics", value: "--", sub: "Loading..." },
-    { label: "Content Pillar", value: "AI Education", sub: "Today's focus" },
+    { label: "Trending Topics", value: "--", sub: "Loading insights" },
+    { label: "Content Pillar", value: "AI Edu.", sub: "Today's focus" },
   ];
 
   return (
-    <div>
+    <div className="stagger">
       <TopBar
-        title={`${greeting}, Tayyib`}
-        subtitle={`${dateStr} · ${account === "business" ? "@azen_ai" : "@tayyib.ai"} · ${pendingContent?.length || 0} posts ready for approval`}
+        eyebrow={`${dateStr} · ${account === "business" ? "@azen_ai" : "@tayyib.ai"}`}
+        title={`Good ${greeting}, Tayyib.`}
+        subtitle={`${pendingContent?.length || 0} posts sitting in the queue waiting on you. Three clicks and they're live.`}
         actions={
           <>
-            <span className="bg-azen-border text-azen-text px-3.5 py-2 rounded-md text-xs">Last scraped: --</span>
-            <button className="bg-azen-accent text-azen-bg px-3.5 py-2 rounded-md text-xs font-semibold">Refresh Research</button>
+            <span className="text-[11px] font-mono text-azen-muted border border-azen-line rounded-md px-3 py-2">
+              Last scraped · just now
+            </span>
+            <Button variant="primary" size="md">Refresh research</Button>
           </>
         }
       />

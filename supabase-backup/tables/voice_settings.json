@@ -1,0 +1,41 @@
+[
+  {
+    "id": "0bb0d077-4fc3-4b78-ae39-11614c55b0af",
+    "account_type": "business",
+    "writing_samples": [],
+    "tone_guidelines": "Professional, authoritative but approachable. Strategy-focused. Clear and concise.",
+    "avoid_words": [
+      "leverage",
+      "synergy",
+      "game-changer",
+      "disrupt"
+    ],
+    "preferred_words": [
+      "implement",
+      "deploy",
+      "strategy",
+      "audit",
+      "custom AI"
+    ],
+    "updated_at": "2026-03-22T21:28:49.610192+00:00"
+  },
+  {
+    "id": "fb8d64fb-de28-41b5-ba04-c34c07fa4f9d",
+    "account_type": "personal",
+    "writing_samples": [],
+    "tone_guidelines": "Conversational, authentic, sharing real experiences. Direct and honest.",
+    "avoid_words": [
+      "hustle",
+      "grind",
+      "guru"
+    ],
+    "preferred_words": [
+      "build",
+      "learn",
+      "test",
+      "ship",
+      "real talk"
+    ],
+    "updated_at": "2026-03-22T21:28:49.610192+00:00"
+  }
+]

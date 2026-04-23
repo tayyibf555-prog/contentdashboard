@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { Sparkles, AtSign, Lock } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,53 +25,91 @@ export default function LoginPage() {
       setLoading(false);
       return;
     }
-
     router.push("/");
     router.refresh();
   }
 
   return (
-    <div className="min-h-screen bg-azen-bg flex items-center justify-center">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-white text-3xl font-bold">azen</h1>
-          <p className="text-azen-accent text-sm mt-1">content dashboard</p>
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden">
+      {/* Atmospheric radial glow behind the card */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(600px circle at 50% 30%, rgba(0,212,170,0.14), transparent 60%), radial-gradient(800px circle at 80% 80%, rgba(0,212,170,0.06), transparent 70%)",
+        }}
+      />
+      <div className="relative w-full max-w-md">
+        {/* Brand lockup */}
+        <div className="flex items-center gap-3 justify-center mb-8">
+          <span className="h-11 w-11 rounded-xl bg-gradient-to-br from-azen-accent to-[#0097A7] flex items-center justify-center shadow-accent">
+            <Sparkles size={18} strokeWidth={2.2} className="text-azen-bg" />
+          </span>
+          <div>
+            <div className="font-display italic text-white text-[36px] leading-none tracking-tight">azen</div>
+            <div className="text-azen-muted text-[10px] uppercase tracking-[0.3em] mt-1">content · hub</div>
+          </div>
         </div>
-        <form onSubmit={handleLogin} className="bg-azen-card border border-azen-border rounded-lg p-6">
-          <h2 className="text-white text-lg font-semibold mb-4">Sign In</h2>
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-md p-3 mb-4">
-              {error}
+
+        <form
+          onSubmit={handleLogin}
+          className="relative bg-azen-surface/80 backdrop-blur-md border border-azen-line rounded-xl shadow-pop overflow-hidden"
+        >
+          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-azen-accent/70 to-transparent" />
+          <div className="p-8">
+            <h2 className="font-display italic text-white text-display-sm tracking-tight leading-none mb-1">
+              Welcome back.
+            </h2>
+            <p className="text-azen-text text-[13px] mb-7">Sign in to your content hub.</p>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-300 text-[12px] rounded-md px-3 py-2.5 mb-5">
+                {error}
+              </div>
+            )}
+
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-azen-muted mb-1.5">Email</label>
+            <div className="flex items-center gap-2 bg-azen-bg border border-azen-line rounded-md px-3 py-2.5 focus-within:border-azen-accent transition-colors mb-4">
+              <AtSign size={14} className="text-azen-muted" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                className="flex-1 bg-transparent text-white text-[13px] placeholder:text-azen-muted focus:outline-none"
+                placeholder="you@company.com"
+              />
             </div>
-          )}
-          <div className="mb-4">
-            <label className="text-azen-text text-[11px] block mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2.5 text-white text-xs focus:outline-none focus:border-azen-accent"
-            />
+
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-azen-muted mb-1.5">Password</label>
+            <div className="flex items-center gap-2 bg-azen-bg border border-azen-line rounded-md px-3 py-2.5 focus-within:border-azen-accent transition-colors mb-6">
+              <Lock size={14} className="text-azen-muted" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                className="flex-1 bg-transparent text-white text-[13px] placeholder:text-azen-muted focus:outline-none"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full inline-flex items-center justify-center gap-2 bg-azen-accent text-azen-bg py-2.5 rounded-md text-[13px] font-semibold shadow-accent hover:shadow-accent-strong hover:-translate-y-px active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            >
+              {loading ? "Signing in…" : "Sign in"}
+            </button>
           </div>
-          <div className="mb-6">
-            <label className="text-azen-text text-[11px] block mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2.5 text-white text-xs focus:outline-none focus:border-azen-accent"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-azen-accent text-azen-bg py-2.5 rounded-md text-xs font-semibold hover:bg-azen-accent/90 transition-colors disabled:opacity-50"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
         </form>
+
+        <p className="text-center text-azen-muted text-[11px] mt-5">
+          The content command centre for <span className="text-azen-text">@azen_ai</span> & <span className="text-azen-text">@tayyib.ai</span>
+        </p>
       </div>
     </div>
   );

@@ -45,8 +45,9 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
   return (
     <div>
       <TopBar
-        title="Instagram Content"
-        subtitle={`${account === "business" ? "@azen_ai" : "@tayyib.ai"} · Carousels${account === "personal" ? " & Reels" : ""}`}
+        eyebrow={`${account === "business" ? "@azen_ai" : "@tayyib.ai"}`}
+        title="Instagram."
+        subtitle={`Carousels${account === "personal" ? ", reels, ideas and recreations" : ""} — everything you're shipping to Instagram.`}
         actions={
           <div className="flex gap-2">
             <WinnersButton platform="instagram" account={account} />

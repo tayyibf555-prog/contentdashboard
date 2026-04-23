@@ -7,6 +7,7 @@ import { PlatformBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { AiAnalysisCard } from "./ai-analysis";
+import { ExternalLink, Sparkles } from "lucide-react";
 
 type FeedItemProps = {
   post: {
@@ -33,6 +34,12 @@ const PLATFORM_TYPES: Record<string, { label: string; value: string }[]> = {
   twitter: [{ label: "Tweet", value: "tweet" }, { label: "Thread", value: "thread" }],
   youtube: [{ label: "Video Script", value: "video_script" }],
 };
+
+function fmt(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+}
 
 export function FeedItem({ post }: FeedItemProps) {
   const router = useRouter();
@@ -67,7 +74,6 @@ export function FeedItem({ post }: FeedItemProps) {
       });
 
       if (!res.ok) throw new Error("Generation failed");
-
       setShowGenerate(false);
       router.push(`/${genPlatform}?account=${genAccount}`);
       router.refresh();
@@ -78,69 +84,86 @@ export function FeedItem({ post }: FeedItemProps) {
     }
   };
 
+  const topEngagement = Object.entries(post.engagement_stats || {})
+    .filter(([, v]) => typeof v === "number" && v > 0)
+    .slice(0, 4);
+
   return (
     <>
-      <Card className="mb-3" border={isCompetitor ? "#ff7675" : undefined}>
-        <div className="flex items-start gap-3">
-          <PlatformBadge platform={post.platform} />
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-white text-[13px] font-medium">
-                {post.tracked_accounts?.name || "Unknown"}
+      <Card variant="surface" interactive accent={isCompetitor} className="h-full flex flex-col">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <PlatformBadge platform={post.platform} />
+            <span className="text-white text-[13px] font-semibold truncate">
+              {post.tracked_accounts?.name || "Unknown"}
+            </span>
+            {isCompetitor && (
+              <span className="text-red-300 text-[9px] font-semibold uppercase tracking-wider border border-red-500/40 rounded px-1.5 py-0.5">
+                Competitor
               </span>
-              {isCompetitor && (
-                <span className="bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded text-[9px] font-semibold">
-                  COMPETITOR
-                </span>
-              )}
-              <span className="text-azen-text text-[10px]">
-                {new Date(post.scraped_at).toLocaleDateString()}
+            )}
+          </div>
+          <span className="text-azen-muted text-[10px] font-mono whitespace-nowrap">
+            {new Date(post.scraped_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+          </span>
+        </div>
+
+        {post.title && (
+          <div className="text-white font-display italic text-[18px] leading-[1.25] mb-2 line-clamp-2">
+            {post.title}
+          </div>
+        )}
+        {post.content_summary && (
+          <div className="text-azen-text text-[12.5px] leading-relaxed mb-4 line-clamp-4">
+            {post.content_summary}
+          </div>
+        )}
+
+        {analysis && (
+          <div className="mb-4">
+            <AiAnalysisCard analysis={analysis} />
+          </div>
+        )}
+
+        <div className="flex-1" />
+
+        <div className="flex items-center justify-between gap-3 pt-3 border-t border-azen-line">
+          <div className="flex gap-3 text-[10px] font-mono text-azen-muted">
+            {topEngagement.map(([k, v]) => (
+              <span key={k} className="uppercase tracking-wider">
+                <span className="text-azen-text-strong">{fmt(v as number)}</span> {k.slice(0, 1)}
               </span>
-            </div>
-            {post.title && (
-              <div className="text-white text-xs font-medium mb-1">{post.title}</div>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5">
+            {post.url && (
+              <a
+                href={post.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] text-azen-text hover:text-white transition-colors px-2 py-1 rounded-md border border-azen-line hover:border-azen-line-strong"
+              >
+                <ExternalLink size={12} /> Source
+              </a>
             )}
-            {post.content_summary && (
-              <div className="text-azen-text text-xs leading-relaxed mb-2 line-clamp-3">
-                {post.content_summary}
-              </div>
-            )}
-            <div className="flex gap-4 text-[10px] text-azen-text mb-3">
-              {Object.entries(post.engagement_stats || {}).map(([key, val]) => (
-                <span key={key}>{key}: {(val as number).toLocaleString()}</span>
-              ))}
-            </div>
-            {analysis && <AiAnalysisCard analysis={analysis} />}
-            <div className="flex gap-2 mt-3">
-              <Button variant="primary" onClick={() => setShowGenerate(true)}>
-                Generate Content From This
-              </Button>
-              {post.url && (
-                <a
-                  href={post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-azen-border text-azen-text px-3 py-1.5 rounded-md text-[11px] font-semibold hover:text-white transition-colors"
-                >
-                  View Original
-                </a>
-              )}
-            </div>
+            <Button variant="primary" size="sm" onClick={() => setShowGenerate(true)}>
+              <Sparkles size={12} /> Generate
+            </Button>
           </div>
         </div>
       </Card>
 
-      <Modal isOpen={showGenerate} onClose={() => setShowGenerate(false)} title="Generate Content">
-        <div className="space-y-3">
+      <Modal isOpen={showGenerate} onClose={() => setShowGenerate(false)} title="Generate from this post">
+        <div className="space-y-4">
           <div>
-            <label className="text-azen-text text-[11px] block mb-1">Platform</label>
+            <label className="text-azen-text text-[11px] font-semibold uppercase tracking-wider block mb-1.5">Platform</label>
             <select
               value={genPlatform}
               onChange={(e) => {
                 setGenPlatform(e.target.value);
                 setGenType(PLATFORM_TYPES[e.target.value]?.[0]?.value || "short");
               }}
-              className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
+              className="w-full bg-azen-bg border border-azen-line rounded-md px-3 py-2 text-white text-xs"
             >
               <option value="instagram">Instagram</option>
               <option value="linkedin">LinkedIn</option>
@@ -149,22 +172,22 @@ export function FeedItem({ post }: FeedItemProps) {
             </select>
           </div>
           <div>
-            <label className="text-azen-text text-[11px] block mb-1">Account</label>
+            <label className="text-azen-text text-[11px] font-semibold uppercase tracking-wider block mb-1.5">Account</label>
             <select
               value={genAccount}
               onChange={(e) => setGenAccount(e.target.value)}
-              className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
+              className="w-full bg-azen-bg border border-azen-line rounded-md px-3 py-2 text-white text-xs"
             >
               <option value="business">Business (@azen_ai)</option>
               <option value="personal">Personal (@tayyib.ai)</option>
             </select>
           </div>
           <div>
-            <label className="text-azen-text text-[11px] block mb-1">Content Type</label>
+            <label className="text-azen-text text-[11px] font-semibold uppercase tracking-wider block mb-1.5">Content Type</label>
             <select
               value={genType}
               onChange={(e) => setGenType(e.target.value)}
-              className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
+              className="w-full bg-azen-bg border border-azen-line rounded-md px-3 py-2 text-white text-xs"
             >
               {(PLATFORM_TYPES[genPlatform] || []).map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
@@ -172,17 +195,13 @@ export function FeedItem({ post }: FeedItemProps) {
             </select>
           </div>
           {analysis?.suggested_pillar && (
-            <div className="text-azen-text text-[10px]">
-              Suggested pillar: <span className="text-azen-accent">{analysis.suggested_pillar}</span>
+            <div className="text-azen-text text-[11px]">
+              Suggested pillar: <span className="text-azen-accent font-semibold">{analysis.suggested_pillar}</span>
             </div>
           )}
-          <button
-            onClick={handleGenerate}
-            disabled={generating}
-            className="w-full bg-azen-accent text-azen-bg px-3 py-2 rounded-md text-xs font-semibold disabled:opacity-50"
-          >
-            {generating ? "Generating..." : "Generate"}
-          </button>
+          <Button variant="primary" size="lg" onClick={handleGenerate} disabled={generating} className="w-full">
+            {generating ? "Generating…" : "Generate"}
+          </Button>
         </div>
       </Modal>
     </>

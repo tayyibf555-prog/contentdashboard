@@ -20,8 +20,9 @@ export default async function SettingsPage() {
   return (
     <div>
       <TopBar
-        title="Voice Settings"
-        subtitle="Train the AI to match your brand voice"
+        eyebrow="Tuning"
+        title="Voice settings."
+        subtitle="Feed samples, avoid-words, and tone guidelines so generated content sounds like you."
       />
       <div className="grid grid-cols-2 gap-6">
         <VoiceSettingsEditor

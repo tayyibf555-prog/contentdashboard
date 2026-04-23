@@ -2,21 +2,53 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Radar,
+  Camera,
+  Briefcase,
+  MessageSquare,
+  Video,
+  CalendarDays,
+  BarChart3,
+  Users,
+  Bookmark,
+  Settings,
+  Sparkles,
+} from "lucide-react";
 import { AccountToggle } from "@/components/ui/account-toggle";
 
-const NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: "grid" },
-  { href: "/research", label: "Research Feed", icon: "search" },
-  { href: "/instagram", label: "Instagram", icon: "camera" },
-  { href: "/linkedin", label: "LinkedIn", icon: "briefcase" },
-  { href: "/twitter", label: "Twitter/X", icon: "message" },
-  { href: "/youtube", label: "YouTube", icon: "play" },
-  { href: "/calendar", label: "Content Calendar", icon: "calendar" },
-  { href: "/analytics", label: "Analytics", icon: "chart" },
-  { href: "/tracked-accounts", label: "Tracked Accounts", icon: "users" },
-  { href: "/evergreen", label: "Evergreen Library", icon: "bookmark" },
-  { href: "/settings", label: "Voice Settings", icon: "settings" },
+type NavItem = { href: string; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> };
+
+const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
+  {
+    heading: "Overview",
+    items: [
+      { href: "/", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/research", label: "Research", icon: Radar },
+    ],
+  },
+  {
+    heading: "Content",
+    items: [
+      { href: "/instagram", label: "Instagram", icon: Camera },
+      { href: "/linkedin", label: "LinkedIn", icon: Briefcase },
+      { href: "/twitter", label: "Twitter / X", icon: MessageSquare },
+      { href: "/youtube", label: "YouTube", icon: Video },
+    ],
+  },
+  {
+    heading: "Operations",
+    items: [
+      { href: "/calendar", label: "Calendar", icon: CalendarDays },
+      { href: "/analytics", label: "Analytics", icon: BarChart3 },
+      { href: "/tracked-accounts", label: "Tracked Accounts", icon: Users },
+      { href: "/evergreen", label: "Evergreen", icon: Bookmark },
+    ],
+  },
 ];
+
+const SETTINGS_ITEMS: NavItem[] = [{ href: "/settings", label: "Voice Settings", icon: Settings }];
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -26,38 +58,67 @@ export function Sidebar() {
     return pathname.startsWith(href);
   }
 
-  function NavLink({ href, label }: { href: string; label: string }) {
-    const active = isActive(href);
+  function NavLink({ item }: { item: NavItem }) {
+    const active = isActive(item.href);
+    const Icon = item.icon;
     return (
       <Link
-        href={href}
-        className={`block px-5 py-2.5 text-[13px] transition-colors ${
+        href={item.href}
+        className={`group relative flex items-center gap-3 mx-3 px-3 py-2 rounded-md text-[13px] transition-all duration-200 ${
           active
-            ? "text-azen-accent font-semibold bg-azen-accent/[0.08] border-l-[3px] border-azen-accent"
-            : "text-azen-text hover:text-white border-l-[3px] border-transparent"
+            ? "bg-azen-accent/10 text-white font-semibold shadow-[inset_0_0_0_1px_rgba(0,212,170,0.25)]"
+            : "text-azen-text hover:text-white hover:bg-azen-surface-2"
         }`}
       >
-        {label}
+        <Icon size={16} strokeWidth={active ? 2.3 : 1.8} />
+        <span className="flex-1">{item.label}</span>
+        {active && <span className="h-1.5 w-1.5 rounded-full bg-azen-accent shadow-[0_0_8px_rgba(0,212,170,0.8)]" />}
       </Link>
     );
   }
 
   return (
-    <aside className="w-[220px] bg-azen-card border-r border-azen-border flex flex-col h-screen fixed left-0 top-0">
-      <div className="px-5 py-6 border-b border-azen-border">
-        <span className="text-white text-[22px] font-bold">azen</span>
-        <span className="text-azen-accent text-[10px] ml-1">hub</span>
+    <aside className="w-[240px] bg-azen-surface/80 backdrop-blur-md border-r border-azen-line flex flex-col h-screen fixed left-0 top-0 z-20">
+      {/* Brand lockup */}
+      <div className="px-6 py-6 border-b border-azen-line">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <span className="relative h-8 w-8 rounded-lg bg-gradient-to-br from-azen-accent to-[#0097A7] flex items-center justify-center shadow-accent">
+            <Sparkles size={14} strokeWidth={2.2} className="text-azen-bg" />
+          </span>
+          <div className="leading-none">
+            <div className="font-display italic text-white text-[22px] tracking-tight">azen</div>
+            <div className="text-azen-muted text-[9px] uppercase tracking-[0.2em] mt-0.5">content · hub</div>
+          </div>
+        </Link>
       </div>
 
+      {/* Nav */}
       <nav className="flex-1 py-4 overflow-y-auto">
-        {NAV_ITEMS.map((item) => (
-          <NavLink key={item.href} href={item.href} label={item.label} />
+        {NAV_GROUPS.map((group) => (
+          <div key={group.heading} className="mb-5">
+            <div className="px-6 mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-azen-muted/70">
+              {group.heading}
+            </div>
+            <div className="flex flex-col gap-0.5">
+              {group.items.map((item) => (
+                <NavLink key={item.href} item={item} />
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 
-      <div className="px-5 py-4 border-t border-azen-border">
-        <div className="text-azen-text text-[11px] uppercase tracking-wider mb-2">Account</div>
-        <AccountToggle />
+      {/* Settings + Account */}
+      <div className="border-t border-azen-line">
+        <div className="py-3">
+          {SETTINGS_ITEMS.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </div>
+        <div className="px-5 py-4 border-t border-azen-line/70">
+          <div className="text-azen-muted text-[10px] uppercase tracking-[0.2em] mb-2">Account</div>
+          <AccountToggle />
+        </div>
       </div>
     </aside>
   );

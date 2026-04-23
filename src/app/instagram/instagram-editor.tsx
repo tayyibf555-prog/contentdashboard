@@ -180,22 +180,37 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
 
   return (
     <div>
-      <div className="flex gap-4 mb-6">
-        {(["pending", "approved", "posted"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => { setTab(t); setSelectedIndex(0); setActiveSlide(0); }}
-            className={`text-xs font-semibold pb-1 border-b-2 transition-colors ${
-              tab === t ? "text-azen-accent border-azen-accent" : "text-azen-text border-transparent hover:text-white"
-            }`}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)} ({posts.filter((p) => {
-              if (t === "pending") return p.status === "pending" || p.status === "draft";
-              if (t === "approved") return p.status === "approved" || p.status === "scheduled";
-              return p.status === "posted";
-            }).length})
-          </button>
-        ))}
+      <div className="flex items-center gap-1 border-b border-azen-line mb-6 overflow-x-auto no-scrollbar">
+        {(["pending", "approved", "posted"] as const).map((t) => {
+          const count = posts.filter((p) => {
+            if (t === "pending") return p.status === "pending" || p.status === "draft";
+            if (t === "approved") return p.status === "approved" || p.status === "scheduled";
+            return p.status === "posted";
+          }).length;
+          const active = tab === t;
+          return (
+            <button
+              key={t}
+              onClick={() => { setTab(t); setSelectedIndex(0); setActiveSlide(0); }}
+              className={`relative px-4 py-2.5 text-[12px] font-semibold transition-colors ${
+                active ? "text-white" : "text-azen-text hover:text-white"
+              }`}
+            >
+              <span className="inline-flex items-center gap-1.5">
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+                <span className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded ${
+                  active ? "bg-azen-accent/15 text-azen-accent" : "bg-azen-surface-2 text-azen-muted"
+                }`}>{count}</span>
+              </span>
+              {active && (
+                <span
+                  className="absolute bottom-0 left-2 right-2 h-[2px] bg-azen-accent rounded-full"
+                  style={{ boxShadow: "0 0 12px rgba(0,212,170,0.6)" }}
+                />
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {!current ? (

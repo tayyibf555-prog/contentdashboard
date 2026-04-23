@@ -19,12 +19,13 @@ export default async function YouTubePage({ searchParams }: { searchParams: Prom
   return (
     <div>
       <TopBar
-        title="YouTube Script Builder"
-        subtitle={`${account === "personal" ? "@tayyib.ai · " : ""}Weekly uploads`}
+        eyebrow={`${account === "personal" ? "@tayyib.ai" : "@azen_ai"}`}
+        title="YouTube."
+        subtitle="Scripts, hooks, thumbnails — one long-form video a week."
         actions={
           <div className="flex gap-2">
             <WinnersButton platform="youtube" account={account} />
-            <GenerateButton platform="youtube" account={account} label="Generate New Script" />
+            <GenerateButton platform="youtube" account={account} label="Generate new script" />
           </div>
         }
       />

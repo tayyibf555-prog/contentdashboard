@@ -19,8 +19,9 @@ export default async function TwitterPage({ searchParams }: { searchParams: Prom
   return (
     <div>
       <TopBar
-        title="Twitter/X Post Editor"
-        subtitle={`${account === "business" ? "@azen_ai" : "@tayyib.ai"} · Craft tweets and threads`}
+        eyebrow={`${account === "business" ? "@azen_ai" : "@tayyib.ai"}`}
+        title="Twitter / X."
+        subtitle="Craft tweets and threads in your voice — drafts land here for approval."
         actions={
           <div className="flex gap-2">
             <WinnersButton platform="twitter" account={account} />

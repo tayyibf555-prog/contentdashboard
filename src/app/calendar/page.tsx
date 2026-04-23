@@ -19,8 +19,9 @@ export default async function CalendarPage() {
   return (
     <div>
       <TopBar
-        title="Content Calendar"
-        subtitle="Drag and drop to reschedule posts"
+        eyebrow="Operations"
+        title="Content calendar."
+        subtitle="Drag any card to reschedule. Hover a day for a quick preview."
       />
       <CalendarView posts={posts || []} />
     </div>

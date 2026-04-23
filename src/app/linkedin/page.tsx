@@ -19,8 +19,9 @@ export default async function LinkedInPage({ searchParams }: { searchParams: Pro
   return (
     <div>
       <TopBar
-        title="LinkedIn Post Editor"
-        subtitle={`${account === "business" ? "@azen_ai" : "@tayyib.ai"} · Craft and preview LinkedIn posts`}
+        eyebrow={`${account === "business" ? "@azen_ai" : "@tayyib.ai"}`}
+        title="LinkedIn."
+        subtitle="Long-form posts and short takes — written, edited, and queued."
         actions={
           <div className="flex gap-2">
             <WinnersButton platform="linkedin" account={account} />

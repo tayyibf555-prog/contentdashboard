@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { AccountQuickView } from "@/components/tracked-accounts/account-quickview";
 import { addTrackedAccount, deleteTrackedAccount, updateTrackedAccount, seedAIIndustryAccounts } from "./actions";
+import { Search, ArrowUpRight, Trash2, Pencil } from "lucide-react";
+import { PLATFORMS } from "@/lib/constants";
 import type { TrackedAccount } from "@/types";
 
 type FormData = {
@@ -141,40 +143,29 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-4">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name or handle…"
-          className="flex-1 max-w-md bg-azen-card border border-azen-border rounded-md px-3 py-2 text-xs text-white placeholder-azen-text/50 focus:outline-none focus:border-azen-accent"
-        />
-        {search && (
-          <span className="text-[10px] text-azen-text">
-            {filtered.length} match{filtered.length === 1 ? "" : "es"}
-          </span>
-        )}
-      </div>
-      <div className="flex gap-4 mb-6">
-        {(["all", "leader", "competitor", "other"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setFilter(t)}
-            className={`text-xs font-semibold pb-1 border-b-2 transition-colors ${
-              filter === t ? "text-azen-accent border-azen-accent" : "text-azen-text border-transparent hover:text-white"
-            }`}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)} ({t === "all" ? accounts.length : accounts.filter((a) => a.category === t).length})
-          </button>
-        ))}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex-1 min-w-[240px] max-w-md flex items-center gap-2 bg-azen-surface border border-azen-line rounded-md px-3 py-2 focus-within:border-azen-accent transition-colors">
+          <Search size={14} className="text-azen-muted" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or handle…"
+            className="flex-1 bg-transparent text-[12px] text-white placeholder-azen-muted focus:outline-none"
+          />
+          {search && (
+            <span className="text-[10px] font-mono text-azen-muted">
+              {filtered.length}
+            </span>
+          )}
+        </div>
         <div className="ml-auto flex gap-2">
-          <button
-            onClick={scraping ? cancelScrape : scrapeAll}
-            className={`px-3 py-1 rounded text-[11px] font-semibold ${scraping ? "bg-red-500/20 text-red-300 border border-red-500/40" : "bg-azen-card border border-azen-accent text-azen-accent hover:bg-azen-accent hover:text-azen-bg transition-colors"}`}
-          >
+          <Button variant={scraping ? "danger" : "secondary"} size="md" onClick={scraping ? cancelScrape : scrapeAll}>
             {scraping ? "Cancel scrape" : "Scrape all"}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
             onClick={async () => {
               setSeeding(true);
               try {
@@ -187,85 +178,124 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
               }
             }}
             disabled={seeding}
-            className="bg-azen-card border border-azen-border text-white px-3 py-1 rounded text-[11px] font-semibold disabled:opacity-50"
           >
-            {seeding ? "Adding..." : "Populate AI Industry"}
-          </button>
-          <button
-            onClick={openAdd}
-            className="bg-azen-accent text-azen-bg px-3 py-1 rounded text-[11px] font-semibold"
-          >
-            + Add Account
-          </button>
+            {seeding ? "Adding…" : "Populate AI industry"}
+          </Button>
+          <Button variant="primary" size="md" onClick={openAdd}>+ Add account</Button>
         </div>
       </div>
 
+      <div className="flex items-center gap-1 border-b border-azen-line mb-6">
+        {(["all", "leader", "competitor", "other"] as const).map((t) => {
+          const active = filter === t;
+          const count = t === "all" ? accounts.length : accounts.filter((a) => a.category === t).length;
+          return (
+            <button
+              key={t}
+              onClick={() => setFilter(t)}
+              className={`relative px-3.5 py-2 text-[12px] font-semibold transition-colors ${
+                active ? "text-white" : "text-azen-text hover:text-white"
+              }`}
+            >
+              <span className="inline-flex items-center gap-1.5">
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${active ? "bg-azen-accent/15 text-azen-accent" : "bg-azen-surface-2 text-azen-muted"}`}>
+                  {count}
+                </span>
+              </span>
+              {active && (
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-azen-accent rounded-full" style={{ boxShadow: "0 0 12px rgba(0,212,170,0.6)" }} />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       {scraping && (
-        <div className="mb-4 bg-azen-card border border-azen-border rounded-lg p-3">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-xs text-white">
-              Scraping <span className="text-azen-accent">{scraping.current || "…"}</span>
+        <div className="mb-6 rounded-lg bg-azen-surface border border-azen-line shadow-lift p-4">
+          <div className="flex items-center justify-between gap-3 mb-2.5">
+            <div className="inline-flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-azen-accent animate-pulse-dot" style={{ boxShadow: "0 0 8px rgba(0,212,170,0.8)" }} />
+              <span className="text-[12px] text-white">
+                Scraping <span className="text-azen-accent font-semibold">{scraping.current || "…"}</span>
+              </span>
             </div>
-            <div className="text-[11px] text-azen-text">
+            <div className="text-[11px] font-mono text-azen-text">
               {scraping.done} / {scraping.total}{scraping.errors > 0 ? ` · ${scraping.errors} errors` : ""}
             </div>
           </div>
-          <div className="h-1 bg-azen-border rounded-full overflow-hidden">
+          <div className="h-1 bg-azen-line rounded-full overflow-hidden">
             <div
-              className="h-full bg-azen-accent transition-all duration-500"
-              style={{ width: `${(scraping.done / scraping.total) * 100}%` }}
+              className="h-full bg-azen-accent transition-all duration-500 rounded-full"
+              style={{ width: `${(scraping.done / scraping.total) * 100}%`, boxShadow: "0 0 12px rgba(0,212,170,0.6)" }}
             />
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
-        {filtered.map((account) => (
-          <div
-            key={account.id}
-            onClick={() => setQuickView(account)}
-            className="cursor-pointer"
-          >
-            <Card border={account.category === "competitor" ? "#ff7675" : undefined}>
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <div className="text-white text-sm font-semibold">{account.name}</div>
-                  <span className={`text-[9px] font-semibold ${
-                    account.category === "competitor" ? "text-red-400" : "text-azen-accent"
-                  }`}>
-                    {account.category.toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                  <Button variant="secondary" onClick={() => openEdit(account)}>Edit</Button>
-                  <Button variant="icon" onClick={() => handleDelete(account.id)} disabled={deleting === account.id}>
-                    {deleting === account.id ? "..." : "x"}
-                  </Button>
-                </div>
+      {filtered.length === 0 ? (
+        <div className="text-center py-16 text-azen-text text-sm">
+          No tracked accounts{filter !== "all" ? ` in "${filter}" category` : ""}. Add one to start scraping.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 stagger">
+          {filtered.map((account) => {
+            const handles = account.handles as Record<string, string>;
+            const activeHandles = Object.entries(handles).filter(([, v]) => v);
+            const isCompetitor = account.category === "competitor";
+            return (
+              <div key={account.id} onClick={() => setQuickView(account)} className="cursor-pointer group">
+                <Card variant="surface" interactive accent={isCompetitor} className="h-full flex flex-col">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0">
+                      <div className="text-white text-[15px] font-semibold tracking-tight truncate">{account.name}</div>
+                      <div className={`mt-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] ${isCompetitor ? "text-red-300" : "text-azen-accent"}`}>
+                        {account.category}
+                      </div>
+                    </div>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                      <Button variant="icon" onClick={() => openEdit(account)} aria-label="Edit"><Pencil size={13} /></Button>
+                      <Button variant="icon" onClick={() => handleDelete(account.id)} disabled={deleting === account.id} aria-label="Delete">
+                        {deleting === account.id ? "…" : <Trash2 size={13} />}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {activeHandles.map(([platform, handle]) => {
+                      const p = PLATFORMS[platform as keyof typeof PLATFORMS];
+                      return (
+                        <span
+                          key={platform}
+                          className="inline-flex items-center gap-1.5 bg-azen-surface-2 border border-azen-line px-2 py-1 rounded-md text-[10.5px] text-azen-text-strong"
+                        >
+                          <span
+                            className="h-1.5 w-1.5 rounded-full"
+                            style={{ backgroundColor: p?.color || "#8892b0", boxShadow: `0 0 6px ${p?.color || "#8892b0"}88` }}
+                          />
+                          <span className="font-mono">{handle}</span>
+                        </span>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex-1" />
+                  <div className="flex items-center justify-between gap-3 pt-3 border-t border-azen-line">
+                    <span className="text-[10px] font-mono text-azen-muted uppercase tracking-wider">
+                      {activeHandles.length} {activeHandles.length === 1 ? "platform" : "platforms"}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[11px] text-azen-accent font-semibold group-hover:gap-2 transition-all">
+                      View top posts <ArrowUpRight size={12} />
+                    </span>
+                  </div>
+                </Card>
               </div>
-              <div className="flex gap-2 mb-2">
-                {(account.platforms as string[]).map((p) => (
-                  <span key={p} className="text-azen-text text-[10px]">{p}</span>
-                ))}
-              </div>
-              <div className="text-azen-text text-[10px]">
-                {Object.entries(account.handles as Record<string, string>).map(([platform, handle]) => (
-                  <div key={platform}>{platform}: {handle}</div>
-                ))}
-              </div>
-              <div className="text-[10px] text-azen-accent mt-2">Click to view top posts →</div>
-            </Card>
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       <AccountQuickView account={quickView} onClose={() => setQuickView(null)} />
-
-      {filtered.length === 0 && (
-        <p className="text-azen-text text-sm text-center mt-8">
-          No tracked accounts{filter !== "all" ? ` in "${filter}" category` : ""}. Add one to start scraping.
-        </p>
-      )}
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingId ? "Edit Account" : "Add Tracked Account"}>
         <div className="space-y-3">

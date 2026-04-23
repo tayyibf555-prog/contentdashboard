@@ -1,13 +1,18 @@
+import { TrendingUp } from "lucide-react";
+
 export function TrendingBar({ topics }: { topics: string[] }) {
   if (topics.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-      <span className="text-azen-text text-[11px] uppercase tracking-wider shrink-0">Trending:</span>
+    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2">
+      <span className="inline-flex items-center gap-1.5 text-azen-muted text-[10px] uppercase tracking-[0.2em] font-semibold shrink-0">
+        <TrendingUp size={12} strokeWidth={2.2} className="text-azen-accent" />
+        Trending
+      </span>
       {topics.map((topic) => (
         <span
           key={topic}
-          className="bg-azen-accent/10 text-azen-accent px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap"
+          className="bg-azen-surface-2 text-azen-text-strong border border-azen-line hover:border-azen-accent/40 hover:text-azen-accent transition-colors px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap cursor-default"
         >
           {topic}
         </span>

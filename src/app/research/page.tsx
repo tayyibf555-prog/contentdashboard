@@ -3,6 +3,8 @@ import { TrendingBar } from "@/components/research/trending-bar";
 import { FeedItem } from "@/components/research/feed-item";
 import { UrlInput } from "@/components/research/url-input";
 import { PlatformTabs } from "@/components/research/platform-tabs";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Radar } from "lucide-react";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export default async function ResearchPage({ searchParams }: { searchParams: Promise<{ platform?: string }> }) {
@@ -10,7 +12,6 @@ export default async function ResearchPage({ searchParams }: { searchParams: Pro
   const { platform } = await searchParams;
   const activePlatform = platform || "all";
 
-  // Per-platform counts (for the tab badges) — one roundtrip, aggregate client-side
   const { data: allPostsForCounts } = await supabase
     .from("scraped_posts")
     .select("platform");
@@ -19,15 +20,12 @@ export default async function ResearchPage({ searchParams }: { searchParams: Pro
     counts[p.platform] = (counts[p.platform] || 0) + 1;
   }
 
-  // Filtered feed
   let query = supabase
     .from("scraped_posts")
     .select("*, tracked_accounts(name, category), ai_analysis(*)")
     .order("scraped_at", { ascending: false })
     .limit(50);
-  if (activePlatform !== "all") {
-    query = query.eq("platform", activePlatform);
-  }
+  if (activePlatform !== "all") query = query.eq("platform", activePlatform);
   const { data: posts } = await query;
 
   const trendingTopics = (posts || [])
@@ -38,32 +36,36 @@ export default async function ResearchPage({ searchParams }: { searchParams: Pro
   return (
     <div>
       <TopBar
-        title="Research Feed"
+        eyebrow="Intel"
+        title="Research feed."
         subtitle={
           activePlatform === "all"
-            ? `${posts?.length || 0} scraped posts from tracked accounts`
-            : `${posts?.length || 0} ${activePlatform} posts`
-        }
-        actions={
-          <button className="bg-azen-accent text-azen-bg px-3.5 py-2 rounded-md text-xs font-semibold">
-            Scrape Now
-          </button>
+            ? `${posts?.length || 0} posts scraped from the accounts you track — sorted by freshness.`
+            : `${posts?.length || 0} ${activePlatform} posts from your tracked accounts.`
         }
       />
+
       <PlatformTabs active={activePlatform} counts={counts} />
-      <TrendingBar topics={trendingTopics} />
-      <div className="space-y-3">
-        {(posts || []).map((post) => (
-          <FeedItem key={post.id} post={post} />
-        ))}
-        {(!posts || posts.length === 0) && (
-          <p className="text-azen-text text-sm">
-            {activePlatform === "all"
-              ? "No research data yet. Add tracked accounts and run a scrape."
-              : `No ${activePlatform} posts yet.`}
-          </p>
-        )}
-      </div>
+
+      {trendingTopics.length > 0 && (
+        <div className="mb-6">
+          <TrendingBar topics={trendingTopics} />
+        </div>
+      )}
+
+      {(!posts || posts.length === 0) ? (
+        <EmptyState
+          icon={<Radar size={22} />}
+          title={activePlatform === "all" ? "No research data yet" : `No ${activePlatform} posts yet`}
+          body="Add tracked accounts and hit 'Scrape all' to pull their latest posts."
+        />
+      ) : (
+        <div className="stagger grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {posts.map((post) => (
+            <FeedItem key={post.id} post={post} />
+          ))}
+        </div>
+      )}
       <UrlInput />
     </div>
   );
