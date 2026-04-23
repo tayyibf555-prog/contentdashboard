@@ -48,6 +48,19 @@ export type GeneratedContent = {
   created_at: string;
 };
 
+export type EngagementIdea = {
+  id: string;
+  account: "business" | "personal";
+  source_post_ids: string[];
+  topic: string;
+  hook_template: string;
+  format: "reel" | "carousel" | "post";
+  engagement_mechanic: string;
+  rationale: string;
+  status: "new" | "used" | "dismissed";
+  created_at: string;
+};
+
 export type CarouselSlide = {
   id: string;
   generated_content_id: string;

@@ -25,6 +25,13 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
     .order("created_at", { ascending: false })
     .limit(20);
 
+  const { data: ideas } = await supabase
+    .from("engagement_ideas")
+    .select("*")
+    .eq("account", account)
+    .order("created_at", { ascending: false })
+    .limit(100);
+
   return (
     <div>
       <TopBar
@@ -35,6 +42,7 @@ export default async function InstagramPage({ searchParams }: { searchParams: Pr
       <InstagramPageClient
         carouselPosts={carouselPosts || []}
         reelPosts={reelPosts || []}
+        ideas={ideas || []}
         account={account}
       />
     </div>
