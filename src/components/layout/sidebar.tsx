@@ -78,11 +78,17 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-[240px] bg-azen-surface/80 backdrop-blur-md border-r border-azen-line flex flex-col h-screen fixed left-0 top-0 z-20">
+    <aside className="w-[240px] bg-azen-surface/55 backdrop-blur-2xl backdrop-saturate-150 border-r border-white/[0.07] flex flex-col h-screen fixed left-0 top-0 z-20">
       {/* Brand lockup */}
-      <div className="px-6 py-6 border-b border-azen-line">
+      <div className="px-6 py-6 border-b border-white/[0.06]">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <span className="relative h-8 w-8 rounded-lg bg-gradient-to-br from-azen-accent to-[#0097A7] flex items-center justify-center shadow-accent">
+          <span
+            className="relative h-8 w-8 rounded-lg flex items-center justify-center shadow-accent"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-azen-accent), color-mix(in srgb, var(--color-azen-accent) 55%, black))",
+            }}
+          >
             <Sparkles size={14} strokeWidth={2.2} className="text-azen-bg" />
           </span>
           <div className="leading-none">
@@ -109,13 +115,13 @@ export function Sidebar() {
       </nav>
 
       {/* Settings + Account */}
-      <div className="border-t border-azen-line">
+      <div className="border-t border-white/[0.06]">
         <div className="py-3">
           {SETTINGS_ITEMS.map((item) => (
             <NavLink key={item.href} item={item} />
           ))}
         </div>
-        <div className="px-5 py-4 border-t border-azen-line/70">
+        <div className="px-5 py-4 border-t border-white/[0.04]">
           <div className="text-azen-muted text-[10px] uppercase tracking-[0.2em] mb-2">Account</div>
           <AccountToggle />
         </div>

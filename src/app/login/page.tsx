@@ -43,7 +43,13 @@ export default function LoginPage() {
       <div className="relative w-full max-w-md">
         {/* Brand lockup */}
         <div className="flex items-center gap-3 justify-center mb-8">
-          <span className="h-11 w-11 rounded-xl bg-gradient-to-br from-azen-accent to-[#0097A7] flex items-center justify-center shadow-accent">
+          <span
+            className="h-11 w-11 rounded-xl flex items-center justify-center shadow-accent"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-azen-accent), color-mix(in srgb, var(--color-azen-accent) 55%, black))",
+            }}
+          >
             <Sparkles size={18} strokeWidth={2.2} className="text-azen-bg" />
           </span>
           <div>

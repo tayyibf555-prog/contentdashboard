@@ -58,10 +58,10 @@ html[data-account="personal"] {
   --color-azen-muted: #6F6F6F;
   --color-azen-text: #A0A0A5;
   --color-azen-text-strong: #E8E8EC;
-  --color-azen-accent: #38BDF8;        /* sky-400 — brighter, cleaner on black */
-  --color-azen-accent-soft: #38BDF822;
-  --color-azen-accent-glow: #38BDF866;
-  --color-azen-accent-rgb: 56, 189, 248;
+  --color-azen-accent: #4A6CF7;        /* royal blue — warmer, violet-leaning */
+  --color-azen-accent-soft: #4A6CF722;
+  --color-azen-accent-glow: #4A6CF766;
+  --color-azen-accent-rgb: 74, 108, 247;
 
   /* Legacy alias sync */
   --color-azen-card: #0A0A0A;
