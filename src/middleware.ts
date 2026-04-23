@@ -2,6 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Short-circuit paths that don't need auth — avoids a full round-trip to
+  // Supabase Auth on every API call and on the login page itself.
+  if (pathname.startsWith("/login") || pathname.startsWith("/api/")) {
+    return NextResponse.next({ request: { headers: request.headers } });
+  }
+
   let response = NextResponse.next({
     request: { headers: request.headers },
   });
@@ -33,15 +41,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Allow unauthenticated access to login page and API routes
-  if (
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/api/")
-  ) {
-    return response;
-  }
-
-  // Redirect to login if not authenticated
   if (!user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
