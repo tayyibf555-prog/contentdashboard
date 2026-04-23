@@ -3,6 +3,8 @@ import { scrapeAccount } from "@/lib/apify/client";
 import { analyzeResearch } from "@/lib/claude/client";
 import { createClient } from "@supabase/supabase-js";
 
+export const maxDuration = 60;
+
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

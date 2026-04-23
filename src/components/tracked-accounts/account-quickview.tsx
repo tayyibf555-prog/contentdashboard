@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import type { TrackedAccount } from "@/types";
 
@@ -26,20 +26,64 @@ export function AccountQuickView({ account, onClose }: { account: TrackedAccount
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [top, setTop] = useState<Record<string, ScrapedRow[]>>({});
+  const [scraping, setScraping] = useState<string | null>(null);
+  const [scrapeError, setScrapeError] = useState<string | null>(null);
+  const [scrapeProgress, setScrapeProgress] = useState<{ done: number; total: number } | null>(null);
+
+  const loadTopPosts = useCallback(async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/tracked-accounts/${id}/top-posts`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      setTop(data.top || {});
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!account) return;
-    setLoading(true);
-    setError(null);
-    fetch(`/api/tracked-accounts/${account.id}/top-posts`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error);
-        setTop(data.top || {});
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [account]);
+    setTop({});
+    setScrapeError(null);
+    loadTopPosts(account.id);
+  }, [account, loadTopPosts]);
+
+  async function scrapeAll() {
+    if (!account) return;
+    const handles = account.handles as Record<string, string>;
+    const entries = Object.entries(handles).filter(([, v]) => v);
+    if (entries.length === 0) {
+      setScrapeError("No handles configured for this account.");
+      return;
+    }
+    setScrapeError(null);
+    setScrapeProgress({ done: 0, total: entries.length });
+    for (let i = 0; i < entries.length; i++) {
+      const [platform, handle] = entries[i];
+      setScraping(platform);
+      try {
+        const res = await fetch("/api/scrape", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accountId: account.id, platform, handle }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `Scrape ${platform} failed`);
+      } catch (e) {
+        setScrapeError(`${platform}: ${e instanceof Error ? e.message : "failed"}`);
+      }
+      setScrapeProgress({ done: i + 1, total: entries.length });
+    }
+    setScraping(null);
+    // Reload top posts with whatever we got
+    await loadTopPosts(account.id);
+    // Leave progress visible briefly so user sees the final state
+    setTimeout(() => setScrapeProgress(null), 2500);
+  }
 
   if (!account) return null;
 
@@ -56,6 +100,22 @@ export function AccountQuickView({ account, onClose }: { account: TrackedAccount
             </span>
           ))}
         </div>
+
+        <div className="flex items-center justify-between gap-2">
+          <button
+            onClick={scrapeAll}
+            disabled={!!scraping}
+            className="bg-azen-accent text-azen-bg px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-azen-accent/90 disabled:opacity-50 transition-colors"
+          >
+            {scraping ? `Scraping ${scraping}…` : "Scrape latest posts"}
+          </button>
+          {scrapeProgress && (
+            <span className="text-[11px] text-azen-text">
+              {scrapeProgress.done}/{scrapeProgress.total} platforms {scrapeProgress.done === scrapeProgress.total ? "done" : ""}
+            </span>
+          )}
+        </div>
+        {scrapeError && <div className="text-xs text-red-400">{scrapeError}</div>}
 
         {loading && <div className="text-xs text-azen-text">Loading top posts…</div>}
         {error && <div className="text-xs text-red-400">{error}</div>}
