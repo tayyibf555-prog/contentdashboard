@@ -48,7 +48,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* --- Personal account theme: pure black background + blue accent --- */
+/* --- Personal account theme: pure black background + sky-blue accent --- */
 html[data-account="personal"] {
   --color-azen-bg: #000000;
   --color-azen-surface: #0A0A0A;
@@ -58,10 +58,10 @@ html[data-account="personal"] {
   --color-azen-muted: #6F6F6F;
   --color-azen-text: #A0A0A5;
   --color-azen-text-strong: #E8E8EC;
-  --color-azen-accent: #3B82F6;
-  --color-azen-accent-soft: #3B82F622;
-  --color-azen-accent-glow: #3B82F666;
-  --color-azen-accent-rgb: 59, 130, 246;
+  --color-azen-accent: #38BDF8;        /* sky-400 — brighter, cleaner on black */
+  --color-azen-accent-soft: #38BDF822;
+  --color-azen-accent-glow: #38BDF866;
+  --color-azen-accent-rgb: 56, 189, 248;
 
   /* Legacy alias sync */
   --color-azen-card: #0A0A0A;

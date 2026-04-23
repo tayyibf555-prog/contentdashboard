@@ -17,17 +17,24 @@ export function Card({
   interactive?: boolean;
   accent?: boolean;
 }) {
-  const base = "rounded-lg p-5 transition-all duration-300";
+  const base =
+    "relative rounded-lg p-5 transition-all duration-300 " +
+    // subtle highlight stroke on the top inner edge
+    "before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/[0.035]";
   const variants: Record<Variant, string> = {
-    surface: "bg-azen-surface border border-azen-line shadow-raised",
-    elevated: "bg-azen-surface border border-azen-line shadow-lift",
-    outlined: "bg-transparent border border-azen-line-strong",
-    ghost: "bg-azen-surface/60 border border-azen-line/60 backdrop-blur-sm",
+    surface:
+      "bg-azen-surface/70 backdrop-blur-xl backdrop-saturate-150 border border-white/[0.06] shadow-raised",
+    elevated:
+      "bg-azen-surface/65 backdrop-blur-2xl backdrop-saturate-150 border border-white/[0.08] shadow-lift",
+    outlined:
+      "bg-transparent backdrop-blur-md border border-white/[0.08]",
+    ghost:
+      "bg-azen-surface/40 backdrop-blur-lg border border-white/[0.05]",
   };
   const interactiveClasses = interactive
-    ? "hover:-translate-y-0.5 hover:border-azen-line-strong hover:shadow-pop cursor-pointer"
+    ? "hover:-translate-y-0.5 hover:border-white/[0.12] hover:shadow-pop hover:bg-azen-surface/75 cursor-pointer"
     : "";
-  const accentClasses = accent ? "relative overflow-hidden" : "";
+  const accentClasses = accent ? "overflow-hidden" : "";
 
   // Legacy API — allow hardcoded border color to keep old callers working
   const style = border ? { borderColor: border } : undefined;
@@ -35,7 +42,7 @@ export function Card({
   return (
     <div className={`${base} ${variants[variant]} ${interactiveClasses} ${accentClasses} ${className}`} style={style}>
       {accent && (
-        <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-azen-accent/60 to-transparent" />
+        <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-azen-accent/70 to-transparent" />
       )}
       {children}
     </div>

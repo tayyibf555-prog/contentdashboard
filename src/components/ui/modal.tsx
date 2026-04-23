@@ -40,10 +40,10 @@ export function Modal({
         open:animate-scale-in
       `}
     >
-      {/* Card surface — we keep this as a wrapper so the dialog backdrop click works */}
+      {/* Glass surface — wrapper ensures backdrop-click closes but content-click doesn't */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative rounded-xl bg-azen-surface border border-azen-line-strong shadow-pop overflow-hidden"
+        className="relative rounded-xl bg-azen-surface/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/[0.1] shadow-pop overflow-hidden"
       >
         <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-azen-accent/70 to-transparent" />
         <div className="flex items-start justify-between gap-4 px-6 pt-5 pb-4 border-b border-azen-line">
