@@ -52,7 +52,7 @@ export function CalendarCell({
         isOver ? "bg-azen-accent/10 border-azen-accent" : ""
       } ${isOtherMonth ? "opacity-40" : ""}`}
     >
-      <div className={`text-[11px] font-semibold mb-1 ${isToday ? "text-azen-accent" : "text-azen-text"}`}>
+      <div className={`text-[11px] font-semibold mb-1 ${isToday ? "text-white" : "text-azen-text"}`}>
         {day}
       </div>
       {posts.map((post) => (

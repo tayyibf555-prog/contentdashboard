@@ -64,7 +64,7 @@ export function WinnersButton({ platform, account, label = "From Winners" }: { p
       <button
         onClick={() => setShowModal(true)}
         title="Generate content seeded from your top-engagement tracked posts"
-        className="bg-azen-card border border-azen-accent text-azen-accent px-3.5 py-2 rounded-md text-xs font-semibold hover:bg-azen-accent hover:text-azen-bg transition-colors"
+        className="bg-azen-card border border-azen-accent text-white px-3.5 py-2 rounded-md text-xs font-semibold hover:bg-azen-accent hover:text-azen-bg transition-colors"
       >
         {label}
       </button>

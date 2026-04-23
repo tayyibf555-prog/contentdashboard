@@ -93,7 +93,7 @@ function IdeaCard({ idea, onUpdate }: { idea: EngagementIdea; onUpdate: (id: str
         <span
           className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
             idea.format === "reel" ? "bg-purple-500/20 text-purple-300" :
-            idea.format === "carousel" ? "bg-azen-accent/20 text-azen-accent" : "bg-azen-border text-azen-text"
+            idea.format === "carousel" ? "bg-azen-accent/20 text-white" : "bg-azen-border text-azen-text"
           }`}
         >
           {idea.format}
@@ -115,7 +115,7 @@ function IdeaCard({ idea, onUpdate }: { idea: EngagementIdea; onUpdate: (id: str
 
       <div>
         <div className="text-[10px] text-azen-text uppercase font-semibold mb-1">Engagement mechanic</div>
-        <div className="text-sm text-azen-accent">{idea.engagement_mechanic}</div>
+        <div className="text-sm text-white">{idea.engagement_mechanic}</div>
       </div>
 
       <div>

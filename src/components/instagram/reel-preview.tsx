@@ -11,11 +11,11 @@ export function ReelPreview({ title, hook, onScreenText }: ReelPreviewProps) {
     <div className="w-[280px] bg-black rounded-[2rem] p-3 mx-auto">
       <div className="bg-azen-bg rounded-2xl overflow-hidden">
         <div className="flex items-center gap-2 px-3 py-2">
-          <div className="w-7 h-7 rounded-full bg-azen-accent/20 flex items-center justify-center text-azen-accent text-[10px] font-bold">
+          <div className="w-7 h-7 rounded-full bg-azen-accent/20 flex items-center justify-center text-white text-[10px] font-bold">
             T
           </div>
           <span className="text-white text-[11px] font-semibold">tayyib.ai</span>
-          <span className="ml-auto text-azen-accent text-[10px] font-semibold">Reel</span>
+          <span className="ml-auto text-white text-[10px] font-semibold">Reel</span>
         </div>
         <div className="aspect-[9/16] bg-gradient-to-b from-azen-card to-azen-bg relative flex flex-col justify-end p-4">
           <div className="absolute inset-0 flex items-center justify-center">

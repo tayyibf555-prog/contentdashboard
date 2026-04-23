@@ -72,7 +72,7 @@ export function UrlInput() {
           {result.suggested_pillar && (
             <div className="text-[12px]">
               <span className="text-azen-muted">Pillar · </span>
-              <span className="text-azen-accent font-semibold">{result.suggested_pillar}</span>
+              <span className="text-white font-semibold">{result.suggested_pillar}</span>
             </div>
           )}
         </div>

@@ -45,7 +45,7 @@ export function PostDetails({ platform, account, pillar, status, bestTime, conte
         {bestTime && (
           <div>
             <span className="text-azen-text">Best Time: </span>
-            <span className="text-azen-accent font-semibold">{bestTime}</span>
+            <span className="text-white font-semibold">{bestTime}</span>
           </div>
         )}
       </div>

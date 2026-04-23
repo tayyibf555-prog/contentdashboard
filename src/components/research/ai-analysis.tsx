@@ -15,7 +15,7 @@ export function AiAnalysisCard({ analysis }: { analysis: Analysis }) {
 
   return (
     <div className="rounded-lg bg-azen-accent/5 border border-azen-accent/20 p-3 space-y-2">
-      <div className="flex items-center gap-1.5 text-azen-accent text-[9px] font-semibold uppercase tracking-[0.2em] mb-1">
+      <div className="flex items-center gap-1.5 text-white text-[9px] font-semibold uppercase tracking-[0.2em] mb-1">
         <Brain size={11} strokeWidth={2.2} /> AI analysis
       </div>
       {analysis.key_insight && (
@@ -32,7 +32,7 @@ export function AiAnalysisCard({ analysis }: { analysis: Analysis }) {
         <div className="flex items-center gap-2 flex-wrap pt-1">
           {pillar && <PillarBadge label={pillar.label.split(" — ")[0]} color={pillar.color} />}
           {analysis.trending_topics?.map((topic) => (
-            <span key={topic} className="text-azen-accent/70 text-[10px] font-mono">#{topic}</span>
+            <span key={topic} className="text-white/70 text-[10px] font-mono">#{topic}</span>
           ))}
         </div>
       )}

@@ -35,7 +35,7 @@ export function CalendarView({ posts }: { posts: GeneratedContent[] }) {
               key={v}
               onClick={() => setView(v)}
               className={`text-xs font-semibold pb-1 border-b-2 transition-colors ${
-                view === v ? "text-azen-accent border-azen-accent" : "text-azen-text border-transparent hover:text-white"
+                view === v ? "text-white border-azen-accent" : "text-azen-text border-transparent hover:text-white"
               }`}
             >
               {v.charAt(0).toUpperCase() + v.slice(1)}
@@ -47,7 +47,7 @@ export function CalendarView({ posts }: { posts: GeneratedContent[] }) {
             <button onClick={() => setWeekOffset(weekOffset - 1)} className="text-azen-text hover:text-white text-xs">
               Prev
             </button>
-            <button onClick={() => setWeekOffset(0)} className="text-azen-accent text-xs font-semibold">
+            <button onClick={() => setWeekOffset(0)} className="text-white text-xs font-semibold">
               This Week
             </button>
             <button onClick={() => setWeekOffset(weekOffset + 1)} className="text-azen-text hover:text-white text-xs">

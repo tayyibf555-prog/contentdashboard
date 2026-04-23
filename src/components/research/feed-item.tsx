@@ -196,7 +196,7 @@ export function FeedItem({ post }: FeedItemProps) {
           </div>
           {analysis?.suggested_pillar && (
             <div className="text-azen-text text-[11px]">
-              Suggested pillar: <span className="text-azen-accent font-semibold">{analysis.suggested_pillar}</span>
+              Suggested pillar: <span className="text-white font-semibold">{analysis.suggested_pillar}</span>
             </div>
           )}
           <Button variant="primary" size="lg" onClick={handleGenerate} disabled={generating} className="w-full">

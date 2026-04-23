@@ -23,7 +23,7 @@ export function SlideNavigator({
           onClick={() => onSelect(i)}
           className={`shrink-0 w-16 h-16 rounded-md flex items-center justify-center text-[9px] font-medium transition-all ${
             i === activeIndex
-              ? "border-2 border-azen-accent bg-azen-accent/10 text-azen-accent"
+              ? "border-2 border-azen-accent bg-azen-accent/10 text-white"
               : "border border-azen-border bg-azen-bg text-azen-text hover:border-azen-text"
           }`}
         >

@@ -31,7 +31,7 @@ export function HashtagManager({
         {hashtags.map((tag) => (
           <span
             key={tag}
-            className="bg-azen-border text-azen-accent px-2 py-0.5 rounded text-[10px] flex items-center gap-1"
+            className="bg-azen-surface-2 text-white px-2 py-0.5 rounded text-[10px] flex items-center gap-1"
           >
             #{tag}
             <button onClick={() => removeTag(tag)} className="text-azen-text hover:text-white ml-0.5">
@@ -51,7 +51,7 @@ export function HashtagManager({
         />
         <button
           onClick={addTag}
-          className="text-azen-accent text-[11px] font-semibold hover:underline"
+          className="text-white text-[11px] font-semibold hover:underline"
         >
           + Add
         </button>

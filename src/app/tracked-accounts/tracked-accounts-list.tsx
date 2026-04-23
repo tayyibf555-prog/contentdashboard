@@ -199,7 +199,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
             >
               <span className="inline-flex items-center gap-1.5">
                 {t.charAt(0).toUpperCase() + t.slice(1)}
-                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${active ? "bg-azen-accent/15 text-azen-accent" : "bg-azen-surface-2 text-azen-muted"}`}>
+                <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${active ? "bg-azen-accent/15 text-white" : "bg-azen-surface-2 text-azen-muted"}`}>
                   {count}
                 </span>
               </span>
@@ -217,7 +217,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
             <div className="inline-flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-azen-accent animate-pulse-dot" style={{ boxShadow: "0 0 8px rgba(var(--color-azen-accent-rgb), 0.8)" }} />
               <span className="text-[12px] text-white">
-                Scraping <span className="text-azen-accent font-semibold">{scraping.current || "…"}</span>
+                Scraping <span className="text-white font-semibold">{scraping.current || "…"}</span>
               </span>
             </div>
             <div className="text-[11px] font-mono text-azen-text">
@@ -249,7 +249,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0">
                       <div className="text-white text-[15px] font-semibold tracking-tight truncate">{account.name}</div>
-                      <div className={`mt-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] ${isCompetitor ? "text-red-300" : "text-azen-accent"}`}>
+                      <div className={`mt-0.5 text-[9px] font-semibold uppercase tracking-[0.2em] ${isCompetitor ? "text-red-300" : "text-white"}`}>
                         {account.category}
                       </div>
                     </div>
@@ -284,7 +284,7 @@ export function TrackedAccountsList({ accounts }: { accounts: TrackedAccount[] }
                     <span className="text-[10px] font-mono text-azen-muted uppercase tracking-wider">
                       {activeHandles.length} {activeHandles.length === 1 ? "platform" : "platforms"}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[11px] text-azen-accent font-semibold group-hover:gap-2 transition-all">
+                    <span className="inline-flex items-center gap-1 text-[11px] text-white font-semibold group-hover:gap-2 transition-all">
                       View top posts <ArrowUpRight size={12} />
                     </span>
                   </div>

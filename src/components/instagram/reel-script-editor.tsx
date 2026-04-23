@@ -36,7 +36,7 @@ export function ReelScriptEditor({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <span className="bg-azen-accent/20 text-azen-accent text-[10px] font-semibold px-2 py-0.5 rounded">
+        <span className="bg-azen-accent/20 text-white text-[10px] font-semibold px-2 py-0.5 rounded">
           {data.estimated_duration || "30s"} Reel
         </span>
       </div>

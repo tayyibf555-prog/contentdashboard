@@ -38,7 +38,7 @@ export function ThreadBuilder({
         {localTweets.map((tweet, i) => (
           <div key={i} className="relative">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-azen-accent text-[10px] font-semibold">Tweet {i + 1}</span>
+              <span className="text-white text-[10px] font-semibold">Tweet {i + 1}</span>
               <span className={`text-[10px] ${tweet.length > 280 ? "text-red-400" : "text-azen-text"}`}>
                 {tweet.length}/280
               </span>
@@ -65,7 +65,7 @@ export function ThreadBuilder({
       </div>
       <button
         onClick={addTweet}
-        className="text-azen-accent text-[11px] font-semibold mt-3 hover:underline"
+        className="text-white text-[11px] font-semibold mt-3 hover:underline"
       >
         + Add Tweet
       </button>

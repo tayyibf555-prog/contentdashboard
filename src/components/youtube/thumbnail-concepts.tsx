@@ -31,7 +31,7 @@ export function ThumbnailConcepts({
               {c.image_url ? (
                 <img src={c.image_url} alt={c.label} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-azen-accent text-2xl font-bold">{c.label}</span>
+                <span className="text-white text-2xl font-bold">{c.label}</span>
               )}
             </div>
             <div className="p-2">

@@ -42,7 +42,7 @@ export function EvergreenLibrary({ items }: { items: EvergreenItem[] }) {
                 {pillar && <PillarBadge label={pillar.label} color={pillar.color} />}
               </div>
               {item.eligible_for_reshare ? (
-                <span className="text-azen-accent text-[9px] font-semibold">ELIGIBLE</span>
+                <span className="text-white text-[9px] font-semibold">ELIGIBLE</span>
               ) : (
                 <span className="text-azen-text text-[9px]">
                   {item.days_until_eligible}d cooldown

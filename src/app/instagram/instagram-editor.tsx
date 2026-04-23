@@ -199,7 +199,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
               <span className="inline-flex items-center gap-1.5">
                 {t.charAt(0).toUpperCase() + t.slice(1)}
                 <span className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded ${
-                  active ? "bg-azen-accent/15 text-azen-accent" : "bg-azen-surface-2 text-azen-muted"
+                  active ? "bg-azen-accent/15 text-white" : "bg-azen-surface-2 text-azen-muted"
                 }`}>{count}</span>
               </span>
               {active && (

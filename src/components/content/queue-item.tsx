@@ -59,7 +59,7 @@ export function QueueItem({
         {content.best_time && (
           <div className="text-right mr-1">
             <div className="text-azen-muted text-[9px] uppercase tracking-wider">Best</div>
-            <div className="text-azen-accent text-[12px] font-mono font-medium">{content.best_time}</div>
+            <div className="text-white text-[12px] font-mono font-medium">{content.best_time}</div>
           </div>
         )}
         <div className="flex items-center gap-2 opacity-80 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
@@ -89,7 +89,7 @@ export function QueueItem({
             {content.hashtags.length > 0 && (
               <div className="flex gap-1.5 flex-wrap">
                 {content.hashtags.map((tag) => (
-                  <span key={tag} className="text-azen-accent text-[11px] font-mono">
+                  <span key={tag} className="text-white text-[11px] font-mono">
                     #{tag}
                   </span>
                 ))}

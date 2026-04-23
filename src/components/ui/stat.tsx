@@ -69,7 +69,7 @@ export function Stat({
 export function DeltaChip({ value }: { value: number }) {
   const positive = value > 0;
   const neutral = value === 0;
-  const color = neutral ? "text-azen-muted" : positive ? "text-azen-accent" : "text-red-400";
+  const color = neutral ? "text-azen-muted" : positive ? "text-white" : "text-red-400";
   const Icon = neutral ? Minus : positive ? TrendingUp : TrendingDown;
   return (
     <span className={`inline-flex items-center gap-1 text-[11px] font-mono font-medium ${color} mb-1`}>

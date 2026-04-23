@@ -126,7 +126,7 @@ export function ManualPostKit({ contentId, caption, hashtags, slides, account }:
           <span className="text-azen-text text-[11px] uppercase tracking-wider">Caption</span>
           <button
             onClick={() => copyToClipboard(fullCaption, "caption")}
-            className="text-azen-accent text-[10px] font-semibold hover:underline"
+            className="text-white text-[10px] font-semibold hover:underline"
           >
             {copied === "caption" ? "Copied!" : "Copy All"}
           </button>
@@ -158,7 +158,7 @@ export function ManualPostKit({ contentId, caption, hashtags, slides, account }:
         <div className="text-white text-[10px] leading-relaxed">
           {sortedSlides.map((s) => (
             <span key={s.id} className="inline-block mr-1">
-              <span className="text-azen-accent font-semibold">{s.slide_number}.</span>{" "}
+              <span className="text-white font-semibold">{s.slide_number}.</span>{" "}
               {s.slide_type === "cover" ? "Cover" : s.slide_type === "cta" ? "CTA" : `Content`}
               {s.slide_number < sortedSlides.length ? " → " : ""}
             </span>

@@ -70,6 +70,14 @@ html[data-account="personal"] {
 
 body {
   background-color: var(--color-azen-bg);
+  background-image: linear-gradient(
+    175deg,
+    var(--color-azen-bg) 0%,
+    var(--color-azen-bg) 35%,
+    rgba(var(--color-azen-accent-rgb), 0.12) 70%,
+    rgba(var(--color-azen-accent-rgb), 0.32) 100%
+  );
+  background-attachment: fixed;
   color: #E6EAF4;
   font-family: var(--font-outfit), system-ui, sans-serif;
   font-feature-settings: "ss01", "cv11";
@@ -77,6 +85,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.005em;
   transition: background-color 280ms ease;
+}
+
+/* Personal theme: stronger black-to-blue fade */
+html[data-account="personal"] body {
+  background-image: linear-gradient(
+    180deg,
+    #000000 0%,
+    #000000 30%,
+    rgba(var(--color-azen-accent-rgb), 0.18) 75%,
+    rgba(var(--color-azen-accent-rgb), 0.45) 100%
+  );
 }
 
 /* Atmospheric background — grain + top-right cyan bloom. Pure CSS, no runtime cost. */

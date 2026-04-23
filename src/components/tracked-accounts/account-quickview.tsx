@@ -29,7 +29,7 @@ function getPostType(row: ScrapedRow): "carousel" | "reel" | "video" | "tweet" |
 }
 
 const POST_TYPE_STYLES: Record<string, string> = {
-  carousel: "bg-azen-accent/20 text-azen-accent",
+  carousel: "bg-azen-accent/20 text-white",
   reel: "bg-purple-500/20 text-purple-300",
   video: "bg-red-500/20 text-red-300",
   tweet: "bg-sky-500/20 text-sky-300",
@@ -230,7 +230,7 @@ function PostCard({ post }: { post: ScrapedRow }) {
           disabled={recreating || recreated}
           className={`text-[10px] font-semibold px-2 py-1 rounded transition-colors ${
             recreated
-              ? "bg-azen-accent/20 text-azen-accent border border-azen-accent"
+              ? "bg-azen-accent/20 text-white border border-azen-accent"
               : "bg-azen-accent text-azen-bg hover:bg-azen-accent/90 disabled:opacity-50"
           }`}
         >

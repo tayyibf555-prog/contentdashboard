@@ -64,7 +64,7 @@ export function ReelEditor({ posts }: { posts: ReelPost[] }) {
             key={t}
             onClick={() => { setTab(t); setSelectedIndex(0); }}
             className={`text-xs font-semibold pb-1 border-b-2 transition-colors ${
-              tab === t ? "text-azen-accent border-azen-accent" : "text-azen-text border-transparent hover:text-white"
+              tab === t ? "text-white border-azen-accent" : "text-azen-text border-transparent hover:text-white"
             }`}
           >
             {t.charAt(0).toUpperCase() + t.slice(1)} ({posts.filter((p) => {

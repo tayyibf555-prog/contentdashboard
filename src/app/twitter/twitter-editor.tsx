@@ -75,7 +75,7 @@ export function TwitterEditor({ posts }: { posts: GeneratedContent[] }) {
             key={f}
             onClick={() => setFormat(f)}
             className={`text-xs font-semibold pb-1 border-b-2 transition-colors ${
-              format === f ? "text-azen-accent border-azen-accent" : "text-azen-text border-transparent hover:text-white"
+              format === f ? "text-white border-azen-accent" : "text-azen-text border-transparent hover:text-white"
             }`}
           >
             {f === "tweet" ? "Single Tweet" : "Thread"}

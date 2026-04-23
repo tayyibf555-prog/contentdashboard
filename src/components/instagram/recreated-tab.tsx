@@ -34,7 +34,7 @@ function RecreatedCard({ post }: { post: RecreatedPost }) {
       <div className="flex items-center justify-between">
         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
           isReel ? "bg-purple-500/20 text-purple-300" :
-          isCarousel ? "bg-azen-accent/20 text-azen-accent" :
+          isCarousel ? "bg-azen-accent/20 text-white" :
           "bg-azen-border text-azen-text"
         }`}>
           {post.content_type}

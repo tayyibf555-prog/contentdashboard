@@ -28,7 +28,7 @@ export function PhonePreview({
       <div className="bg-azen-bg rounded-2xl overflow-hidden">
         {/* IG Header */}
         <div className="flex items-center gap-2 px-3 py-2">
-          <div className="w-7 h-7 rounded-full bg-azen-accent/20 flex items-center justify-center text-azen-accent text-[10px] font-bold">
+          <div className="w-7 h-7 rounded-full bg-azen-accent/20 flex items-center justify-center text-white text-[10px] font-bold">
             {handle[0].toUpperCase()}
           </div>
           <span className="text-white text-[11px] font-semibold">{handle}</span>

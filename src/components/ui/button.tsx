@@ -25,7 +25,7 @@ const variants: Record<ButtonVariant, string> = {
   ghost:
     "bg-transparent text-azen-text hover:text-white hover:bg-azen-surface",
   link:
-    "bg-transparent text-azen-accent px-0 hover:underline underline-offset-4",
+    "bg-transparent text-white px-0 hover:underline underline-offset-4",
 };
 
 export function Button({

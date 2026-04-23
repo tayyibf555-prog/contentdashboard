@@ -128,12 +128,12 @@ export function RecreateTab({ account }: { account: "business" | "personal" }) {
             <div className="flex items-center gap-2">
               <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
                 plan.format === "reel" ? "bg-purple-500/20 text-purple-300" :
-                plan.format === "carousel" ? "bg-azen-accent/20 text-azen-accent" : "bg-azen-border text-azen-text"
+                plan.format === "carousel" ? "bg-azen-accent/20 text-white" : "bg-azen-border text-azen-text"
               }`}>{plan.format}</span>
               <span className="text-sm font-semibold text-white">{plan.topic}</span>
             </div>
             {savedId ? (
-              <span className="text-xs text-azen-accent">Saved as draft</span>
+              <span className="text-xs text-white">Saved as draft</span>
             ) : (
               <button
                 onClick={saveAsDraft}
@@ -158,7 +158,7 @@ export function RecreateTab({ account }: { account: "business" | "personal" }) {
                   <div className="text-xs font-semibold text-white mb-1">
                     {i + 1}. {step.slide_or_beat}
                   </div>
-                  {step.on_screen_text && <div className="text-[11px] text-azen-accent mb-1">Text: {step.on_screen_text}</div>}
+                  {step.on_screen_text && <div className="text-[11px] text-white mb-1">Text: {step.on_screen_text}</div>}
                   {step.voiceover && <div className="text-[11px] text-white/80 mb-1">VO: {step.voiceover}</div>}
                   {step.notes && <div className="text-[11px] text-azen-text">{step.notes}</div>}
                 </li>
@@ -179,7 +179,7 @@ function Section({ label, body, italic, accent }: { label: string; body: string;
   return (
     <div>
       <div className="text-[10px] text-azen-text uppercase font-semibold mb-1">{label}</div>
-      <div className={`text-sm ${accent ? "text-azen-accent" : "text-white/90"} ${italic ? "italic" : ""}`}>{body}</div>
+      <div className={`text-sm ${accent ? "text-white" : "text-white/90"} ${italic ? "italic" : ""}`}>{body}</div>
     </div>
   );
 }

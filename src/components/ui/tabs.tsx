@@ -49,7 +49,7 @@ export function Tabs({
         {typeof it.count === "number" && (
           <span
             className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded ${
-              isActive ? "bg-azen-accent/15 text-azen-accent" : "bg-azen-surface-2 text-azen-muted"
+              isActive ? "bg-azen-accent/15 text-white" : "bg-azen-surface-2 text-azen-muted"
             }`}
           >
             {it.count}

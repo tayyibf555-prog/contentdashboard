@@ -35,7 +35,7 @@ export function HookVariants({
                   style={{ width: `${(hook.score / 10) * 100}%` }}
                 />
               </div>
-              <span className="text-azen-accent text-[10px] font-semibold">{hook.score}/10</span>
+              <span className="text-white text-[10px] font-semibold">{hook.score}/10</span>
             </div>
           </button>
         ))}
