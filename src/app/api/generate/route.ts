@@ -125,7 +125,7 @@ Reel rules:
 - Total duration: ~30 seconds max
 - Hook (0:00-0:05): One punchy sentence that stops the scroll. Pattern-interrupt or bold claim.
 - Body (0:05-0:25): 2-3 key points delivered conversationally. Speak to one person. No jargon. Real value.
-- CTA (0:25-0:30): Clear next step — follow for more, save this, or DM me.
+- CTA (0:25-0:30): MUST be a comment-keyword engagement mechanic. Pick ONE uppercase keyword tied to the reel topic (e.g. "AI", "PLAYBOOK", "GUIDE", "STACK", "SYSTEM"). The spoken CTA must follow: "Comment '[KEYWORD]' and I'll DM you the [guide / step-by-step plan / playbook / breakdown]". No exceptions, no URLs.
 - On-screen text: Short text overlays that reinforce key points (max 6 words each)
 - Recording notes: Brief filming tips for this specific reel
 
