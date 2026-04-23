@@ -38,34 +38,34 @@ async function main() {
   const bg = await getTestBackground();
   console.log(bg ? "Using test-bg.{jpg,png} as background" : "No test-bg found — using solid fallback");
 
-  // Cover
+  // Cover — per the JSON spec (multi-line title + italic blue keyword + scribble)
   console.log("Tayyib cover");
   const coverEl = React.createElement(TayyibCover, {
-    headline: "How to design a minimal",
-    accentWord: "Carousel",
-    subtitle: "Steal the exact designs\nI use for my posts.",
+    headline: "How to use AI\nto save",
+    accentWord: "10 hours a week",
+    subtitle: "",
     account: "personal" as const, theme, slideNumber: 1, totalSlides: 8, backgroundImage: bg ?? undefined,
   });
   const coverSvg = await satori(coverEl, { width: W, height: H, fonts });
   writeFileSync("test-tayyib-cover.png", new Resvg(coverSvg, { fitTo: { mode: "width", value: W } }).render().asPng());
   console.log("  -> Saved test-tayyib-cover.png");
 
-  // Content
+  // Content (middle slide) — per the JSON spec (STEP label + headline + body)
   console.log("Tayyib content");
   const contentEl = React.createElement(TayyibContent, {
-    headline: "Start with contrast",
-    bodyText: "Dark images + bright accent text = instant hierarchy. Don't overthink the palette; one accent does the work.",
-    account: "personal" as const, theme, slideNumber: 3, totalSlides: 8, backgroundImage: bg ?? undefined,
+    headline: "Audit your weekly tasks",
+    bodyText: "Spend 20 minutes listing every repetitive task you do in a typical week. This becomes your automation shortlist — and you'll be surprised how much of it is AI-ready.",
+    account: "personal" as const, theme, slideNumber: 2, totalSlides: 8, backgroundImage: bg ?? undefined,
   });
   const contentSvg = await satori(contentEl, { width: W, height: H, fonts });
   writeFileSync("test-tayyib-content.png", new Resvg(contentSvg, { fitTo: { mode: "width", value: W } }).render().asPng());
   console.log("  -> Saved test-tayyib-content.png");
 
-  // CTA
+  // CTA — per the JSON spec (headline + body with single-quoted keyword)
   console.log("Tayyib CTA");
   const ctaEl = React.createElement(TayyibCta, {
-    headline: "Ready to ship better posts?",
-    ctaText: "Steal my templates.",
+    headline: "Want the full\nsetup guide?",
+    ctaText: "Comment 'VIDEO' and I'll DM you the full breakdown",
     account: "personal" as const, theme, slideNumber: 8, totalSlides: 8, backgroundImage: bg ?? undefined,
   });
   const ctaSvg = await satori(ctaEl, { width: W, height: H, fonts });
