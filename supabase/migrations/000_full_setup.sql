@@ -150,6 +150,19 @@ CREATE TABLE IF NOT EXISTS engagement_ideas (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS tasks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'backlog' CHECK (status IN ('backlog','todo','in_progress','done')),
+  priority TEXT NOT NULL DEFAULT 'medium' CHECK (priority IN ('low','medium','high')),
+  due_date TIMESTAMPTZ,
+  linked_content_id UUID REFERENCES generated_content(id) ON DELETE SET NULL,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS strategies (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   platform TEXT NOT NULL CHECK (platform IN ('instagram','linkedin','twitter','youtube')),
@@ -191,6 +204,7 @@ ALTER TABLE voice_settings        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE evergreen_content     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE engagement_ideas      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE strategies            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tasks                 ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
   PERFORM 1;
@@ -236,6 +250,12 @@ CREATE POLICY "Service role full access" ON engagement_ideas FOR ALL USING (true
 
 DROP POLICY IF EXISTS "Service role full access" ON strategies;
 CREATE POLICY "Service role full access" ON strategies FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Service role full access" ON tasks;
+CREATE POLICY "Service role full access" ON tasks FOR ALL USING (true) WITH CHECK (true);
+
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
 
 CREATE INDEX IF NOT EXISTS idx_engagement_ideas_account ON engagement_ideas(account);
 CREATE INDEX IF NOT EXISTS idx_engagement_ideas_status ON engagement_ideas(status);

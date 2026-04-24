@@ -17,6 +17,7 @@ import {
   Bookmark,
   Settings,
   Sparkles,
+  ListChecks,
 } from "lucide-react";
 import { AccountToggle } from "@/components/ui/account-toggle";
 
@@ -43,6 +44,7 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
   {
     heading: "Operations",
     items: [
+      { href: "/tasks", label: "Tasks", icon: ListChecks },
       { href: "/calendar", label: "Calendar", icon: CalendarDays },
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/tracked-accounts", label: "Tracked Accounts", icon: Users },

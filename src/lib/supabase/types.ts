@@ -49,6 +49,19 @@ export type GeneratedContent = {
   created_at: string;
 };
 
+export type Task = {
+  id: string;
+  title: string;
+  description: string | null;
+  status: "backlog" | "todo" | "in_progress" | "done";
+  priority: "low" | "medium" | "high";
+  due_date: string | null;
+  linked_content_id: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Strategy = {
   id: string;
   platform: "instagram" | "linkedin" | "twitter" | "youtube";
