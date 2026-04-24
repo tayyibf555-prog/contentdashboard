@@ -118,10 +118,27 @@ function BackgroundLayers() {
 export function TayyibCover({ headline, accentWord, subtitle, backgroundImage: _bg }: CoverSlideProps) {
   void _bg;
   // Map app data → JSON element IDs:
-  //   title_line  = headline + optional subtitle (joined with the JSON's "\n")
-  //   keyword_line = accentWord (rendered Playfair italic blue)
-  const titleLine = [headline, subtitle].filter(Boolean).join("\n") || headline || "";
-  const keywordLine = accentWord || "";
+  //   title_line  = headline (+ optional subtitle on a new line)
+  //   keyword_line = accentWord (rendered DM Serif italic blue)
+  //
+  // Dedupe: Claude sometimes generates an accent_word that's a suffix of the
+  // headline, which would cause e.g. 'Stop editing manually.' + 'manually.'
+  // both rendering. Strip the accent word (with any trailing punctuation) off
+  // the end of the title so each piece shows exactly once.
+  const keywordLine = (accentWord || "").trim();
+
+  const rawHeadline = (headline || "").trim();
+  let strippedHeadline = rawHeadline;
+  if (keywordLine) {
+    const tail = keywordLine.replace(/[.?!,;:]+$/, ""); // ignore trailing punctuation for comparison
+    const pattern = new RegExp(
+      `[\\s,.:;—–-]*${tail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[.?!,;:]*\\s*$`,
+      "i"
+    );
+    strippedHeadline = rawHeadline.replace(pattern, "").trim();
+  }
+
+  const titleLine = [strippedHeadline, subtitle].filter(Boolean).join("\n");
 
   return (
     <div style={{ width: W, height: H, display: "flex", position: "relative", overflow: "hidden" }}>
