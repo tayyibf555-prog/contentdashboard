@@ -37,6 +37,15 @@ function AccountProviderInner({ children }: { children: ReactNode }) {
     }
   }, [account]);
 
+  // Prefetch the OPPOSITE account's version of the current page so toggling
+  // between business/personal feels instant after the first load
+  useEffect(() => {
+    const other = account === "business" ? "personal" : "business";
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("account", other);
+    router.prefetch(`${pathname}?${params.toString()}`);
+  }, [account, pathname, router, searchParams]);
+
   const setAccount = (newAccount: AccountType) => {
     setAccountState(newAccount);
     // Reflect in the DOM immediately so theme variables flip before React finishes
