@@ -14,6 +14,7 @@ import { TemplatePicker } from "@/components/instagram/template-picker";
 import { ManualPostKit } from "@/components/instagram/manual-post-kit";
 import { CompanionPdfButton } from "@/components/instagram/companion-pdf-button";
 import { BackgroundUploader } from "@/components/instagram/background-uploader";
+import { ChangesBox } from "@/components/instagram/changes-box";
 import type { GeneratedContent, CarouselSlide } from "@/types";
 
 type PostWithSlides = GeneratedContent & { carousel_slides: CarouselSlide[] };
@@ -268,6 +269,7 @@ export function InstagramEditor({ posts }: { posts: PostWithSlides[] }) {
               account={current.account}
               contentType={current.content_type}
             />
+            <ChangesBox contentId={current.id} contentType={current.content_type} />
             {slides.length > 0 && (current.status === "pending" || current.status === "draft") && (
               <TemplatePicker
                 slides={slides}

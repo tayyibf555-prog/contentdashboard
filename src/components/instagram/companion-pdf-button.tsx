@@ -34,6 +34,23 @@ export function CompanionPdfButton({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed");
+      // Auto-download the freshly-generated PDF to the user's download folder
+      if (data.url) {
+        try {
+          const pdfRes = await fetch(data.url);
+          const blob = await pdfRes.blob();
+          const objUrl = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = objUrl;
+          a.download = `playbook-${contentId}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(objUrl);
+        } catch (dlErr) {
+          console.warn("[companion-pdf] auto-download failed:", dlErr);
+        }
+      }
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
