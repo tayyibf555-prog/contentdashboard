@@ -14,7 +14,7 @@ async function loadFont(filename: string): Promise<ArrayBuffer> {
 export async function loadFonts() {
   const [
     interBold, interRegular,
-    dmSerifRegular, dmSansRegular, dmSansSemiBold,
+    dmSerifRegular, dmSerifItalic, dmSansRegular, dmSansSemiBold,
     outfitBold, outfitMedium, outfitRegular,
     plusJakartaMedium, plusJakartaBold, plusJakartaExtraBold,
     permanentMarker, playfairSemiBoldItalic, playfairBlackItalic,
@@ -22,6 +22,7 @@ export async function loadFonts() {
     loadFont("Inter-Bold.woff"),
     loadFont("Inter-Regular.woff"),
     loadFont("DMSerifDisplay-Regular.ttf"),
+    loadFont("DMSerifDisplay-Italic.ttf"),
     loadFont("DMSans-Regular.ttf"),
     loadFont("DMSans-SemiBold.ttf"),
     loadFont("Outfit-Bold.ttf"),
@@ -39,6 +40,7 @@ export async function loadFonts() {
     { name: "Inter" as const, data: interBold, weight: 700 as const, style: "normal" as const },
     { name: "Inter" as const, data: interRegular, weight: 400 as const, style: "normal" as const },
     { name: "DM Serif Display" as const, data: dmSerifRegular, weight: 400 as const, style: "normal" as const },
+    { name: "DM Serif Display" as const, data: dmSerifItalic, weight: 400 as const, style: "italic" as const },
     { name: "DM Sans" as const, data: dmSansRegular, weight: 400 as const, style: "normal" as const },
     { name: "DM Sans" as const, data: dmSansSemiBold, weight: 600 as const, style: "normal" as const },
     { name: "Outfit" as const, data: outfitBold, weight: 700 as const, style: "normal" as const },

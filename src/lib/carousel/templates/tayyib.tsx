@@ -22,12 +22,39 @@ const COLORS = {
 } as const;
 
 const SANS = "Outfit";              // stands in for "SF Pro Display, -apple-system, Helvetica Neue, system-ui"
-const SERIF = "Playfair Display";   // loaded at 600 italic
+const SERIF = "DM Serif Display";   // loaded at 400 italic (wedge-serif didone)
 
 const SLIDE_PADDING = Math.round(W * 0.08);          // slide_horizontal_padding: "8%"
 const CONTENT_PADDING = Math.round(W * 0.1);         // content_slide_padding: "10%"
 
 // ─── Shared background layers ────────────────────────────────────────────
+
+/** Subtle handle at the bottom-left of every slide. */
+function Byline() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: 40,
+        left: 56,
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: SANS,
+          fontWeight: 400,
+          fontSize: 22,
+          color: "rgba(255,255,255,0.45)",
+          letterSpacing: "-0.01em",
+        }}
+      >
+        by @tayyib_ai
+      </span>
+    </div>
+  );
+}
 
 /**
  * Base + gradient glow + two pre-baked feTurbulence grain tiles per JSON spec.
@@ -132,12 +159,12 @@ export function TayyibCover({ headline, accentWord, subtitle, backgroundImage: _
           </span>
         )}
 
-        {/* keyword_line — Playfair italic at 80px so the serif reads with title weight */}
+        {/* keyword_line — DM Serif Display Italic at 80px (display face reads bold at 400) */}
         {keywordLine && (
           <span
             style={{
               fontFamily: SERIF,
-              fontWeight: 600,
+              fontWeight: 400,
               fontStyle: "italic",
               fontSize: 80,
               color: COLORS.accent_blue,
@@ -174,17 +201,15 @@ export function TayyibCover({ headline, accentWord, subtitle, backgroundImage: _
           </div>
         )}
       </div>
+      <Byline />
     </div>
   );
 }
 
 // ─── CONTENT (middle slides) ─────────────────────────────────────────────
 
-export function TayyibContent({ headline, bodyText, slideNumber, backgroundImage: _bg }: ContentSlideProps) {
+export function TayyibContent({ headline, bodyText, backgroundImage: _bg }: ContentSlideProps) {
   void _bg;
-  // Auto-compute "STEP 01" from the slide position (cover is slide 1)
-  const stepNumber = Math.max(1, (slideNumber ?? 2) - 1);
-  const stepLabel = `STEP ${String(stepNumber).padStart(2, "0")}`;
 
   return (
     <div style={{ width: W, height: H, display: "flex", position: "relative", overflow: "hidden" }}>
@@ -204,21 +229,6 @@ export function TayyibContent({ headline, bodyText, slideNumber, backgroundImage
           padding: `${CONTENT_PADDING}px ${CONTENT_PADDING}px`, // "10% 10%"
         }}
       >
-        {/* step_label — 2× JSON: 32px (was 16), margin-bottom 32 (was 16) */}
-        <span
-          style={{
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: 32,
-            color: COLORS.accent_blue,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            marginBottom: 32,
-          }}
-        >
-          {stepLabel}
-        </span>
-
         {/* headline — 2× JSON: 80px (was 40), margin-bottom 40 (was 20) */}
         {headline && (
           <span
@@ -251,6 +261,7 @@ export function TayyibContent({ headline, bodyText, slideNumber, backgroundImage
           </span>
         )}
       </div>
+      <Byline />
     </div>
   );
 }
@@ -353,6 +364,7 @@ export function TayyibCta({ headline, ctaText, backgroundImage: _bg }: CtaSlideP
           )
         )}
       </div>
+      <Byline />
     </div>
   );
 }
