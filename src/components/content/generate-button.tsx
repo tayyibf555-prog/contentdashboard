@@ -55,14 +55,17 @@ export function GenerateButton({ platform, account, label = "Generate New" }: Ge
         }),
       });
 
-      if (!res.ok) throw new Error("Generation failed");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Generation failed (${res.status})`);
+      }
 
       setShowModal(false);
       setTopic("");
       router.push(`/${platform}?account=${genAccount}`);
       router.refresh();
-    } catch {
-      alert("Failed to generate content. Please try again.");
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Failed to generate content. Please try again.");
     } finally {
       setGenerating(false);
     }

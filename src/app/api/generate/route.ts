@@ -213,7 +213,14 @@ Respond in JSON format:
 }`;
   }
 
-  const raw = await generateContent(prompt, voice || undefined, account as "business" | "personal");
+  let raw: string;
+  try {
+    raw = await generateContent(prompt, voice || undefined, account as "business" | "personal");
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    console.error("[/api/generate] Claude call failed:", msg);
+    return NextResponse.json({ error: `Claude generation failed: ${msg}` }, { status: 500 });
+  }
 
   let parsed;
   try {

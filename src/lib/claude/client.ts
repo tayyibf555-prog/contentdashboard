@@ -51,7 +51,7 @@ export async function generateContent(
 
   const anthropic = getAnthropic();
   const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-5-20250929",
+    model: "claude-sonnet-4-6",
     max_tokens: 4096,
     system: systemParts.join("\n\n"),
     messages: [{ role: "user", content: prompt }],
@@ -64,7 +64,7 @@ export async function generateContent(
 export type ClaudeModel = "sonnet" | "haiku" | "opus";
 
 const MODEL_IDS: Record<ClaudeModel, string> = {
-  sonnet: "claude-sonnet-4-5-20250929",
+  sonnet: "claude-sonnet-4-6",
   haiku: "claude-haiku-4-5-20251001",
   opus: "claude-opus-4-7",
 };
