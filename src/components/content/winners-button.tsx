@@ -29,6 +29,7 @@ export function WinnersButton({ platform, account, label = "From Winners" }: { p
   const [genAccount, setGenAccount] = useState(account);
   const [genType, setGenType] = useState(PLATFORM_TYPES[platform]?.[0]?.value || "short");
   const [genPillar, setGenPillar] = useState(account === "business" ? "education" : "bts");
+  const [ctaStyle, setCtaStyle] = useState<"comment_keyword" | "direct">("comment_keyword");
 
   const pillars = genAccount === "business" ? BUSINESS_PILLARS : PERSONAL_PILLARS;
 
@@ -45,6 +46,7 @@ export function WinnersButton({ platform, account, label = "From Winners" }: { p
           pillar: genPillar,
           contentType: genType,
           useWinners: true,
+          ctaStyle: genAccount === "personal" && genType === "carousel" ? ctaStyle : undefined,
         }),
       });
       const data = await res.json();
@@ -115,6 +117,20 @@ export function WinnersButton({ platform, account, label = "From Winners" }: { p
               ))}
             </select>
           </div>
+
+          {genAccount === "personal" && genType === "carousel" && (
+            <div>
+              <label className="text-azen-text text-[11px] block mb-1">CTA Style</label>
+              <select
+                value={ctaStyle}
+                onChange={(e) => setCtaStyle(e.target.value as "comment_keyword" | "direct")}
+                className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
+              >
+                <option value="comment_keyword">Comment-keyword (DM trigger)</option>
+                <option value="direct">Direct CTA</option>
+              </select>
+            </div>
+          )}
 
           {error && <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-md p-2">{error}</div>}
 

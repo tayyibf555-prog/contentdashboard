@@ -39,6 +39,7 @@ export function GenerateFromStrategy({
     strategy?.account === "business" ? "business" : "personal"
   );
   const [pillar, setPillar] = useState(genAccount === "business" ? "education" : "bts");
+  const [ctaStyle, setCtaStyle] = useState<"comment_keyword" | "direct">("comment_keyword");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +62,7 @@ export function GenerateFromStrategy({
           pillar,
           contentType,
           strategyId: strategy.id,
+          ctaStyle: genAccount === "personal" && contentType === "carousel" ? ctaStyle : undefined,
         }),
       });
       const data = await res.json();
@@ -124,6 +126,19 @@ export function GenerateFromStrategy({
             ))}
           </select>
         </Field>
+
+        {genAccount === "personal" && contentType === "carousel" && (
+          <Field label="CTA Style">
+            <select
+              value={ctaStyle}
+              onChange={(e) => setCtaStyle(e.target.value as "comment_keyword" | "direct")}
+              className="w-full bg-azen-bg border border-azen-line rounded-md px-3 py-2 text-[13px] text-white focus:outline-none focus:border-azen-accent"
+            >
+              <option value="comment_keyword">Comment-keyword (DM trigger)</option>
+              <option value="direct">Direct CTA</option>
+            </select>
+          </Field>
+        )}
 
         {error && <div className="text-[12px] text-red-400 bg-red-500/10 border border-red-500/30 rounded-md px-3 py-2">{error}</div>}
 

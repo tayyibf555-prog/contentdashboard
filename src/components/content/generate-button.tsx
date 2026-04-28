@@ -35,6 +35,7 @@ export function GenerateButton({ platform, account, label = "Generate New" }: Ge
   const [genType, setGenType] = useState(PLATFORM_TYPES[platform]?.[0]?.value || "short");
   const [genPillar, setGenPillar] = useState("education");
   const [topic, setTopic] = useState("");
+  const [ctaStyle, setCtaStyle] = useState<"comment_keyword" | "direct">("comment_keyword");
 
   const pillars = genAccount === "business" ? BUSINESS_PILLARS : PERSONAL_PILLARS;
 
@@ -50,6 +51,7 @@ export function GenerateButton({ platform, account, label = "Generate New" }: Ge
           pillar: genPillar,
           contentType: genType,
           researchContext: topic || undefined,
+          ctaStyle: genAccount === "personal" && genType === "carousel" ? ctaStyle : undefined,
         }),
       });
 
@@ -117,6 +119,20 @@ export function GenerateButton({ platform, account, label = "Generate New" }: Ge
               ))}
             </select>
           </div>
+
+          {genAccount === "personal" && genType === "carousel" && (
+            <div>
+              <label className="text-azen-text text-[11px] block mb-1">CTA Style</label>
+              <select
+                value={ctaStyle}
+                onChange={(e) => setCtaStyle(e.target.value as "comment_keyword" | "direct")}
+                className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
+              >
+                <option value="comment_keyword">Comment-keyword (DM trigger)</option>
+                <option value="direct">Direct CTA</option>
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="text-azen-text text-[11px] block mb-1">Topic / Context (optional)</label>

@@ -15,7 +15,7 @@ function getSupabase() {
 
 export async function POST(request: Request) {
   const supabase = getSupabase();
-  const { platform, account, pillar, researchContext, contentType, useWinners, strategyId } = await request.json();
+  const { platform, account, pillar, researchContext, contentType, useWinners, strategyId, ctaStyle } = await request.json();
 
   // If a strategyId is provided, fetch and inject it as the primary playbook
   let strategyContext = "";
@@ -99,8 +99,13 @@ Strategic angle: Educate with real value so they see the gap between where they 
   let prompt = "";
 
   if (contentType === "carousel") {
+    // Personal carousels default to a comment-keyword DM trigger, but the user
+    // can opt into a direct CTA via ctaStyle="direct". Business is always direct.
+    const personalCtaStyle = ctaStyle === "direct" ? "direct" : "comment_keyword";
     const ctaRule = account === "personal"
-      ? `- Slide 8: "cta" — MUST be a comment-keyword engagement CTA. Pick ONE uppercase keyword closely tied to the post topic (e.g. "AI", "PLAYBOOK", "GUIDE", "STACK", "SYSTEM", "SCALE", "FOUNDER"). The cta_text MUST follow this pattern: "Comment '[KEYWORD]' and I'll DM you the [guide / step-by-step plan / playbook / breakdown]". Max 12 words. No URLs. Every single personal carousel MUST end this way — no exceptions.`
+      ? personalCtaStyle === "direct"
+        ? `- Slide 8: "cta" (drive action). The cta_text must be a short direct sentence, max 8 words, telling the reader exactly what to do next. Personal-brand voice — first person, no agency-speak, no "azen.io". Examples: "DM me 'AI' to get the playbook", "Follow @tayyib.ai for more AI systems", "Save this and try it tomorrow". It must relate to the post topic. No URLs.`
+        : `- Slide 8: "cta" — MUST be a comment-keyword engagement CTA. Pick ONE uppercase keyword closely tied to the post topic (e.g. "AI", "PLAYBOOK", "GUIDE", "STACK", "SYSTEM", "SCALE", "FOUNDER"). The cta_text MUST follow this pattern: "Comment '[KEYWORD]' and I'll DM you the [guide / step-by-step plan / playbook / breakdown]". Max 12 words. No URLs.`
       : `- Slide 8: "cta" (drive action). The cta_text must be a short direct sentence, max 8 words, that tells the reader exactly what to do next. Examples: "Book your free AI audit today", "DM us to start saving time", "Visit azen.io for a free strategy call". It must relate to the post topic — not generic. No URLs in the text.`;
 
     prompt = `Generate an Instagram carousel post for ${accountHandle}.
