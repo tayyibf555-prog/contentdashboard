@@ -246,7 +246,7 @@ Respond in JSON format:
 Topic: ${original.title}
 Content pillar: ${original.pillar}
 
-Use the full 7-part value post structure: Contrarian Hook → Problem Callout (3 plain lines + reframe) → Authority Proof (I just... + 4 plain outcome lines) → Insight Flip (2 lines, names a new paradigm) → Value Stack (5 plain lines with a named asset) → Contrast Promise (Zero X. Zero Y. Just Z.) → CTA Architecture (Connect + Comment KEYWORD + Repost → DM).
+Use the full 7-part value post structure: Contrarian Hook → Problem Callout (2 plain lines + reframe) → Authority Proof (I just... + 3 plain outcome lines) → Insight Flip (2 lines, names a new paradigm) → Value Stack (3 plain lines with a named asset) → Contrast Promise (Zero X. Zero Y. Just Z.) → CTA Architecture (Connect + Comment KEYWORD + Repost → DM).
 No emojis, no dashes, no arrows, no bullet symbols, no checkmarks — plain text only. Blank line between every section. No external links.
 
 Respond in JSON format:

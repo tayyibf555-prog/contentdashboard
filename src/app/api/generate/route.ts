@@ -236,12 +236,12 @@ Use "I" / "I've" voice where it fits.
 
 PART 2 — PROBLEM CALLOUT
 Short setup line ending in a colon.
-Then exactly 3 lines showing verbatim wrong behaviors or bad practices. Write each as a plain sentence — no bullet symbols, no dashes, no arrows. Just one line per wrong behavior.
+Then exactly 2 lines showing verbatim wrong behaviors or bad practices. Write each as a plain sentence — no bullet symbols, no dashes, no arrows. Just one line per wrong behavior.
 End with one-line memorable reframe using a metaphor: "That's not a [serious thing]. That's a [trivial/negative thing]."
 
 PART 3 — AUTHORITY PROOF
 "I just [tested/built/discovered] [specific thing] and [strong reaction]:" — personal, current, first-hand.
-Then 4 plain lines, each describing an outcome (not a feature). Format: [Verb] + [specific mechanism] + [desirable outcome]. Include at least one number or named target audience. No bullet symbols of any kind.
+Then 3 plain lines, each describing an outcome (not a feature). Format: [Verb] + [specific mechanism] + [desirable outcome]. Include at least one number or named target audience. No bullet symbols of any kind.
 
 PART 4 — INSIGHT FLIP (two lines with white space between)
 Line 1: "The [thing] isn't [obvious wrong answer]."
@@ -250,7 +250,7 @@ This is the screenshot-worthy line. Own a word or phrase.
 
 PART 5 — VALUE STACK
 Setup: "I'm giving away the exact [named asset]:"
-Then exactly 5 plain lines, each pairing [Asset name] and what it does. No checkmarks, no dashes, no bullet symbols. Just sentences. At least one must include a specific number. Name the collection like a product ("The [X] System", "The [X] Architecture").
+Then exactly 3 plain lines, each pairing [Asset name] and what it does. No checkmarks, no dashes, no bullet symbols. Just sentences. At least one must include a specific number. Name the collection like a product ("The [X] System", "The [X] Architecture").
 
 PART 6 — CONTRAST PROMISE (two lines)
 Line 1: "Zero [pain #1]. Zero [pain #2]."
