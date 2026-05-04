@@ -230,7 +230,7 @@ Topic: ${original.title}
 Content pillar: ${original.pillar}
 
 Use the 4-part story structure: Hook (3-line identity+credential+turn with "...") → Rising Action (before/decision/doubt with triple repetition) → Conclusion (parallel structure with specific numbers) → Payoff (one understated line, no CTA).
-Fifth-grade language. One idea per line. White space between beats. No emojis. No CTA.
+Fifth-grade language. One idea per line. White space between beats. No emojis, no dashes, no arrows, no bullet symbols. Plain text only. No CTA.
 
 Respond in JSON format:
 {
@@ -243,8 +243,8 @@ Respond in JSON format:
 Topic: ${original.title}
 Content pillar: ${original.pillar}
 
-Use the full 7-part value post structure: Contrarian Hook → Problem Callout (3 → bullets + reframe) → Authority Proof (I just... + 4 outcome bullets) → Insight Flip (2 lines, names a new paradigm) → Value Stack (5 ✅ items with a named asset) → Contrast Promise (Zero X. Zero Y. Just Z.) → CTA Architecture (Connect + Comment KEYWORD + Repost → DM).
-Keep all formatting: →, ✅, 1️⃣, 2️⃣. Blank line between every section. No external links. No emojis beyond those specified.
+Use the full 7-part value post structure: Contrarian Hook → Problem Callout (3 plain lines + reframe) → Authority Proof (I just... + 4 plain outcome lines) → Insight Flip (2 lines, names a new paradigm) → Value Stack (5 plain lines with a named asset) → Contrast Promise (Zero X. Zero Y. Just Z.) → CTA Architecture (Connect + Comment KEYWORD + Repost → DM).
+No emojis, no dashes, no arrows, no bullet symbols, no checkmarks — plain text only. Blank line between every section. No external links.
 
 Respond in JSON format:
 {

@@ -210,7 +210,7 @@ STYLE RULES (all non-negotiable):
 - No AI-voice corporate language. Write like you talk.
 - Do NOT add a CTA, "DM me", or "follow for more" — the story IS the conversion.
 - Do NOT add external links.
-- No emojis.
+- No emojis, no dashes, no arrows, no bullet symbols of any kind. Plain text only. Every line is a sentence, not a list item.
 
 Respond in JSON format:
 {
@@ -233,12 +233,12 @@ Use "I" / "I've" voice where it fits.
 
 PART 2 — PROBLEM CALLOUT
 Short setup line ending in a colon.
-Then exactly 3 arrow bullets (→) showing verbatim wrong behaviors or bad practices in quotes.
+Then exactly 3 lines showing verbatim wrong behaviors or bad practices. Write each as a plain sentence — no bullet symbols, no dashes, no arrows. Just one line per wrong behavior.
 End with one-line memorable reframe using a metaphor: "That's not a [serious thing]. That's a [trivial/negative thing]."
 
 PART 3 — AUTHORITY PROOF
 "I just [tested/built/discovered] [specific thing] and [strong reaction]:" — personal, current, first-hand.
-Then 4 arrow bullets (→), each describing an outcome (not a feature). Format: [Verb] + [specific mechanism] + [desirable outcome]. Include at least one number or named target audience.
+Then 4 plain lines, each describing an outcome (not a feature). Format: [Verb] + [specific mechanism] + [desirable outcome]. Include at least one number or named target audience. No bullet symbols of any kind.
 
 PART 4 — INSIGHT FLIP (two lines with white space between)
 Line 1: "The [thing] isn't [obvious wrong answer]."
@@ -247,8 +247,7 @@ This is the screenshot-worthy line. Own a word or phrase.
 
 PART 5 — VALUE STACK
 Setup: "I'm giving away the exact [named asset]:"
-Then exactly 5 checkmark bullets (✅), each pairing [Asset name] ([benefit or what it does]).
-At least one item must include a specific number. Name the collection like a product ("The [X] System", "The [X] Architecture").
+Then exactly 5 plain lines, each pairing [Asset name] and what it does. No checkmarks, no dashes, no bullet symbols. Just sentences. At least one must include a specific number. Name the collection like a product ("The [X] System", "The [X] Architecture").
 
 PART 6 — CONTRAST PROMISE (two lines)
 Line 1: "Zero [pain #1]. Zero [pain #2]."
@@ -256,18 +255,16 @@ Line 2: "Just [desirable outcome that compounds or scales]."
 
 PART 7 — CTA ARCHITECTURE
 Line 1: "Want the complete [named asset]?" (yes/no question with obvious answer)
-Line 2-3: Numbered action ladder using emoji numbers:
-1️⃣ Connect with me
-2️⃣ Comment "[KEYWORD]" below + Repost
+Line 2: "Connect with me."
+Line 3: "Comment [KEYWORD] below and repost this."
 Line 4: "I'll DM you the full [asset name]."
 
 The KEYWORD must be: one word, all-caps, thematic to the post, 4–6 letters, easy to type on mobile. Examples: VAULT, STACK, OPUS, BLUEPRINT, LADDER, PLAYBOOK, NUDGE, DECK.
 
-VISUAL FORMATTING RULES (non-negotiable):
+FORMATTING RULES (non-negotiable):
 - Blank line between every section
-- → for problem bullets, ✅ for value stack bullets, 1️⃣ 2️⃣ for CTA steps
+- No emojis, no dashes, no arrows, no bullet symbols, no checkmarks, no numbered emoji steps — plain text only
 - No external links in the body
-- No emojis except the ones specified above (→, ✅, 1️⃣, 2️⃣)
 - No generic AI voice — write like Tayyib talks, not a press release
 - Never put the lead magnet link in the post body
 
