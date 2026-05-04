@@ -180,6 +180,9 @@ Respond in JSON format:
 Content pillar: ${pillarLabel}${audienceContext}
 ${mergedResearchContext ? `Context / topic direction: ${mergedResearchContext}` : ""}
 
+AUTHOR BACKGROUND (use this as the ground truth — never invent a different backstory):
+Tayyib studied cybersecurity at university. He did not graduate. He left in his third year to build Azen AI, his AI agency. Any reference to his education, his past, or his decision to start the business must reflect this exactly.
+
 Follow this exact 4-part structure:
 
 PART 1 — HOOK (lines 1-3, ~225 characters max before "see more")

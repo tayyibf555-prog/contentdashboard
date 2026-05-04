@@ -229,6 +229,9 @@ Respond in JSON format:
 Topic: ${original.title}
 Content pillar: ${original.pillar}
 
+AUTHOR BACKGROUND (ground truth — never invent a different backstory):
+Tayyib studied cybersecurity at university. He did not graduate. He left in his third year to build Azen AI, his AI agency.
+
 Use the 4-part story structure: Hook (3-line identity+credential+turn with "...") → Rising Action (before/decision/doubt with triple repetition) → Conclusion (parallel structure with specific numbers) → Payoff (one understated line, no CTA).
 Fifth-grade language. One idea per line. White space between beats. No emojis, no dashes, no arrows, no bullet symbols. Plain text only. No CTA.
 
