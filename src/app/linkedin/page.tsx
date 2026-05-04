@@ -27,8 +27,8 @@ export default async function LinkedInPage({ searchParams }: { searchParams: Pro
           <div className="flex gap-2">
             {account === "personal" && (
               <>
-                <QuickGenerateButton platform="linkedin" contentType="story" label="Story Post" />
-                <QuickGenerateButton platform="linkedin" contentType="value_post" label="Value Post" />
+                <QuickGenerateButton platform="linkedin" contentType="story" label="Story Post" defaultPillar="journey" />
+                <QuickGenerateButton platform="linkedin" contentType="value_post" label="Value Post" defaultPillar="tips" />
               </>
             )}
             <WinnersButton platform="linkedin" account={account} />
