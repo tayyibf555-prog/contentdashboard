@@ -175,6 +175,108 @@ Respond in JSON format:
   ],
   "estimated_duration": "12 min"
 }`;
+  } else if (contentType === "story") {
+    prompt = `Write a LinkedIn storytelling post for @tayyib.ai.
+Content pillar: ${pillarLabel}${audienceContext}
+${mergedResearchContext ? `Context / topic direction: ${mergedResearchContext}` : ""}
+
+Follow this exact 4-part structure:
+
+PART 1 — HOOK (lines 1-3, ~225 characters max before "see more")
+Line 1: Identity statement with a specific number. Who you were + a concrete fact.
+Line 2: Credential or context that raises the stakes. Another specific number.
+Line 3: The turn — start with "But" or "Then" or "One day". End with "....." to create a physical cliffhanger.
+Use "I" or "I've" to open — they signal a real person. Numbers are non-negotiable. Short sentences only.
+
+PART 2 — RISING ACTION (the body)
+Sub-beat A — THE BEFORE: Set the world you came from. 2-4 lines. End with one short emotional line (e.g. "And it felt forced.").
+Sub-beat B — THE DECISION: The pivot moment. Use "So..." to signal consequence. Can use scare quotes for irony.
+Sub-beat C — THE DOUBT: External or internal opposition. Use TRIPLE REPETITION: three lines with the same opening structure (e.g. "Many thought... / Many thought... / Many thought..."). Three beats, no more, no less.
+Rhythm rule: alternate long and short sentences throughout. Never three long sentences in a row.
+
+PART 3 — CONCLUSION
+Use PARALLEL STRUCTURE with three lines. Template: "It's been [time]. / It's been [effort]. / It's been [result]." OR "Today, I [state]. / Today, I [reality]. / Today, I [truth]."
+Include at least one specific number ($, hours, months, clients, etc.).
+No sales pitch. No list of services. Understated, not boastful.
+
+PART 4 — PAYOFF (one or two lines max)
+One profound, understated line that makes the reader pause. Simple language. Emotional, not informational. No CTA. No "follow me for more." No question to the audience.
+Examples of the right tone: "What a ride it's been." / "Glad I bet on myself." / "Turns out, the risk was the safe path." / "Still figuring it out. Still going."
+
+STYLE RULES (all non-negotiable):
+- Fifth-grade reading level. Short words. No jargon.
+- One idea per line. White space between every beat.
+- Specific numbers beat vague claims ("$487k" not "a lot of money").
+- No AI-voice corporate language. Write like you talk.
+- Do NOT add a CTA, "DM me", or "follow for more" — the story IS the conversion.
+- Do NOT add external links.
+- No emojis.
+
+Respond in JSON format:
+{
+  "title": "story topic (internal reference, not shown publicly)",
+  "body": "the complete LinkedIn story post — full text with line breaks between every beat, exactly as it should be posted",
+  "hashtags": ["tag1", "tag2", "tag3"]
+}`;
+  } else if (contentType === "value_post") {
+    prompt = `Write a LinkedIn value post for @tayyib.ai.
+Content pillar: ${pillarLabel}${audienceContext}
+${mergedResearchContext ? `Context / topic direction: ${mergedResearchContext}` : ""}
+
+Follow this exact 7-part structure. Every section is required:
+
+PART 1 — CONTRARIAN HOOK (3 lines, ~225 characters max)
+Line 1: A bold contrarian command or claim. Start with "NEVER", "STOP", "Most [audience] are wrong about...", or a shocking statement. This must be controversial enough to stop the scroll.
+Line 2: Specific current event, credential, or dollar figure that backs the claim. Include a concrete number ($, %, timeframe).
+Line 3: "Most [audience] [do this wrong]:" — ends with a colon to promise a list is coming.
+Use "I" / "I've" voice where it fits.
+
+PART 2 — PROBLEM CALLOUT
+Short setup line ending in a colon.
+Then exactly 3 arrow bullets (→) showing verbatim wrong behaviors or bad practices in quotes.
+End with one-line memorable reframe using a metaphor: "That's not a [serious thing]. That's a [trivial/negative thing]."
+
+PART 3 — AUTHORITY PROOF
+"I just [tested/built/discovered] [specific thing] and [strong reaction]:" — personal, current, first-hand.
+Then 4 arrow bullets (→), each describing an outcome (not a feature). Format: [Verb] + [specific mechanism] + [desirable outcome]. Include at least one number or named target audience.
+
+PART 4 — INSIGHT FLIP (two lines with white space between)
+Line 1: "The [thing] isn't [obvious wrong answer]."
+Line 2: "It's [non-obvious answer that names a new concept or paradigm]."
+This is the screenshot-worthy line. Own a word or phrase.
+
+PART 5 — VALUE STACK
+Setup: "I'm giving away the exact [named asset]:"
+Then exactly 5 checkmark bullets (✅), each pairing [Asset name] ([benefit or what it does]).
+At least one item must include a specific number. Name the collection like a product ("The [X] System", "The [X] Architecture").
+
+PART 6 — CONTRAST PROMISE (two lines)
+Line 1: "Zero [pain #1]. Zero [pain #2]."
+Line 2: "Just [desirable outcome that compounds or scales]."
+
+PART 7 — CTA ARCHITECTURE
+Line 1: "Want the complete [named asset]?" (yes/no question with obvious answer)
+Line 2-3: Numbered action ladder using emoji numbers:
+1️⃣ Connect with me
+2️⃣ Comment "[KEYWORD]" below + Repost
+Line 4: "I'll DM you the full [asset name]."
+
+The KEYWORD must be: one word, all-caps, thematic to the post, 4–6 letters, easy to type on mobile. Examples: VAULT, STACK, OPUS, BLUEPRINT, LADDER, PLAYBOOK, NUDGE, DECK.
+
+VISUAL FORMATTING RULES (non-negotiable):
+- Blank line between every section
+- → for problem bullets, ✅ for value stack bullets, 1️⃣ 2️⃣ for CTA steps
+- No external links in the body
+- No emojis except the ones specified above (→, ✅, 1️⃣, 2️⃣)
+- No generic AI voice — write like Tayyib talks, not a press release
+- Never put the lead magnet link in the post body
+
+Respond in JSON format:
+{
+  "title": "value post topic (internal reference)",
+  "body": "the complete LinkedIn value post — all 7 parts with correct formatting and line breaks, exactly as it should be posted",
+  "hashtags": ["tag1", "tag2", "tag3"]
+}`;
   } else if (contentType === "reel") {
     prompt = `Generate an Instagram Reel script for @tayyib.ai.
 Content pillar: ${pillarLabel}${audienceContext}
@@ -292,7 +394,7 @@ Respond in JSON format:
 
   // Store reel script if applicable
   if (contentType === "reel") {
-    await supabase.from("reel_scripts").insert({
+    const { error: reelError } = await supabase.from("reel_scripts").insert({
       generated_content_id: content.id,
       hook: parsed.hook,
       body_script: parsed.body_script,
@@ -301,6 +403,10 @@ Respond in JSON format:
       estimated_duration: parsed.estimated_duration || "30s",
       recording_notes: parsed.recording_notes || null,
     });
+    if (reelError) {
+      console.error("[/api/generate] reel_scripts insert failed:", reelError.message);
+      return NextResponse.json({ error: `Failed to store reel script: ${reelError.message}` }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ content, parsed });

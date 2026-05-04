@@ -32,7 +32,7 @@ export type GeneratedContent = {
   id: string;
   platform: string;
   account: "business" | "personal";
-  content_type: "carousel" | "long_form" | "short" | "video_script" | "thread" | "tweet" | "reel";
+  content_type: "carousel" | "long_form" | "short" | "video_script" | "thread" | "tweet" | "reel" | "story" | "value_post";
   title: string;
   body: string | null;
   hashtags: string[];

@@ -224,6 +224,34 @@ Respond in JSON format:
   "estimated_duration": "30s",
   "recording_notes": "filming tips"
 }`;
+    } else if (original.content_type === "story") {
+      prompt = `Rewrite this LinkedIn storytelling post for ${accountHandle} with a completely different angle on the same topic.
+Topic: ${original.title}
+Content pillar: ${original.pillar}
+
+Use the 4-part story structure: Hook (3-line identity+credential+turn with "...") → Rising Action (before/decision/doubt with triple repetition) → Conclusion (parallel structure with specific numbers) → Payoff (one understated line, no CTA).
+Fifth-grade language. One idea per line. White space between beats. No emojis. No CTA.
+
+Respond in JSON format:
+{
+  "title": "story topic",
+  "body": "complete story post with line breaks between every beat",
+  "hashtags": ["tag1", "tag2", "tag3"]
+}`;
+    } else if (original.content_type === "value_post") {
+      prompt = `Rewrite this LinkedIn value post for ${accountHandle} with a fresh angle on the same topic.
+Topic: ${original.title}
+Content pillar: ${original.pillar}
+
+Use the full 7-part value post structure: Contrarian Hook → Problem Callout (3 → bullets + reframe) → Authority Proof (I just... + 4 outcome bullets) → Insight Flip (2 lines, names a new paradigm) → Value Stack (5 ✅ items with a named asset) → Contrast Promise (Zero X. Zero Y. Just Z.) → CTA Architecture (Connect + Comment KEYWORD + Repost → DM).
+Keep all formatting: →, ✅, 1️⃣, 2️⃣. Blank line between every section. No external links. No emojis beyond those specified.
+
+Respond in JSON format:
+{
+  "title": "value post topic",
+  "body": "complete value post with all 7 parts and correct formatting",
+  "hashtags": ["tag1", "tag2", "tag3"]
+}`;
     } else {
       prompt = `Regenerate a ${original.content_type} for ${accountHandle} on ${original.platform}.
 Topic: ${original.title}

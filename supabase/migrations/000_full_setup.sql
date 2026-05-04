@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS generated_content (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   platform TEXT NOT NULL,
   account TEXT NOT NULL CHECK (account IN ('business', 'personal')),
-  content_type TEXT NOT NULL CHECK (content_type IN ('carousel', 'long_form', 'short', 'video_script', 'thread', 'tweet', 'reel')),
+  content_type TEXT NOT NULL CHECK (content_type IN ('carousel', 'long_form', 'short', 'video_script', 'thread', 'tweet', 'reel', 'story', 'value_post')),
   title TEXT NOT NULL,
   body TEXT,
   hashtags TEXT[] DEFAULT '{}',

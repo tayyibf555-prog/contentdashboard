@@ -52,7 +52,8 @@ export function WinnersButton({ platform, account, label = "From Winners" }: { p
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Generation failed");
       setShowModal(false);
-      router.push(`/${platform}?account=${genAccount}`);
+      const tabSuffix = platform === "instagram" && genType === "reel" ? "&tab=reels" : "";
+      router.push(`/${platform}?account=${genAccount}${tabSuffix}`);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
@@ -112,7 +113,15 @@ export function WinnersButton({ platform, account, label = "From Winners" }: { p
               onChange={(e) => setGenType(e.target.value)}
               className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
             >
-              {(PLATFORM_TYPES[platform] || []).map((t) => (
+              {[
+                ...(PLATFORM_TYPES[platform] || []),
+                ...(platform === "linkedin" && genAccount === "personal"
+                  ? [
+                      { label: "Storytelling Post", value: "story" },
+                      { label: "Value Post", value: "value_post" },
+                    ]
+                  : []),
+              ].map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>

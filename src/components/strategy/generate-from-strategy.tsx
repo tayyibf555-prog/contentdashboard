@@ -46,7 +46,15 @@ export function GenerateFromStrategy({
   if (!strategy) return null;
 
   const pillars = genAccount === "business" ? BUSINESS_PILLARS : PERSONAL_PILLARS;
-  const contentTypes = PLATFORM_TYPES[strategy.platform];
+  const contentTypes = [
+    ...PLATFORM_TYPES[strategy.platform],
+    ...(strategy.platform === "linkedin" && genAccount === "personal"
+      ? [
+          { label: "Storytelling Post", value: "story" },
+          { label: "Value Post", value: "value_post" },
+        ]
+      : []),
+  ];
 
   async function handleGenerate() {
     if (!strategy) return;
@@ -68,7 +76,8 @@ export function GenerateFromStrategy({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Generation failed");
       onClose();
-      router.push(`/${strategy.platform}?account=${genAccount}`);
+      const tabSuffix = strategy.platform === "instagram" && contentType === "reel" ? "&tab=reels" : "";
+      router.push(`/${strategy.platform}?account=${genAccount}${tabSuffix}`);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");

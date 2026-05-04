@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { LinkedInEditor } from "./linkedin-editor";
 import { GenerateButton } from "@/components/content/generate-button";
 import { WinnersButton } from "@/components/content/winners-button";
+import { QuickGenerateButton } from "@/components/content/quick-generate-button";
 
 export default async function LinkedInPage({ searchParams }: { searchParams: Promise<{ account?: string }> }) {
   const supabase = await createServerSupabaseClient();
@@ -24,6 +25,12 @@ export default async function LinkedInPage({ searchParams }: { searchParams: Pro
         subtitle="Long-form posts and short takes — written, edited, and queued."
         actions={
           <div className="flex gap-2">
+            {account === "personal" && (
+              <>
+                <QuickGenerateButton platform="linkedin" contentType="story" label="Story Post" />
+                <QuickGenerateButton platform="linkedin" contentType="value_post" label="Value Post" />
+              </>
+            )}
             <WinnersButton platform="linkedin" account={account} />
             <GenerateButton platform="linkedin" account={account} />
           </div>

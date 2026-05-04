@@ -62,7 +62,8 @@ export function GenerateButton({ platform, account, label = "Generate New" }: Ge
 
       setShowModal(false);
       setTopic("");
-      router.push(`/${platform}?account=${genAccount}`);
+      const tabSuffix = platform === "instagram" && genType === "reel" ? "&tab=reels" : "";
+      router.push(`/${platform}?account=${genAccount}${tabSuffix}`);
       router.refresh();
     } catch (e) {
       alert(e instanceof Error ? e.message : "Failed to generate content. Please try again.");
@@ -117,7 +118,15 @@ export function GenerateButton({ platform, account, label = "Generate New" }: Ge
               onChange={(e) => setGenType(e.target.value)}
               className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
             >
-              {(PLATFORM_TYPES[platform] || []).map((t) => (
+              {[
+                ...(PLATFORM_TYPES[platform] || []),
+                ...(platform === "linkedin" && genAccount === "personal"
+                  ? [
+                      { label: "Storytelling Post", value: "story" },
+                      { label: "Value Post", value: "value_post" },
+                    ]
+                  : []),
+              ].map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>
