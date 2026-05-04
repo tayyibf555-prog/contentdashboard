@@ -93,7 +93,8 @@ Strategic angle: Every post should position Azen AI as the trusted authority on 
 Content must NOT be generic AI news or tool reviews. Focus on: how AI solves specific business problems, client transformation stories, ROI frameworks, implementation insights, and why most businesses are falling behind by not acting now.`;
   } else {
     audienceContext = `\nTarget audience: Business owners and founders who are considering AI but haven't implemented it yet.
-Strategic angle: Educate with real value so they see the gap between where they are and where AI could take them. Never pitch — just teach. Cover diverse business topics (operations, marketing, sales, hiring, workflows, customer experience, strategy) — not just one tool or product.`;
+Strategic angle: Educate with real value so they see the gap between where they are and where AI could take them. Never pitch — just teach. Cover diverse business topics (operations, marketing, sales, hiring, workflows, customer experience, strategy) — not just one tool or product.
+Numbers guidance: This is a UK audience. Always use £ not $. Keep figures grounded in small to medium business reality — think £30k–£300k annual revenue, £1k–£5k/month for services, £5k–£30k saved per year, 5–40 hours saved per week. Never use figures that feel like enterprise or startup fundraising territory.`;
   }
 
   let prompt = "";
@@ -183,6 +184,8 @@ ${mergedResearchContext ? `Context / topic direction: ${mergedResearchContext}` 
 AUTHOR BACKGROUND (use this as the ground truth — never invent a different backstory):
 Tayyib studied cybersecurity at university. He did not graduate. He left in his third year to build Azen AI, his AI agency. Any reference to his education, his past, or his decision to start the business must reflect this exactly.
 
+NUMBERS: UK audience. Always use £ not $. Keep figures realistic for small to medium businesses — £30k–£300k revenue, £1k–£5k/month services, £5k–£30k saved per year, 5–40 hours saved per week. Nothing that sounds like enterprise or VC land.
+
 Follow this exact 4-part structure:
 
 PART 1 — HOOK (lines 1-3, ~225 characters max before "see more")
@@ -225,6 +228,8 @@ Respond in JSON format:
     prompt = `Write a LinkedIn value post for @tayyib.ai.
 Content pillar: ${pillarLabel}${audienceContext}
 ${mergedResearchContext ? `Context / topic direction: ${mergedResearchContext}` : ""}
+
+NUMBERS: UK audience. Always use £ not $. Keep figures realistic for small to medium businesses — £30k–£300k revenue, £1k–£5k/month services, £5k–£30k saved per year, 5–40 hours saved per week. Nothing enterprise or VC scale.
 
 Follow this exact 7-part structure. Every section is required:
 

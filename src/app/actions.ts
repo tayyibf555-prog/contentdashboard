@@ -232,6 +232,8 @@ Content pillar: ${original.pillar}
 AUTHOR BACKGROUND (ground truth — never invent a different backstory):
 Tayyib studied cybersecurity at university. He did not graduate. He left in his third year to build Azen AI, his AI agency.
 
+NUMBERS: UK audience. Always use £ not $. Keep figures realistic for small to medium businesses — £30k–£300k revenue, £1k–£5k/month services, £5k–£30k saved per year, 5–40 hours saved per week. Nothing enterprise or VC scale.
+
 Use the 4-part story structure: Hook (3-line identity+credential+turn with "...") → Rising Action (before/decision/doubt with triple repetition) → Conclusion (parallel structure with specific numbers) → Payoff (one understated line, no CTA).
 Fifth-grade language. One idea per line. White space between beats. No emojis, no dashes, no arrows, no bullet symbols. Plain text only. No CTA.
 
@@ -248,6 +250,7 @@ Content pillar: ${original.pillar}
 
 Use the full 7-part value post structure: Contrarian Hook → Problem Callout (2 plain lines + reframe) → Authority Proof (I just... + 3 plain outcome lines) → Insight Flip (2 lines, names a new paradigm) → Value Stack (3 plain lines with a named asset) → Contrast Promise (Zero X. Zero Y. Just Z.) → CTA Architecture (Connect + Comment KEYWORD + Repost → DM).
 No emojis, no dashes, no arrows, no bullet symbols, no checkmarks — plain text only. Blank line between every section. No external links.
+UK audience — always use £ not $. Keep figures in small to medium business range.
 
 Respond in JSON format:
 {
