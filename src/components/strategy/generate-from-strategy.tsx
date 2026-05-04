@@ -124,7 +124,7 @@ export function GenerateFromStrategy({
           </select>
         </Field>
 
-        <Field label="Content pillar">
+        {contentType !== "story" && contentType !== "value_post" && <Field label="Content pillar">
           <select
             value={pillar}
             onChange={(e) => setPillar(e.target.value)}
@@ -134,7 +134,7 @@ export function GenerateFromStrategy({
               <option key={p.key} value={p.key}>{p.label}</option>
             ))}
           </select>
-        </Field>
+        </Field>}
 
         {genAccount === "personal" && contentType === "carousel" && (
           <Field label="CTA Style">

@@ -98,18 +98,20 @@ export function GenerateButton({ platform, account, label = "Generate New" }: Ge
             </select>
           </div>
 
-          <div>
-            <label className="text-azen-text text-[11px] block mb-1">Content Pillar</label>
-            <select
-              value={genPillar}
-              onChange={(e) => setGenPillar(e.target.value)}
-              className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
-            >
-              {pillars.map((p) => (
-                <option key={p.key} value={p.key}>{p.label}</option>
-              ))}
-            </select>
-          </div>
+          {genType !== "story" && genType !== "value_post" && (
+            <div>
+              <label className="text-azen-text text-[11px] block mb-1">Content Pillar</label>
+              <select
+                value={genPillar}
+                onChange={(e) => setGenPillar(e.target.value)}
+                className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs"
+              >
+                {pillars.map((p) => (
+                  <option key={p.key} value={p.key}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="text-azen-text text-[11px] block mb-1">Content Type</label>
