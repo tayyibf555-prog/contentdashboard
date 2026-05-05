@@ -256,8 +256,16 @@ Respond in JSON format:
 Topic: ${original.title}
 Content pillar: ${original.pillar}
 
-Use the full 7-part value post structure: Contrarian Hook → Problem Callout (2 plain lines + reframe) → Authority Proof (I just... + 3 plain outcome lines) → Insight Flip (2 lines, names a new paradigm) → Value Stack (3 plain lines with a named asset) → Contrast Promise (Zero X. Zero Y. Just Z.) → CTA Architecture (Connect + Comment KEYWORD + Repost → DM).
-No emojis, no dashes, no arrows, no bullet symbols, no checkmarks — plain text only. Blank line between every section. No external links.
+Use the full 7-part value post structure:
+- Contrarian Hook (3 lines, ~225 chars, ends with colon)
+- Problem Callout (short setup line + exactly 3 → arrow bullets showing wrong behaviors + one-line metaphor reframe)
+- Authority Proof ("I just..." + 3 outcome-focused lines, not features)
+- Insight Flip (2 lines with white space between — kills obvious answer, reveals non-obvious paradigm)
+- Value Stack ("I'm giving away the exact [named asset]:" + exactly 5 ✅ checkmark bullets, each pairing asset name + benefit in parens, at least one with a specific number)
+- Contrast Promise ("Zero [pain]. Zero [pain]. / Just [desirable outcome that compounds].")
+- CTA Architecture ("Want the [named asset]?" + 1️⃣ Connect with me + 2️⃣ Comment "[KEYWORD]" below + Repost + blank line + "I'll DM you the full [asset name].")
+
+Formatting: → arrows in Problem Callout, ✅ checkmarks in Value Stack, 1️⃣ 2️⃣ in CTA. Everywhere else plain text — no dashes, no arrows, no other symbols. Blank line between every section. No external links.
 UK audience — always use £ not $. Keep figures in small to medium business range.
 
 Respond in JSON format:

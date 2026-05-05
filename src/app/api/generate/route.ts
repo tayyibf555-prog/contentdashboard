@@ -273,7 +273,7 @@ Use "I" / "I've" voice where it fits.
 
 PART 2 — PROBLEM CALLOUT
 Short setup line ending in a colon.
-Then exactly 2 lines showing verbatim wrong behaviors or bad practices. Write each as a plain sentence — no bullet symbols, no dashes, no arrows. Just one line per wrong behavior.
+Then exactly 3 lines showing verbatim wrong behaviors or bad practices — each as a → arrow bullet. Two is weak, four is bloated. Write each as a short phrase or verbatim thing the reader has said/done.
 End with one-line memorable reframe using a metaphor: "That's not a [serious thing]. That's a [trivial/negative thing]."
 
 PART 3 — AUTHORITY PROOF
@@ -287,23 +287,24 @@ This is the screenshot-worthy line. Own a word or phrase.
 
 PART 5 — VALUE STACK
 Setup: "I'm giving away the exact [named asset]:"
-Then exactly 3 plain lines, each pairing [Asset name] and what it does. No checkmarks, no dashes, no bullet symbols. Just sentences. At least one must include a specific number. Name the collection like a product ("The [X] System", "The [X] Architecture").
+Then exactly 5 lines, each as a ✅ checkmark bullet. Each item pairs [Asset name] ([what it does — benefit in parens]). At least one item must include a specific number (e.g. "15+ templates", "47-point checklist"). Name the collection like a product ("The [X] System", "The [X] Architecture"). Order: most coveted item first, most tactical/specific last.
 
 PART 6 — CONTRAST PROMISE (two lines)
 Line 1: "Zero [pain #1]. Zero [pain #2]."
 Line 2: "Just [desirable outcome that compounds or scales]."
 
 PART 7 — CTA ARCHITECTURE
-Line 1: "Want the complete [named asset]?" (yes/no question with obvious answer)
-Line 2: "Connect with me."
-Line 3: "Comment [KEYWORD] below and repost this."
-Line 4: "I'll DM you the full [asset name]."
+Line 1: "Want the complete [named asset]?" (yes/no question — "no" must not be a plausible answer. Name the asset exactly as it was named in Part 5.)
+Line 2: "1️⃣ Connect with me"
+Line 3: "2️⃣ Comment \"[KEYWORD]\" below + Repost"
+Line 4: (blank line)
+Line 5: "I'll DM you the full [asset name]."
 
 The KEYWORD must be: one word, all-caps, thematic to the post, 4–6 letters, easy to type on mobile. Examples: VAULT, STACK, OPUS, BLUEPRINT, LADDER, PLAYBOOK, NUDGE, DECK.
 
 FORMATTING RULES (non-negotiable):
 - Blank line between every section
-- No emojis, no dashes, no arrows, no bullet symbols, no checkmarks, no numbered emoji steps — plain text only
+- Problem Callout bullets use → arrows. Value Stack bullets use ✅ checkmarks. CTA ladder uses 1️⃣ 2️⃣. Everywhere else: plain text only — no dashes, no hyphens, no asterisks, no other symbols.
 - No external links in the body
 - No generic AI voice — write like Tayyib talks, not a press release
 - Never put the lead magnet link in the post body
