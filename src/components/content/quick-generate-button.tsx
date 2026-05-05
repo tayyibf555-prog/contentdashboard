@@ -15,7 +15,24 @@ export function QuickGenerateButton({ platform, contentType, label, defaultPilla
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
   const [topic, setTopic] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const handleSuggest = async () => {
+    setSuggesting(true);
+    try {
+      const res = await fetch("/api/suggest-topics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contentType, pillar: defaultPillar }),
+      });
+      const data = await res.json();
+      if (res.ok) setSuggestions(data.topics || []);
+    } finally {
+      setSuggesting(false);
+    }
+  };
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -39,6 +56,7 @@ export function QuickGenerateButton({ platform, contentType, label, defaultPilla
 
       setShowModal(false);
       setTopic("");
+      setSuggestions([]);
       router.push(`/${platform}?account=personal`);
       router.refresh();
     } catch (e) {
@@ -57,18 +75,44 @@ export function QuickGenerateButton({ platform, contentType, label, defaultPilla
         {label}
       </button>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={`Generate ${label}`}>
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setSuggestions([]); setTopic(""); }} title={`Generate ${label}`}>
         <div className="space-y-3">
           <div>
-            <label className="text-azen-text text-[11px] block mb-1">Topic / Context (optional)</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-azen-text text-[11px]">Topic / Context (optional)</label>
+              <button
+                onClick={handleSuggest}
+                disabled={suggesting}
+                className="text-[10px] text-azen-accent hover:text-white disabled:opacity-40 transition-colors font-semibold"
+              >
+                {suggesting ? "Thinking..." : "Suggest topics"}
+              </button>
+            </div>
             <textarea
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Describe what the post should be about, or leave blank and AI will decide..."
-              rows={4}
+              rows={3}
               className="w-full bg-azen-bg border border-azen-border rounded-md px-3 py-2 text-white text-xs leading-relaxed resize-none focus:outline-none focus:border-azen-accent"
             />
           </div>
+
+          {suggestions.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.15em] text-azen-muted">Pick a topic</div>
+              <div className="flex flex-col gap-1.5">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setTopic(s); setSuggestions([]); }}
+                    className="text-left text-[11px] text-azen-text bg-azen-bg border border-azen-line rounded-md px-3 py-2 hover:border-azen-accent hover:text-white transition-colors leading-snug"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <button
             onClick={handleGenerate}
