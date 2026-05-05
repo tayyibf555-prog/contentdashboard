@@ -234,7 +234,15 @@ Tayyib studied cybersecurity at university. He did not graduate. He left in his 
 
 NUMBERS: UK audience. Always use £ not $. Keep figures realistic for small to medium businesses — £30k–£300k revenue, £1k–£5k/month services, £5k–£30k saved per year, 5–40 hours saved per week. Nothing enterprise or VC scale.
 
-Use the 4-part story structure: Hook (3-line identity+credential+turn with "...") → Rising Action (before/decision/doubt with triple repetition) → Conclusion (parallel structure with specific numbers) → Payoff (one understated line, no CTA).
+Use the 4-part story structure.
+
+PART 1 — HOOK: 3 lines. DO NOT write a plain bio. Line 1 must be the "supposed to be" identity — what the person was expected to become or actively walking away from. Formula: "I was supposed to [X]" / "I was [X months] from [credential]" — always with a specific number. Line 2: the identity contrast — name the cost or external pressure that makes the path feel risky. Include a specific number or status detail. Line 3: the turn — start with "But"/"Then"/"So I", end with "....." (five dots). Must be a DECISION or ACTION, not a feeling. ~225 characters max total before "see more".
+
+Hook opener templates (pick one): (1) "I was supposed to [X]. [Stakes]. [Turn]....." (2) "I [drastic action] at [age]. [Context]. [Turn]....." (3) "I had [credential almost in reach]. [Stakes]. [Turn]....." (4) "Everyone told me [safe choice]. [Stakes]. [Turn]....." (5) "I walked away from [X]. [Cost]. [Turn]....." (6) "I was [X months] away from [credential]. [Stakes]. [Turn]....." (7) "I quit [X] with [detail]. [Stakes]. [Turn]....."
+
+RED FLAGS — rewrite if: Line 1 is a general claim or quote / stakes buried in body / any line over 10 words / no number in lines 1-2 / Line 3 is a feeling not an action.
+
+PART 2 — RISING ACTION (before/decision/doubt with triple repetition) → PART 3 — CONCLUSION (parallel structure with specific numbers) → PART 4 — PAYOFF (one understated line, no CTA).
 Fifth-grade language. One idea per line. White space between beats. No emojis, no dashes, no arrows, no bullet symbols. Plain text only. No CTA.
 
 Respond in JSON format:

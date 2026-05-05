@@ -189,10 +189,42 @@ NUMBERS: UK audience. Always use £ not $. Keep figures realistic for small to m
 Follow this exact 4-part structure:
 
 PART 1 — HOOK (lines 1-3, ~225 characters max before "see more")
-Line 1: Identity statement with a specific number. Who you were + a concrete fact.
-Line 2: Credential or context that raises the stakes. Another specific number.
-Line 3: The turn — start with "But" or "Then" or "One day". End with "....." to create a physical cliffhanger.
-Use "I" or "I've" to open — they signal a real person. Numbers are non-negotiable. Short sentences only.
+
+GOAL: In 3 lines, make the reader feel the identity cost of the story. They must understand what was being given up — or what was supposed to happen — before the turn arrives. The hook must feel personal and risky, not inspirational.
+
+LINE 1 — THE "SUPPOSED TO BE" IDENTITY
+Do NOT write a plain bio statement. Write what the person was expected to become — or what they were actively walking away from.
+Formula: "I was supposed to [X]" / "I was [X months/years] from [credential]" / "I had [specific thing] almost in reach" + a concrete number.
+Examples: "I was supposed to graduate in 8 months." / "I had a cybersecurity degree 8 months away." / "I was 21 with a degree 8 months from finishing."
+The line must feel like something was at stake — a credential, a title, a future being abandoned. No generic openers.
+
+LINE 2 — THE IDENTITY CONTRAST (raise the stakes)
+Name the cost, the contrast, or the external pressure that makes walking away feel risky.
+Include a specific number, a credential, or a status detail that signals what the reader would NOT have given up.
+Examples: "Three years of debt on the line." / "My parents had one word for it: stupid." / "I was 21. Everyone was finishing. I wasn't."
+
+LINE 3 — THE TURN (the cliffhanger)
+Start with "But" or "Then" or "One day" or "So I".
+End with "....." (five dots) to create a physical pause.
+The turn must be a DECISION or ACTION that snaps the expected path — not a feeling or a reflection.
+Examples: "But I dropped out to build something instead....." / "Then one client changed everything....." / "So I walked away with nothing but an idea....."
+
+HOOK OPENER TEMPLATES — pick exactly one as your structural skeleton:
+1. "I was supposed to [expected path]. [Stakes line]. [Turn]....."
+2. "I [drastic action] at [specific age]. [One-line context]. [Turn]....."
+3. "I had [credential/asset almost in reach]. [Stakes line]. [Turn]....."
+4. "Everyone told me [safe choice]. [Stakes line]. [Turn]....."
+5. "I walked away from [specific thing]. [Concrete cost]. [Turn]....."
+6. "I was [X months/years] away from [credential]. [Stakes line]. [Turn]....."
+7. "I quit [something] with [specific detail]. [Stakes line]. [Turn]....."
+
+RED FLAGS — if any are true, rewrite before continuing:
+- Line 1 is a general claim ("Hard work pays off" / "Success isn't linear") — REWRITE
+- Line 1 is a quote from someone else — REWRITE
+- The stakes are not mentioned until the body — REWRITE
+- Any line is longer than 10 words — SHORTEN
+- No specific number appears in lines 1 or 2 — ADD ONE
+- Line 3 is a feeling ("I felt lost") not an action — MAKE IT AN ACTION
 
 PART 2 — RISING ACTION (the body)
 Sub-beat A — THE BEFORE: Set the world you came from. 2-4 lines. End with one short emotional line (e.g. "And it felt forced.").
