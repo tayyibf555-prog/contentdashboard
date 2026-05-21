@@ -20,6 +20,7 @@ import {
   ListChecks,
 } from "lucide-react";
 import { AccountToggle } from "@/components/ui/account-toggle";
+import { useAccount } from "@/lib/account-context";
 
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> };
 
@@ -58,6 +59,7 @@ const SETTINGS_ITEMS: NavItem[] = [{ href: "/settings", label: "Voice Settings",
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { account } = useAccount();
   const [pending, startTransition] = useTransition();
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
@@ -89,12 +91,15 @@ export function Sidebar() {
         href={item.href}
         prefetch
         onClick={(e) => {
-          // Immediate visual state flip + soft replace (no history spam)
           if (item.href === pathname) return;
           e.preventDefault();
           setPendingHref(item.href);
+          // Preserve the current account param so switching pages doesn't reset to business
+          const ACCOUNT_PAGES = ["/instagram", "/linkedin", "/twitter", "/youtube", "/calendar", "/analytics"];
+          const shouldCarryAccount = ACCOUNT_PAGES.some((p) => item.href.startsWith(p));
+          const dest = shouldCarryAccount ? `${item.href}?account=${account}` : item.href;
           startTransition(() => {
-            router.push(item.href);
+            router.push(dest);
           });
         }}
         className={`group relative flex items-center gap-3 mx-3 px-3 py-2 rounded-md text-[13px] transition-all duration-150 ${
