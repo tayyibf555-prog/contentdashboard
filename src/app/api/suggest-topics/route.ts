@@ -6,7 +6,20 @@ export async function POST(request: Request) {
 
   let prompt: string;
 
-  if (contentType === "story") {
+  if (contentType === "reddit_post") {
+    prompt = `Generate 5 Reddit post topic ideas for @tayyib.ai (Tayyib, founder of Azen AI — a UK AI agency that builds custom AI solutions for SMBs).
+
+Each topic should be a specific client story, project outcome, or revenue milestone that would resonate with entrepreneurs and founders on Reddit. UK context, £ figures.
+
+Rules:
+- Each topic follows the viral Reddit title formula: specific £ figure or result + curiosity trigger
+- Under 12 words, honest, not clickbaity
+- Must be something Tayyib could plausibly have done as an AI agency founder
+- No generic topics like "my AI journey" or "lessons from entrepreneurship"
+- Examples: "Built an AI hiring tool and landed 3 clients in a week" / "Client saved £8k/month after automating their invoicing with AI" / "How a £2k project turned into a £40k/yr retainer"
+
+Respond in JSON: { "topics": ["topic 1", "topic 2", "topic 3", "topic 4", "topic 5"] }`;
+  } else if (contentType === "story") {
     prompt = `Generate 5 LinkedIn storytelling post topic ideas for @tayyib.ai (personal brand of Tayyib, founder of Azen AI — cybersecurity dropout who left university in his third year to build an AI agency).
 
 Each topic should be a specific, real-life moment or turning point that could anchor a personal story post. Think: pivots, costly mistakes, near-misses, uncomfortable realisations, things no one told him, decisions that looked wrong but weren't.

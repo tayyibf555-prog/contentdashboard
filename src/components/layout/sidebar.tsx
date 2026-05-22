@@ -18,6 +18,7 @@ import {
   Settings,
   Sparkles,
   ListChecks,
+  Globe,
 } from "lucide-react";
 import { AccountToggle } from "@/components/ui/account-toggle";
 import { useAccount } from "@/lib/account-context";
@@ -40,6 +41,7 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
       { href: "/linkedin", label: "LinkedIn", icon: Briefcase },
       { href: "/twitter", label: "Twitter / X", icon: MessageSquare },
       { href: "/youtube", label: "YouTube", icon: Video },
+      { href: "/reddit", label: "Reddit", icon: Globe },
     ],
   },
   {
@@ -96,6 +98,7 @@ export function Sidebar() {
           setPendingHref(item.href);
           // Preserve the current account param so switching pages doesn't reset to business
           const ACCOUNT_PAGES = ["/instagram", "/linkedin", "/twitter", "/youtube", "/calendar", "/analytics"];
+          // Reddit is always personal — no account param needed
           const shouldCarryAccount = ACCOUNT_PAGES.some((p) => item.href.startsWith(p));
           const dest = shouldCarryAccount ? `${item.href}?account=${account}` : item.href;
           startTransition(() => {

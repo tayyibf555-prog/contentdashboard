@@ -20,6 +20,7 @@ function revalidateAll() {
   revalidatePath("/linkedin");
   revalidatePath("/twitter");
   revalidatePath("/youtube");
+  revalidatePath("/reddit");
 }
 
 export async function approveContent(id: string): Promise<ActionResult> {
@@ -274,6 +275,29 @@ Respond in JSON format:
   "body": "complete value post with all 7 parts and correct formatting",
   "hashtags": ["tag1", "tag2", "tag3"]
 }`;
+    } else if (original.content_type === "reddit_post") {
+      prompt = `Rewrite this Reddit post for @tayyib.ai with a completely different story angle on the same topic.
+Topic: ${original.title}
+
+Follow the 6-part viral Reddit post structure:
+1. Introduction — introduce yourself and the client/situation casually
+2. The Problem — specific, concrete problem identified
+3. Your Feelings — honest personal reaction (doubt, excitement, curiosity) in short sentences
+4. Solution Idea — what you decided to build and why
+5. Building It — real challenges, things that went wrong, tools used, time spent
+6. End Result — specific £ figures and soft lesson. No pitch.
+
+TITLE: include a specific £ figure or concrete result, create curiosity, under 12 words.
+NUMBERS: UK audience, £ not $, SMB scale.
+Style: conversational first person, short paragraphs, real struggles included, no emojis, no CTA.
+Suggest the best subreddit from: r/entrepreneur, r/SaaS, r/smallbusiness, r/startups, r/automation, r/nocode, r/webdev, r/ArtificialIntelligence, r/AIToolsForBusiness
+
+Respond in JSON:
+{
+  "title": "the Reddit post title",
+  "body": "the full post body with blank lines between sections",
+  "subreddit": "r/entrepreneur"
+}`;
     } else {
       prompt = `Regenerate a ${original.content_type} for ${accountHandle} on ${original.platform}.
 Topic: ${original.title}
@@ -296,7 +320,9 @@ Generate a completely different take on the same topic. Respond in JSON format:
       .update({
         title: parsed.title,
         body: parsed.body,
-        hashtags: parsed.hashtags || [],
+        hashtags: original.content_type === "reddit_post"
+          ? (parsed.subreddit ? [parsed.subreddit] : [])
+          : (parsed.hashtags || []),
       })
       .eq("id", id);
 
