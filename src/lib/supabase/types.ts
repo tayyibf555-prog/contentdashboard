@@ -93,6 +93,21 @@ export type EngagementIdea = {
   created_at: string;
 };
 
+export type VideoIdea = {
+  id: string;
+  account: "business" | "personal";
+  source_post_ids: string[];
+  video_title: string;
+  overview: string;
+  how_to_recreate: string;
+  niche: string | null;
+  source_url: string | null;
+  source_metric: string | null;
+  status: "new" | "used" | "dismissed";
+  saved: boolean;
+  created_at: string;
+};
+
 export type CarouselSlide = {
   id: string;
   generated_content_id: string;

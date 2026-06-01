@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { generateReelIdeas } from "@/lib/claude/ideas";
+import { generateReelIdeas, generateVideoIdeas } from "@/lib/claude/ideas";
 
 // How many top reels to consider, and how many new ideas to generate per run.
 const TOP_CANDIDATES = 15;
@@ -110,6 +110,87 @@ export async function generateAndStoreIdeas(account: "business" | "personal") {
   if (rows.length === 0) return { generated: 0, reason: "no rows to insert" };
 
   const { data: inserted, error: iErr } = await supabase.from("engagement_ideas").insert(rows).select();
+  if (iErr) throw new Error(iErr.message);
+
+  return { generated: inserted?.length || 0 };
+}
+
+/**
+ * Select the top-performing competitor YouTube long-form videos, skip any that
+ * already produced an idea, and generate + persist fresh video ideas. Safe to
+ * call after a scrape — returns a summary and never throws on "nothing to do".
+ */
+export async function generateAndStoreVideoIdeas(account: "business" | "personal") {
+  const supabase = getSupabase();
+
+  const { data: scraped, error: sErr } = await supabase
+    .from("scraped_posts")
+    .select("id, title, content_summary, engagement_stats, url")
+    .eq("platform", "youtube")
+    .order("scraped_at", { ascending: false })
+    .limit(500);
+
+  if (sErr) throw new Error(sErr.message);
+  if (!scraped || scraped.length === 0) return { generated: 0, reason: "no scraped videos" };
+
+  // Long-form only: keep videos over 60s, or where duration is unknown (0).
+  const longForm = scraped.filter((s) => {
+    const secs = Number((s.engagement_stats as Engagement)?.durationSeconds) || 0;
+    return secs === 0 || secs > 60;
+  });
+  if (longForm.length === 0) return { generated: 0, reason: "no long-form videos" };
+
+  // Rank by performance and take the top candidates.
+  longForm.sort((a, b) => score(b.engagement_stats as Engagement) - score(a.engagement_stats as Engagement));
+  const top = longForm.slice(0, TOP_CANDIDATES);
+
+  // Dedup: never produce a second idea from a video we've already used.
+  const { data: existing } = await supabase
+    .from("video_ideas")
+    .select("source_post_ids")
+    .eq("account", account);
+  const used = new Set<string>();
+  for (const row of existing || []) {
+    for (const id of (row.source_post_ids as string[]) || []) used.add(id);
+  }
+
+  const fresh = top.filter((r) => !used.has(r.id)).slice(0, MAX_NEW_PER_RUN);
+  if (fresh.length === 0) return { generated: 0, reason: "no new top videos" };
+
+  const ideas = await generateVideoIdeas(
+    account,
+    fresh.map((r) => ({
+      id: r.id,
+      title: r.title || "",
+      content: r.content_summary || "",
+      engagement: (r.engagement_stats as Record<string, number>) || {},
+      url: r.url || "",
+    }))
+  );
+  if (ideas.length === 0) return { generated: 0, reason: "model returned no ideas" };
+
+  const byId = new Map(fresh.map((r) => [r.id, r]));
+  const rows = ideas
+    .map((i) => {
+      const src = byId.get(i.source_post_id);
+      if (!src) return null;
+      return {
+        account,
+        source_post_ids: [src.id],
+        video_title: i.video_title,
+        overview: i.overview,
+        how_to_recreate: i.how_to_recreate,
+        niche: i.niche || null,
+        source_url: src.url || null,
+        source_metric: formatMetric((src.engagement_stats as Engagement) || {}),
+        status: "new" as const,
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
+
+  if (rows.length === 0) return { generated: 0, reason: "no rows to insert" };
+
+  const { data: inserted, error: iErr } = await supabase.from("video_ideas").insert(rows).select();
   if (iErr) throw new Error(iErr.message);
 
   return { generated: inserted?.length || 0 };

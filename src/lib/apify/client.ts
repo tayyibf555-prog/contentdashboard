@@ -73,9 +73,12 @@ function buildInput(platform: string, handle: string): Record<string, unknown> {
     case "instagram":
       return { username: [handle.replace("@", "")], resultsLimit: 10 };
     case "youtube":
+      // Pull each channel's top long-form videos by views (the /videos tab
+      // excludes Shorts), so ideas come from what actually performed.
       return {
         startUrls: [{ url: `https://www.youtube.com/@${handle.replace("@", "")}/videos` }],
-        maxResults: 5,
+        maxResults: 25,
+        sortVideosBy: "POPULAR",
       };
     case "twitter":
       return { handle: handle.replace("@", ""), tweetsDesired: 10 };
@@ -86,9 +89,19 @@ function buildInput(platform: string, handle: string): Record<string, unknown> {
   }
 }
 
+// Parse a YouTube duration string ("12:34" / "1:02:33") to seconds.
+// Returns 0 when the format is unrecognised (treated downstream as "unknown").
+function parseDurationSeconds(raw: string): number {
+  if (!raw) return 0;
+  const parts = raw.split(":").map((p) => parseInt(p, 10));
+  if (parts.some((n) => Number.isNaN(n))) return 0;
+  return parts.reduce((acc, n) => acc * 60 + n, 0);
+}
+
 function normalizeResult(platform: string, item: Record<string, unknown>): ScrapeResult {
   switch (platform) {
-    case "youtube":
+    case "youtube": {
+      const durationRaw = (item.duration as string) || "";
       return {
         platform,
         title: (item.title as string) || "",
@@ -98,10 +111,13 @@ function normalizeResult(platform: string, item: Record<string, unknown>): Scrap
           comments: (item.commentsCount as number) || 0,
           shares: 0,
           views: (item.viewCount as number) || 0,
+          duration: durationRaw,
+          durationSeconds: parseDurationSeconds(durationRaw),
         },
         url: (item.url as string) || "",
         postedAt: (item.date as string) || new Date().toISOString(),
       };
+    }
     case "instagram": {
       // Derive post type from Apify fields: "Sidecar"=carousel, "Video"+productType="clips"=reel, "Image"=post
       let postType: "carousel" | "reel" | "video" | "post" = "post";

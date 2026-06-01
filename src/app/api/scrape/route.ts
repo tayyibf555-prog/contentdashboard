@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { scrapeAccount } from "@/lib/apify/client";
 import { analyzeResearch } from "@/lib/claude/client";
 import { createClient } from "@supabase/supabase-js";
-import { generateAndStoreIdeas } from "@/lib/ideas/generate";
+import { generateAndStoreIdeas, generateAndStoreVideoIdeas } from "@/lib/ideas/generate";
 
 export const maxDuration = 60;
 
@@ -96,6 +96,14 @@ export async function POST(request: Request) {
         ideasGenerated = result.generated;
       } catch (e) {
         console.error("[scrape] idea generation failed:", e);
+      }
+    }
+    if (platform === "youtube") {
+      try {
+        const result = await generateAndStoreVideoIdeas("personal");
+        ideasGenerated = result.generated;
+      } catch (e) {
+        console.error("[scrape] video idea generation failed:", e);
       }
     }
 

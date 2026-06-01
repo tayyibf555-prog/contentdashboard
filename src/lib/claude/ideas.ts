@@ -52,6 +52,62 @@ Return ONLY a JSON array of these objects, wrapped in \`\`\`json ... \`\`\` if y
     }));
 }
 
+export type VideoIdeaResult = {
+  source_post_id: string;
+  video_title: string;
+  overview: string;
+  how_to_recreate: string;
+  niche: string;
+};
+
+/**
+ * Given the top-performing competitor YouTube long-form videos, produce for each
+ * a recreate-able video idea: a title the user could use for their own version,
+ * a brief overview of the source video, and how to recreate it. Themed toward
+ * content that attracts business-owner clients who need AI. One idea per video.
+ */
+export async function generateVideoIdeas(
+  account: "business" | "personal",
+  videos: Array<{ id: string; title: string; content: string; engagement: Record<string, number>; url: string }>
+): Promise<VideoIdeaResult[]> {
+  const voice = account === "business"
+    ? "Azen — an AI agency helping founders Audit, Educate, and Deploy AI tools. Direct, founder-focused, practical."
+    : "Tayyib — a solo founder documenting AI + business lessons, founder of Azen AI (an agency that builds custom AI solutions for businesses). Personal, opinionated, conversational 'founder voice'.";
+
+  const systemPrompt = `You are a senior YouTube strategist studying the highest-performing long-form videos from peer / competitor channels.
+
+Account voice: ${voice}
+
+GOAL: the user makes YouTube videos to attract business-owner clients who need AI for their business. The best-fitting angles are: founder takes on AI, personal stories about building with AI, practical "AI for your business" breakdowns, and lead-generating content. Every idea should ladder up to "this makes a business owner trust Tayyib and want to work with Azen."
+
+For EACH video provided, distill a recreate-able idea (NOT a script). Output an object with:
+- source_post_id: the id of the source video (echo it back exactly)
+- video_title: a compelling YouTube title the user could use for their OWN video on the same idea — in their voice, oriented toward attracting AI clients. Do NOT copy the original title.
+- overview: 1-2 sentences on what the source video is about.
+- how_to_recreate: a short, practical note on how the user would make their own version — the angle/approach to take, not a full script.
+- niche: which lane it fits — one of "Founder takes on AI", "Personal story", "Client acquisition", "AI use-cases", or a similarly short label.
+
+Produce exactly one idea object per video provided — do not merge videos or invent extra ones.
+Return ONLY a JSON array of these objects, wrapped in \`\`\`json ... \`\`\` if you must format it.`;
+
+  const videosPayload = videos
+    .map((p) => `ID: ${p.id}\nURL: ${p.url}\nTitle: ${p.title}\nDescription: ${p.content}\nEngagement: ${JSON.stringify(p.engagement)}`)
+    .join("\n\n---\n\n");
+
+  const raw = await generateWithClaude(systemPrompt, videosPayload);
+  const parsed = extractJSON(raw);
+  if (!Array.isArray(parsed)) throw new Error("Claude did not return a JSON array");
+  return (parsed as VideoIdeaResult[])
+    .filter((i) => i && i.source_post_id && i.video_title)
+    .map((i) => ({
+      source_post_id: i.source_post_id,
+      video_title: i.video_title,
+      overview: i.overview || "",
+      how_to_recreate: i.how_to_recreate || "",
+      niche: i.niche || "",
+    }));
+}
+
 /**
  * Given a scraped post OR a plain description, return a recreation plan the
  * user can execute themselves — tailored to their voice.

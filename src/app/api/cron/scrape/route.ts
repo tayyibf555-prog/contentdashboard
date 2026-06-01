@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { scrapeAccount } from "@/lib/apify/client";
 import { analyzeResearch } from "@/lib/claude/client";
-import { generateAndStoreIdeas } from "@/lib/ideas/generate";
+import { generateAndStoreIdeas, generateAndStoreVideoIdeas } from "@/lib/ideas/generate";
 
 export const maxDuration = 60;
 
@@ -88,5 +88,14 @@ export async function GET(request: Request) {
     console.error("[cron/scrape] idea generation failed:", err);
   }
 
-  return NextResponse.json({ scraped: scrapedCount, accounts: accounts?.length || 0, ideasGenerated });
+  // Auto-refresh personal-account YouTube video ideas from the latest top videos.
+  let videoIdeasGenerated = 0;
+  try {
+    const result = await generateAndStoreVideoIdeas("personal");
+    videoIdeasGenerated = result.generated;
+  } catch (err) {
+    console.error("[cron/scrape] video idea generation failed:", err);
+  }
+
+  return NextResponse.json({ scraped: scrapedCount, accounts: accounts?.length || 0, ideasGenerated, videoIdeasGenerated });
 }

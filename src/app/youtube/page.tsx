@@ -1,6 +1,6 @@
 import { TopBar } from "@/components/layout/top-bar";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { YouTubeEditor } from "./youtube-editor";
+import { YouTubePageClient } from "./youtube-page-client";
 import { GenerateButton } from "@/components/content/generate-button";
 import { WinnersButton } from "@/components/content/winners-button";
 
@@ -8,13 +8,24 @@ export default async function YouTubePage({ searchParams }: { searchParams: Prom
   const supabase = await createServerSupabaseClient();
   const { account = "business" } = await searchParams;
 
-  const { data: posts } = await supabase
-    .from("generated_content")
-    .select("*, youtube_scripts(*)")
-    .eq("platform", "youtube")
-    .eq("account", account)
-    .order("created_at", { ascending: false })
-    .limit(10);
+  const [postsResult, ideasResult] = await Promise.all([
+    supabase
+      .from("generated_content")
+      .select("*, youtube_scripts(*)")
+      .eq("platform", "youtube")
+      .eq("account", account)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    supabase
+      .from("video_ideas")
+      .select("*")
+      .eq("account", account)
+      .order("created_at", { ascending: false })
+      .limit(100),
+  ]);
+
+  const posts = postsResult.data;
+  const ideas = ideasResult.data;
 
   return (
     <div>
@@ -29,7 +40,7 @@ export default async function YouTubePage({ searchParams }: { searchParams: Prom
           </div>
         }
       />
-      <YouTubeEditor posts={posts || []} />
+      <YouTubePageClient posts={posts || []} ideas={ideas || []} account={account} />
     </div>
   );
 }
