@@ -8,6 +8,7 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "new" | "used" | "dismissed" | "saved">("new");
 
   const matchFilter = (i: EngagementIdea, f: typeof filter) =>
@@ -17,6 +18,7 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
 
   async function generateIdeas() {
     setError(null);
+    setInfo(null);
     setLoading(true);
     try {
       const res = await fetch("/api/ideas", {
@@ -26,6 +28,12 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to generate");
+      if (data.generated === 0) {
+        setInfo("No new ideas — you've already used the available top reels. Run a fresh competitor scrape to surface new ones.");
+      } else {
+        setInfo(`Added ${data.generated} new idea${data.generated === 1 ? "" : "s"}.`);
+        setFilter("new");
+      }
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
@@ -86,6 +94,7 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
       </div>
 
       {error && <div className="mb-4 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg p-3">{error}</div>}
+      {info && <div className="mb-4 text-xs text-azen-text bg-azen-card border border-azen-border rounded-lg p-3">{info}</div>}
 
       {filtered.length === 0 ? (
         <div className="text-azen-text text-sm">

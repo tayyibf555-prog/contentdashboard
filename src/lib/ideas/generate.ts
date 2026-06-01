@@ -1,8 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { generateReelIdeas, generateVideoIdeas } from "@/lib/claude/ideas";
 
-// How many top reels to consider, and how many new ideas to generate per run.
-const TOP_CANDIDATES = 15;
+// How many new ideas to generate per run (each refresh surfaces the next best).
 const MAX_NEW_PER_RUN = 8;
 
 function getSupabase() {
@@ -58,9 +57,8 @@ export async function generateAndStoreIdeas(account: "business" | "personal") {
   const reels = scraped.filter((s) => (s.engagement_stats as Engagement)?.postType === "reel");
   if (reels.length === 0) return { generated: 0, reason: "no reels" };
 
-  // Rank by performance and take the top candidates.
+  // Rank all reels by performance (best first).
   reels.sort((a, b) => score(b.engagement_stats as Engagement) - score(a.engagement_stats as Engagement));
-  const top = reels.slice(0, TOP_CANDIDATES);
 
   // Dedup: never produce a second idea from a reel we've already used.
   const { data: existing } = await supabase
@@ -72,8 +70,10 @@ export async function generateAndStoreIdeas(account: "business" | "personal") {
     for (const id of (row.source_post_ids as string[]) || []) used.add(id);
   }
 
-  const fresh = top.filter((r) => !used.has(r.id)).slice(0, MAX_NEW_PER_RUN);
-  if (fresh.length === 0) return { generated: 0, reason: "no new top reels" };
+  // Walk down the ranked list, skipping already-used reels, so each refresh
+  // surfaces the NEXT best performers instead of stopping at a fixed top-N.
+  const fresh = reels.filter((r) => !used.has(r.id)).slice(0, MAX_NEW_PER_RUN);
+  if (fresh.length === 0) return { generated: 0, reason: "no new reels" };
 
   const ideas = await generateReelIdeas(
     account,
@@ -140,9 +140,8 @@ export async function generateAndStoreVideoIdeas(account: "business" | "personal
   });
   if (longForm.length === 0) return { generated: 0, reason: "no long-form videos" };
 
-  // Rank by performance and take the top candidates.
+  // Rank all videos by performance (best first).
   longForm.sort((a, b) => score(b.engagement_stats as Engagement) - score(a.engagement_stats as Engagement));
-  const top = longForm.slice(0, TOP_CANDIDATES);
 
   // Dedup: never produce a second idea from a video we've already used.
   const { data: existing } = await supabase
@@ -154,8 +153,10 @@ export async function generateAndStoreVideoIdeas(account: "business" | "personal
     for (const id of (row.source_post_ids as string[]) || []) used.add(id);
   }
 
-  const fresh = top.filter((r) => !used.has(r.id)).slice(0, MAX_NEW_PER_RUN);
-  if (fresh.length === 0) return { generated: 0, reason: "no new top videos" };
+  // Walk down the ranked list, skipping already-used videos, so each refresh
+  // surfaces the NEXT best performers instead of stopping at a fixed top-N.
+  const fresh = longForm.filter((r) => !used.has(r.id)).slice(0, MAX_NEW_PER_RUN);
+  if (fresh.length === 0) return { generated: 0, reason: "no new videos" };
 
   const ideas = await generateVideoIdeas(
     account,
