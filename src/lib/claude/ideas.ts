@@ -1,60 +1,55 @@
 import { generateWithClaude, extractJSON } from "./client";
 
+export type ReelIdea = {
+  source_post_id: string;
+  topic: string;
+  idea: string;
+  framings: string[];
+};
+
 /**
- * Analyze a batch of scraped Instagram posts from tracked accounts and return
- * ideation templates: topics + hook + format + engagement mechanic.
- * Focus is specifically on engagement-triggering mechanics the creator used
- * (comment-for-DM keyword, save-for-later, follow-for-more, poll, quiz, etc.).
+ * Given the top-performing competitor reels, distill the CORE IDEA behind each
+ * one (what made it work as a piece of content — not a script) plus 2-3 short,
+ * casual angles for how the user could frame the same idea. One idea per reel.
  */
-export async function generateEngagementIdeas(
+export async function generateReelIdeas(
   account: "business" | "personal",
-  scrapedPosts: Array<{ id: string; title: string; content: string; engagement: Record<string, number>; url: string }>
-): Promise<
-  Array<{
-    source_post_ids: string[];
-    topic: string;
-    hook_template: string;
-    format: "reel" | "carousel" | "post";
-    engagement_mechanic: string;
-    rationale: string;
-  }>
-> {
+  reels: Array<{ id: string; title: string; content: string; engagement: Record<string, number>; url: string }>
+): Promise<ReelIdea[]> {
   const voice = account === "business"
-    ? "Azen — an AI agency helping founders Audit, Educate, and Deploy AI tools. Tone is direct, founder-focused, practical."
-    : "Tayyib — a solo founder documenting AI + business lessons. Tone is personal, opinionated, 'founder voice'.";
+    ? "Azen — an AI agency helping founders Audit, Educate, and Deploy AI tools. Direct, founder-focused, practical."
+    : "Tayyib — a solo founder documenting AI + business lessons. Personal, opinionated, conversational 'founder voice'.";
 
-  const systemPrompt = `You are a senior Instagram growth strategist studying competitor / peer content.
-
-Your job: read the scraped posts from tracked accounts and extract POST IDEAS the user can create, focused specifically on ENGAGEMENT MECHANICS (how they get viewers to comment, save, share, or DM).
+  const systemPrompt = `You are a senior Instagram content strategist studying the highest-performing reels from competitor / peer accounts.
 
 Account voice: ${voice}
 
-For each idea, output:
-- source_post_ids: which of the provided posts inspired this idea (by id)
-- topic: what the post is ABOUT (short, 3-8 words)
-- hook_template: the opening line the user would post (written in their voice)
-- format: "reel", "carousel", or "post"
-- engagement_mechanic: the exact mechanic, e.g. "Comment 'AI' to get the free framework DM'd", "7 slides → save for later", "Poll on slide 2 + explanation on slide 3"
-- rationale: why this works for the tracked-account audience, citing the engagement numbers from the sourced posts
+Your job: for EACH reel provided, distill the underlying CONTENT IDEA — the reusable concept that made it perform — so the user can make their own version. You are NOT writing a script, hook line, caption, or shot list. Just the idea, and a few ways to angle it.
 
-Return 5-8 ideas as a JSON array. Avoid duplicating a single mechanic twice — each idea should use a distinct engagement approach.
-Return ONLY a JSON array, wrapped in \`\`\`json ... \`\`\` if you must format it.`;
+For each reel, output an object with:
+- source_post_id: the id of the reel this idea came from (echo it back exactly)
+- topic: a short 3-8 word label of what it's about
+- idea: 1-2 sentences describing the core, reusable idea behind the reel (the concept, not the execution)
+- framings: an array of EXACTLY 2-3 short, casual angles for approaching this idea — each written like a quick note to self, NOT polished copy. Examples of the STYLE: "frame it as a mistake you made early on", "go contrarian — argue most people do this backwards", "make it a step-by-step you wish someone told you". Keep each under ~15 words.
 
-  const postsPayload = scrapedPosts
+Produce exactly one idea object per reel provided — do not merge reels or invent extra ones.
+Return ONLY a JSON array of these objects, wrapped in \`\`\`json ... \`\`\` if you must format it.`;
+
+  const reelsPayload = reels
     .map((p) => `ID: ${p.id}\nURL: ${p.url}\nTitle: ${p.title}\nCaption: ${p.content}\nEngagement: ${JSON.stringify(p.engagement)}`)
     .join("\n\n---\n\n");
 
-  const raw = await generateWithClaude(systemPrompt, postsPayload);
+  const raw = await generateWithClaude(systemPrompt, reelsPayload);
   const parsed = extractJSON(raw);
   if (!Array.isArray(parsed)) throw new Error("Claude did not return a JSON array");
-  return parsed as Array<{
-    source_post_ids: string[];
-    topic: string;
-    hook_template: string;
-    format: "reel" | "carousel" | "post";
-    engagement_mechanic: string;
-    rationale: string;
-  }>;
+  return (parsed as ReelIdea[])
+    .filter((i) => i && i.source_post_id && i.idea)
+    .map((i) => ({
+      source_post_id: i.source_post_id,
+      topic: i.topic || "",
+      idea: i.idea,
+      framings: Array.isArray(i.framings) ? i.framings.slice(0, 3) : [],
+    }));
 }
 
 /**

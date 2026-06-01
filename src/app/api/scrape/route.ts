@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { scrapeAccount } from "@/lib/apify/client";
 import { analyzeResearch } from "@/lib/claude/client";
 import { createClient } from "@supabase/supabase-js";
+import { generateAndStoreIdeas } from "@/lib/ideas/generate";
 
 export const maxDuration = 60;
 
@@ -86,7 +87,19 @@ export async function POST(request: Request) {
       await supabase.from("ai_analysis").insert(validAnalyses);
     }
 
-    return NextResponse.json({ scraped: newResults.length, skipped: results.length - newResults.length });
+    // After an Instagram scrape, auto-refresh personal-account ideas from the
+    // latest top reels. Best-effort: never fail the scrape on idea errors.
+    let ideasGenerated = 0;
+    if (platform === "instagram") {
+      try {
+        const result = await generateAndStoreIdeas("personal");
+        ideasGenerated = result.generated;
+      } catch (e) {
+        console.error("[scrape] idea generation failed:", e);
+      }
+    }
+
+    return NextResponse.json({ scraped: newResults.length, skipped: results.length - newResults.length, ideasGenerated });
   } catch (error) {
     console.error("Scrape error:", error);
     return NextResponse.json(

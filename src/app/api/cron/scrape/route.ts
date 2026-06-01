@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { scrapeAccount } from "@/lib/apify/client";
 import { analyzeResearch } from "@/lib/claude/client";
+import { generateAndStoreIdeas } from "@/lib/ideas/generate";
 
 export const maxDuration = 60;
 
@@ -77,5 +78,15 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ scraped: scrapedCount, accounts: accounts?.length || 0 });
+  // Auto-refresh personal-account Instagram ideas from the latest top reels.
+  // Best-effort: a failure here must not fail the scrape.
+  let ideasGenerated = 0;
+  try {
+    const result = await generateAndStoreIdeas("personal");
+    ideasGenerated = result.generated;
+  } catch (err) {
+    console.error("[cron/scrape] idea generation failed:", err);
+  }
+
+  return NextResponse.json({ scraped: scrapedCount, accounts: accounts?.length || 0, ideasGenerated });
 }

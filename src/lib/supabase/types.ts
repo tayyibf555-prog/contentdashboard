@@ -84,10 +84,10 @@ export type EngagementIdea = {
   account: "business" | "personal";
   source_post_ids: string[];
   topic: string;
-  hook_template: string;
-  format: "reel" | "carousel" | "post";
-  engagement_mechanic: string;
-  rationale: string;
+  idea: string;
+  framings: string[];
+  source_url: string | null;
+  source_metric: string | null;
   status: "new" | "used" | "dismissed";
   created_at: string;
 };

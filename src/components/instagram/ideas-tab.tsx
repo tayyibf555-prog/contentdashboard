@@ -65,7 +65,7 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
           disabled={loading}
           className="px-3 py-1.5 rounded-md text-xs font-semibold bg-azen-accent text-azen-bg hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
-          {loading ? "Analyzing tracked accounts…" : "Generate new ideas"}
+          {loading ? "Finding top reels…" : "Refresh ideas"}
         </button>
       </div>
 
@@ -73,7 +73,7 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
 
       {filtered.length === 0 ? (
         <div className="text-azen-text text-sm">
-          No {filter} ideas yet. Click &ldquo;Generate new ideas&rdquo; to analyze your tracked Instagram accounts.
+          No {filter} ideas yet. Ideas appear automatically after the next competitor scrape — or hit &ldquo;Refresh ideas&rdquo; to pull them from your top-performing tracked reels now.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -89,15 +89,16 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
 function IdeaCard({ idea, onUpdate }: { idea: EngagementIdea; onUpdate: (id: string, status: "used" | "dismissed") => void }) {
   return (
     <div className="bg-azen-card border border-azen-border rounded-xl p-4 flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <span
-          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-            idea.format === "reel" ? "bg-purple-500/20 text-purple-300" :
-            idea.format === "carousel" ? "bg-azen-accent/20 text-white" : "bg-azen-border text-azen-text"
-          }`}
-        >
-          {idea.format}
-        </span>
+      <div className="flex items-center justify-between gap-2">
+        {idea.source_metric ? (
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
+            {idea.source_metric}
+          </span>
+        ) : (
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
+            top reel
+          </span>
+        )}
         {idea.status !== "new" && (
           <span className="text-[10px] text-azen-text uppercase">{idea.status}</span>
         )}
@@ -109,19 +110,34 @@ function IdeaCard({ idea, onUpdate }: { idea: EngagementIdea; onUpdate: (id: str
       </div>
 
       <div>
-        <div className="text-[10px] text-azen-text uppercase font-semibold mb-1">Hook</div>
-        <div className="text-sm text-white/90 italic">&ldquo;{idea.hook_template}&rdquo;</div>
+        <div className="text-[10px] text-azen-text uppercase font-semibold mb-1">The idea</div>
+        <div className="text-sm text-white/90 leading-relaxed">{idea.idea}</div>
       </div>
 
-      <div>
-        <div className="text-[10px] text-azen-text uppercase font-semibold mb-1">Engagement mechanic</div>
-        <div className="text-sm text-white">{idea.engagement_mechanic}</div>
-      </div>
+      {idea.framings.length > 0 && (
+        <div>
+          <div className="text-[10px] text-azen-text uppercase font-semibold mb-1">Ways to frame it</div>
+          <ul className="flex flex-col gap-1.5">
+            {idea.framings.map((f, i) => (
+              <li key={i} className="text-sm text-white flex gap-2">
+                <span className="text-azen-accent">→</span>
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <div>
-        <div className="text-[10px] text-azen-text uppercase font-semibold mb-1">Why it works</div>
-        <div className="text-xs text-azen-text leading-relaxed">{idea.rationale}</div>
-      </div>
+      {idea.source_url && (
+        <a
+          href={idea.source_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-semibold text-azen-accent hover:underline"
+        >
+          View original reel →
+        </a>
+      )}
 
       {idea.status === "new" && (
         <div className="flex gap-2 mt-auto pt-2 border-t border-azen-border">
