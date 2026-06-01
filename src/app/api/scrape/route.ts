@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { scrapeAccount } from "@/lib/apify/client";
+import { scrapeAccount, selectTopInstagram } from "@/lib/apify/client";
 import { analyzeResearch } from "@/lib/claude/client";
 import { createClient } from "@supabase/supabase-js";
 import { generateAndStoreIdeas, generateAndStoreVideoIdeas } from "@/lib/ideas/generate";
@@ -18,7 +18,9 @@ export async function POST(request: Request) {
     const supabase = getSupabase();
     const { accountId, platform, handle } = await request.json();
 
-    const results = await scrapeAccount(platform, handle);
+    const rawResults = await scrapeAccount(platform, handle);
+    // Instagram: keep only the top 5 reels + 3 carousels. Other platforms unchanged.
+    const results = platform === "instagram" ? selectTopInstagram(rawResults) : rawResults;
 
     // 1. Dedupe by URL in one query
     const urls = results.map((r) => r.url).filter(Boolean);

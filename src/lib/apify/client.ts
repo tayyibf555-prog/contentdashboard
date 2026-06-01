@@ -68,10 +68,33 @@ export async function scrapeAccount(
   return items.map((item) => normalizeResult(platform, item));
 }
 
+// From a recent batch of Instagram results, keep only the top performers:
+// the 5 best reels (by views, fallback likes+comments) and the 3 best
+// carousels (by likes+comments). Single images and long videos are dropped.
+export function selectTopInstagram(results: ScrapeResult[]): ScrapeResult[] {
+  const num = (v: unknown) => Number(v) || 0;
+  const views = (r: ScrapeResult) => num(r.engagement.views);
+  const social = (r: ScrapeResult) => num(r.engagement.likes) + num(r.engagement.comments);
+
+  const reels = results
+    .filter((r) => r.engagement.postType === "reel")
+    .sort((a, b) => (views(b) || social(b)) - (views(a) || social(a)))
+    .slice(0, 5);
+
+  const carousels = results
+    .filter((r) => r.engagement.postType === "carousel")
+    .sort((a, b) => social(b) - social(a))
+    .slice(0, 3);
+
+  return [...reels, ...carousels];
+}
+
 function buildInput(platform: string, handle: string): Record<string, unknown> {
   switch (platform) {
     case "instagram":
-      return { username: [handle.replace("@", "")], resultsLimit: 10 };
+      // Pull a larger recent batch so selectTopInstagram can pick genuine
+      // top performers (the actor returns recent order, not by popularity).
+      return { username: [handle.replace("@", "")], resultsLimit: 50 };
     case "youtube":
       // Pull each channel's top long-form videos by views (the /videos tab
       // excludes Shorts), so ideas come from what actually performed.

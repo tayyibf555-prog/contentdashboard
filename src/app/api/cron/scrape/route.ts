@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { scrapeAccount } from "@/lib/apify/client";
+import { scrapeAccount, selectTopInstagram } from "@/lib/apify/client";
 import { analyzeResearch } from "@/lib/claude/client";
 import { generateAndStoreIdeas, generateAndStoreVideoIdeas } from "@/lib/ideas/generate";
 
@@ -31,7 +31,9 @@ export async function GET(request: Request) {
         if (!handle) continue;
 
         try {
-          const results = await scrapeAccount(platform, handle);
+          const rawResults = await scrapeAccount(platform, handle);
+          // Instagram: keep only the top 5 reels + 3 carousels. Other platforms unchanged.
+          const results = platform === "instagram" ? selectTopInstagram(rawResults) : rawResults;
           for (const result of results) {
             const { data: existing } = await supabase
               .from("scraped_posts")
