@@ -89,6 +89,7 @@ export type EngagementIdea = {
   source_url: string | null;
   source_metric: string | null;
   status: "new" | "used" | "dismissed";
+  saved: boolean;
   created_at: string;
 };
 

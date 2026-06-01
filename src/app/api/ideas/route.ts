@@ -24,12 +24,22 @@ export async function POST(request: Request) {
   }
 }
 
-// PATCH /api/ideas — update status (used/dismissed)
+// PATCH /api/ideas — update status (used/dismissed) and/or toggle the saved bookmark
 export async function PATCH(request: Request) {
   try {
-    const { id, status } = (await request.json()) as { id: string; status: "new" | "used" | "dismissed" };
+    const { id, status, saved } = (await request.json()) as {
+      id: string;
+      status?: "new" | "used" | "dismissed";
+      saved?: boolean;
+    };
+    const update: { status?: string; saved?: boolean } = {};
+    if (status !== undefined) update.status = status;
+    if (saved !== undefined) update.saved = saved;
+    if (Object.keys(update).length === 0) {
+      return NextResponse.json({ error: "nothing to update" }, { status: 400 });
+    }
     const supabase = getSupabase();
-    const { error } = await supabase.from("engagement_ideas").update({ status }).eq("id", id);
+    const { error } = await supabase.from("engagement_ideas").update(update).eq("id", id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
   } catch (err: unknown) {

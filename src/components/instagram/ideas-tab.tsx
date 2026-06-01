@@ -8,9 +8,12 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "new" | "used" | "dismissed">("new");
+  const [filter, setFilter] = useState<"all" | "new" | "used" | "dismissed" | "saved">("new");
 
-  const filtered = ideas.filter((i) => (filter === "all" ? true : i.status === filter));
+  const matchFilter = (i: EngagementIdea, f: typeof filter) =>
+    f === "all" ? true : f === "saved" ? i.saved : i.status === f;
+
+  const filtered = ideas.filter((i) => matchFilter(i, filter));
 
   async function generateIdeas() {
     setError(null);
@@ -44,11 +47,24 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
     }
   }
 
+  async function toggleSaved(id: string, saved: boolean) {
+    try {
+      await fetch("/api/ideas", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, saved }),
+      });
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div className="flex gap-2">
-          {(["new", "used", "dismissed", "all"] as const).map((f) => (
+          {(["new", "saved", "used", "dismissed", "all"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
@@ -56,7 +72,7 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
                 filter === f ? "bg-azen-accent text-azen-bg" : "bg-azen-card text-azen-text border border-azen-border hover:text-white"
               }`}
             >
-              {f.charAt(0).toUpperCase() + f.slice(1)} ({ideas.filter((i) => (f === "all" ? true : i.status === f)).length})
+              {f.charAt(0).toUpperCase() + f.slice(1)} ({ideas.filter((i) => matchFilter(i, f)).length})
             </button>
           ))}
         </div>
@@ -78,7 +94,7 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((idea) => (
-            <IdeaCard key={idea.id} idea={idea} onUpdate={updateStatus} />
+            <IdeaCard key={idea.id} idea={idea} onUpdate={updateStatus} onToggleSave={toggleSaved} />
           ))}
         </div>
       )}
@@ -86,22 +102,36 @@ export function IdeasTab({ ideas, account }: { ideas: EngagementIdea[]; account:
   );
 }
 
-function IdeaCard({ idea, onUpdate }: { idea: EngagementIdea; onUpdate: (id: string, status: "used" | "dismissed") => void }) {
+function IdeaCard({
+  idea,
+  onUpdate,
+  onToggleSave,
+}: {
+  idea: EngagementIdea;
+  onUpdate: (id: string, status: "used" | "dismissed") => void;
+  onToggleSave: (id: string, saved: boolean) => void;
+}) {
   return (
     <div className="bg-azen-card border border-azen-border rounded-xl p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        {idea.source_metric ? (
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
-            {idea.source_metric}
-          </span>
-        ) : (
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
-            top reel
-          </span>
-        )}
-        {idea.status !== "new" && (
-          <span className="text-[10px] text-azen-text uppercase">{idea.status}</span>
-        )}
+        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
+          {idea.source_metric || "top reel"}
+        </span>
+        <div className="flex items-center gap-2">
+          {idea.status !== "new" && (
+            <span className="text-[10px] text-azen-text uppercase">{idea.status}</span>
+          )}
+          <button
+            onClick={() => onToggleSave(idea.id, !idea.saved)}
+            title={idea.saved ? "Remove from saved" : "Save idea"}
+            aria-label={idea.saved ? "Remove from saved" : "Save idea"}
+            className={`text-base leading-none transition-colors ${
+              idea.saved ? "text-azen-accent" : "text-azen-text hover:text-white"
+            }`}
+          >
+            {idea.saved ? "★" : "☆"}
+          </button>
+        </div>
       </div>
 
       <div>
