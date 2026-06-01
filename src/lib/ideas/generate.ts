@@ -48,7 +48,7 @@ export async function generateAndStoreIdeas(account: "business" | "personal") {
     .select("id, title, content_summary, engagement_stats, url")
     .eq("platform", "instagram")
     .order("scraped_at", { ascending: false })
-    .limit(500);
+    .limit(2000);
 
   if (sErr) throw new Error(sErr.message);
   if (!scraped || scraped.length === 0) return { generated: 0, reason: "no scraped posts" };
@@ -128,7 +128,7 @@ export async function generateAndStoreVideoIdeas(account: "business" | "personal
     .select("id, title, content_summary, engagement_stats, url")
     .eq("platform", "youtube")
     .order("scraped_at", { ascending: false })
-    .limit(500);
+    .limit(2000);
 
   if (sErr) throw new Error(sErr.message);
   if (!scraped || scraped.length === 0) return { generated: 0, reason: "no scraped videos" };
