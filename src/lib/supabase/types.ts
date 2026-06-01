@@ -105,6 +105,7 @@ export type VideoIdea = {
   source_metric: string | null;
   status: "new" | "used" | "dismissed";
   saved: boolean;
+  notes: string | null;
   created_at: string;
 };
 

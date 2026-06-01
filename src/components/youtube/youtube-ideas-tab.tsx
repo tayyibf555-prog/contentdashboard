@@ -68,6 +68,15 @@ export function YouTubeIdeasTab({ ideas, account }: { ideas: VideoIdea[]; accoun
     }
   }
 
+  async function saveNotes(id: string, notes: string) {
+    await fetch("/api/video-ideas", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, notes }),
+    });
+    router.refresh();
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
@@ -103,7 +112,7 @@ export function YouTubeIdeasTab({ ideas, account }: { ideas: VideoIdea[]; accoun
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((idea) => (
-            <VideoIdeaCard key={idea.id} idea={idea} onUpdate={updateStatus} onToggleSave={toggleSaved} />
+            <VideoIdeaCard key={idea.id} idea={idea} onUpdate={updateStatus} onToggleSave={toggleSaved} onSaveNotes={saveNotes} />
           ))}
         </div>
       )}
@@ -115,11 +124,27 @@ function VideoIdeaCard({
   idea,
   onUpdate,
   onToggleSave,
+  onSaveNotes,
 }: {
   idea: VideoIdea;
   onUpdate: (id: string, status: "used" | "dismissed") => void;
   onToggleSave: (id: string, saved: boolean) => void;
+  onSaveNotes: (id: string, notes: string) => Promise<void>;
 }) {
+  const [note, setNote] = useState(idea.notes || "");
+  const [savedHint, setSavedHint] = useState(false);
+
+  async function handleNotesBlur() {
+    if (note === (idea.notes || "")) return;
+    try {
+      await onSaveNotes(idea.id, note);
+      setSavedHint(true);
+      setTimeout(() => setSavedHint(false), 2000);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   return (
     <div className="bg-azen-card border border-azen-border rounded-xl p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
@@ -174,6 +199,23 @@ function VideoIdeaCard({
         >
           View original video →
         </a>
+      )}
+
+      {idea.saved && (
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <div className="text-[10px] text-azen-text uppercase font-semibold">Notes</div>
+            {savedHint && <span className="text-[10px] text-azen-accent">Saved ✓</span>}
+          </div>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            onBlur={handleNotesBlur}
+            placeholder="Add your notes on this idea…"
+            rows={3}
+            className="w-full text-sm text-white bg-azen-bg border border-azen-border rounded-lg p-2 resize-y focus:outline-none focus:border-azen-accent placeholder:text-azen-text/60"
+          />
+        </div>
       )}
 
       {idea.status === "new" && (

@@ -27,14 +27,16 @@ export async function POST(request: Request) {
 // PATCH /api/video-ideas — update status (used/dismissed) and/or toggle the saved bookmark
 export async function PATCH(request: Request) {
   try {
-    const { id, status, saved } = (await request.json()) as {
+    const { id, status, saved, notes } = (await request.json()) as {
       id: string;
       status?: "new" | "used" | "dismissed";
       saved?: boolean;
+      notes?: string;
     };
-    const update: { status?: string; saved?: boolean } = {};
+    const update: { status?: string; saved?: boolean; notes?: string } = {};
     if (status !== undefined) update.status = status;
     if (saved !== undefined) update.saved = saved;
+    if (notes !== undefined) update.notes = notes;
     if (Object.keys(update).length === 0) {
       return NextResponse.json({ error: "nothing to update" }, { status: 400 });
     }
