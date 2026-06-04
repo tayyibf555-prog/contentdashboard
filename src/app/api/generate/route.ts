@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateContent } from "@/lib/claude/client";
+import { buildRedditPrompt } from "@/lib/claude/reddit";
 import { createClient } from "@supabase/supabase-js";
 import { BUSINESS_PILLARS, PERSONAL_PILLARS, POSTING_SCHEDULE } from "@/lib/constants";
 import { resolveTheme } from "@/lib/carousel/theme";
@@ -341,55 +342,7 @@ Respond in JSON format:
   "recording_notes": "brief filming/delivery tips for this reel"
 }`;
   } else if (contentType === "reddit_post") {
-    prompt = `Write a Reddit post for @tayyib.ai (Tayyib, founder of Azen AI — a UK AI agency that builds custom AI solutions for small and medium businesses).
-${mergedResearchContext ? `Topic / story direction: ${mergedResearchContext}` : ""}
-
-AUTHOR BACKGROUND: Tayyib studied cybersecurity. He did not graduate — he left in his third year to build Azen AI.
-
-NUMBERS: UK audience. Always use £ not $. Keep figures grounded in SMB reality — £30k–£300k revenue clients, £1k–£10k project fees, £5k–£30k saved per year.
-
-TITLE FORMULA — the title must:
-- Include a specific £ figure, timeframe, or concrete achievement number
-- Create curiosity: the reader wonders "how did they do that?"
-- Speak to an entrepreneur or founder goal or pain
-- Be under 12 words and feel honest, not clickbaity
-Examples: "I Sold an AI Business for £1,500" / "Made £11,000 from my First Client in 2 Months" / "Built an AI Payroll Agent for £3k — here's how"
-
-BODY — 6 parts, flowing naturally with NO section headers:
-
-PART 1 — INTRODUCTION (1-2 short paragraphs)
-Introduce yourself and the client or situation. Casual — like telling a friend. Who are you, who is the client (industry, rough size)?
-
-PART 2 — THE PROBLEM (1 paragraph)
-What specific problem did you or the client recognise? Be concrete. "Spending 20 hours a week manually processing invoices" not "there was an efficiency issue."
-
-PART 3 — YOUR FEELINGS (2-4 lines)
-Your honest personal reaction. A moment of doubt, excitement, or curiosity. Short sentences. This is what makes the post feel human and not AI-generated.
-
-PART 4 — THE SOLUTION IDEA (1 paragraph)
-What solution came to mind and the initial plan. High-level — what you decided to build and why.
-
-PART 5 — BUILDING THE SOLUTION (1-2 paragraphs)
-The real challenges. Things that went wrong or took longer than expected. At least one specific obstacle and how you got past it. Mention tools if relevant (n8n, Claude, Zapier, Make). Time spent. Do not skip the struggle.
-
-PART 6 — END RESULT (1 paragraph)
-Specific results: £ figures, hours saved, clients onboarded, MRR. End with a soft lesson or insight. No direct pitch. The results sell for themselves.
-
-STYLE RULES:
-- Conversational first person — write like a real person, not a marketer
-- Short paragraphs (2-4 lines max)
-- Specific £ figures and timeframes throughout — never vague
-- Include at least one thing that went wrong or was harder than expected
-- No hard pitch, no "DM me", no explicit CTA at the end
-- No emojis
-- Suggest the single best subreddit from: r/entrepreneur, r/SaaS, r/smallbusiness, r/startups, r/automation, r/nocode, r/webdev, r/ArtificialIntelligence, r/AIToolsForBusiness
-
-Respond in JSON:
-{
-  "title": "the Reddit post title",
-  "body": "the full post body — all 6 parts flowing naturally, no section headers, blank lines between sections",
-  "subreddit": "r/entrepreneur"
-}`;
+    prompt = buildRedditPrompt({ direction: mergedResearchContext });
   } else {
     prompt = `Generate a short social media post for ${accountHandle} on ${platform}.
 Content pillar: ${pillarLabel}${audienceContext}
